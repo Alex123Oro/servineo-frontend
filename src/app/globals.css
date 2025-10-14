@@ -3,6 +3,14 @@
 
 @import 'tailwindcss';
 
+:root {
+  --font-roboto: 'roboto', sans-serif;
+}
+
+html {
+  font-family: var(--font-roboto);
+}
+
 /*
 @layer base {
   :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {

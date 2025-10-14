@@ -42,7 +42,7 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
     }
     
     const redireccion = () => {
-        route.push(`/Home/jobPage?idJob=${idJob}`)
+        window.open(`/Home/jobPage?idJob=${idJob}`, "_blank")
     }
 
     const categoriaColors: {[key: string]: string} = {
@@ -67,9 +67,6 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
                     > 
                         Destacado 
                     </span> 
-                } 
-                {
-                    tiempo === "5 horas" && <span className='border border-solid border-#004280 text-[#004280] rounded-[10px] p-[1px] pr-[5px] pl-[5px] text-[13px] font-semibold'> Nuevo </span>
                 }
                 <span
                     className={`border border-solid border-white/0 rounded-[10px] p-[1px] pr-[5px] pl-[5px] text-[13px] font-semibold ${categoriaClass} bg-[${categoriaClass}]`}
