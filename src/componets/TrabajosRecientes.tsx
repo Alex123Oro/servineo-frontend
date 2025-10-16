@@ -48,7 +48,7 @@ export const TrabajosRecientes = () => {
 
       {
         jobs.length > 0 && 
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-4 sm:justify-center justify-items-center">
             {
               jobs
                 .slice()
@@ -87,7 +87,7 @@ export const TrabajosRecientes = () => {
           // el boton de ver siguiente solo se muestra si el usuario ya avanzo una pagina
           initial === 10 &&
             <button
-              className='bg-[#d39625] hover:bg-[#1834c2] duration-150 text-white h-9 w-40 rounded-[8px]'
+              className='cursor-pointer bg-[#2B31E0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px]'
               onClick={updateListPrevius}
             >
               Ver anteriores
@@ -104,7 +104,7 @@ export const TrabajosRecientes = () => {
             .length >= 10 &&
           visible < jobs.length &&
             <button 
-              className='bg-[#2585d3] hover:bg-[#1834c2] duration-150 text-white h-9 w-40 rounded-[8px]'
+              className='cursor-pointer bg-[#2B31E0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px]'
               onClick={updateList}
             > 
               Ver mas 

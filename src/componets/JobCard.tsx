@@ -46,30 +46,30 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
     }
 
     const categoriaColors: {[key: string]: string} = {
-        "plomeria": "text-blue-700 bg-blue-100",
-        "electricidad": "text-yellow-700 bg-yellow-100",
-        "carpinteria": "text-amber-800 bg-amber-100",
-        "limpieza": "text-green-700 bg-green-100",
-        "pintura": "text-red-700 bg-red-100",
-        "jardinería": "text-lime-700 bg-lime-100",
+        "plomeria": "text-[#1AA7ED] bg-[#E6F7FB]",
+        "electricidad": "text-[#2B31E0] bg-[#E6E7FB]",
+        "carpinteria": "text-[#2B6AE0] bg-[#E6F0FB]",
+        "limpieza": "text-[#2BDDE0] bg-[#E6FBFA]",
+        "pintura": "text-[#5E2BE0] bg-[#ECE6FB]",
+        "jardinería": "text-[#759AE0] bg-[#EEF3FB]",
 
-        "default": "text-green-900 bg-[#a7f3a7]"
+        "default": "text-[#2B31E0] bg-[#E6E7FB]"
     }
 
     const categoriaClass = categoriaColors[categoria] || categoriaColors["default"]
 
   return (
     <>
-        <div className={`flex flex-col rounded-[10px] justify-around border border-solid border-black/15 transition-shadow duration-300 hover:shadow-lg hover:shadow-black/30 mr-[5px] mb-[5px] p-3 min-h-[370] max-h-[auto] max-w-[260] min-w-[260]`}>
+        <div className={`flex flex-col rounded-[10px] justify-around border border-solid border-black/15 shadow-md transition-shadow duration-300 hover:shadow-lg hover:shadow-black/30 mr-[5px] mb-[5px] p-3 min-h-[370] max-h-[auto] max-w-[260] min-w-[260]`}>
             <div className='flex flex-row justify-between mb-[5px]'>
                 { 
-                    <span className={destacado ? `opacity-[100%] border border-solid pr-[5px] pl-[5px] text-[gold] rounded-[8px]` : `opacity-[0%]`}
+                    <span className={destacado ? `opacity-[100%] border border-solid pr-[5px] pl-[5px] text-[#5E2BE0] rounded-[8px]` : `opacity-[0%]`}
                     > 
                         Destacado 
                     </span> 
                 }
                 <span
-                    className={`border border-solid border-white/0 rounded-[10px] p-[1px] pr-[5px] pl-[5px] text-[13px] font-semibold ${categoriaClass} bg-[${categoriaClass}]`}
+                    className={`border border-solid border-white/0 rounded-[10px] p-[1px] pr-[5px] pl-[5px] text-[13px] font-semibold ${categoriaClass}`}
                 > 
                     {categoria} 
                 </span>
@@ -110,7 +110,7 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
 
             <div className='flex flex-row justify-between items-center'>
                 <button 
-                    className='flex flex-row items-center justify-center gap-[3px] bg-[#25D366] hover:bg-[#1ebe5d] duration-150 text-white h-9 w-40 rounded-[8px]'
+                    className='flex flex-row items-center justify-center cursor-pointer gap-[3px] bg-[#28DDE0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px]'
                     onClick={handleClick}
                 >
                     <FaWhatsapp />
