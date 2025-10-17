@@ -36,6 +36,8 @@ const Header = () => {
       className="sticky top-0 z-50 shadow-md"
       style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
       onKeyDown={handleArrowNavigation}
+      role="banner"
+      aria-label="Header principal de Servineo"
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center">
@@ -46,6 +48,7 @@ const Header = () => {
                 aria-label="Volver al inicio"
                 className="text-2xl transition-colors duration-200 
                    hover:bg-gray-300 hover:rounded-md p-1"
+                title="Volver a la página principal"
               >
                 ←
               </Link>
@@ -57,6 +60,8 @@ const Header = () => {
               href="/"
               className="ml-3 font-bold text-xl sm:text-2xl md:text-3xl"
               style={{ color: 'var(--primary-color)' }}
+              aria-label="Servineo - Ir al inicio"
+              title="Servineo - Página principal"
             >
               Servineo
             </Link>
@@ -65,6 +70,8 @@ const Header = () => {
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="ml-3 font-bold text-xl sm:text-2xl md:text-3xl"
               style={{ color: 'var(--primary-color)' }}
+              aria-label="Servineo - Ir arriba de la página"
+              title="Servineo - Ir arriba"
             >
               Servineo
             </button>
@@ -72,9 +79,9 @@ const Header = () => {
         </div>
 
         {/* Desktop Menu (ajustado para tablets) */}
-        <nav className="hidden md:block" aria-label="Main navigation">
+        <nav className="hidden md:block" aria-label="Navegación principal">
           <ul className="flex flex-wrap lg:flex-nowrap space-x-2 lg:space-x-4" role="menubar">
-            <li>
+            <li role="none">
               <Link
                 href="/Servicios"
                 className={`px-2 lg:px-3 py-1 text-sm lg:text-base whitespace-nowrap border-b-2 border-transparent transition-all duration-200
@@ -82,11 +89,13 @@ const Header = () => {
                 style={{ '--primary-color': 'var(--primary-color)' }}
                 role="menuitem"
                 tabIndex={0}
+                aria-label="Ver servicios disponibles"
+                aria-current={pathname.startsWith('/Servicios') ? 'page' : undefined}
               >
                 Servicios
               </Link>
             </li>
-            <li>
+            <li role="none">
               <Link
                 href="/Ofertas"
                 className={`px-2 lg:px-3 py-1 text-sm lg:text-base whitespace-nowrap border-b-2 border-transparent transition-all duration-200
@@ -94,11 +103,13 @@ const Header = () => {
                 style={{ '--primary-color': 'var(--primary-color)' }}
                 role="menuitem"
                 tabIndex={0}
+                aria-label="Ver ofertas de trabajo"
+                aria-current={pathname.startsWith('/Ofertas') ? 'page' : undefined}
               >
                 Ofertas
               </Link>
             </li>
-            <li>
+            <li role="none">
               <Link
                 href="/Help"
                 className={`px-2 lg:px-3 py-1 text-sm lg:text-base whitespace-nowrap border-b-2 border-transparent transition-all duration-200
@@ -106,13 +117,16 @@ const Header = () => {
                 style={{ '--primary-color': 'var(--primary-color)' }}
                 role="menuitem"
                 tabIndex={0}
+                aria-label="Obtener ayuda y soporte"
+                aria-current={pathname.startsWith('/Help') ? 'page' : undefined}
               >
                 Ayuda
               </Link>
             </li>
           </ul>
         </nav>
-        {/* Auth Buttons - Desktop (ajustado para tablets) */}
+        
+        {/* Auth Buttons - Desktop (ajustado para tablets) - Movidos a la derecha */}
         <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
           <button
             className="px-3 lg:px-4 py-2 text-sm lg:text-base rounded-md border transition-opacity duration-200 hover:opacity-70 whitespace-nowrap"
@@ -120,6 +134,8 @@ const Header = () => {
               borderColor: 'var(--primary-color)',
               color: 'var(--primary-color)',
             }}
+            aria-label="Iniciar sesión en tu cuenta"
+            title="Iniciar sesión"
           >
             Iniciar sesión
           </button>
@@ -127,7 +143,8 @@ const Header = () => {
           <button
             className="px-3 lg:px-4 py-2 text-sm lg:text-base rounded-md text-white hover:opacity-80 transition-opacity duration-200 whitespace-nowrap"
             style={{ backgroundColor: 'var(--primary-color)' }}
-            aria-label="Registrarse"
+            aria-label="Crear una nueva cuenta"
+            title="Registrarse"
             tabIndex={0}
           >
             Registrarse
@@ -136,7 +153,7 @@ const Header = () => {
       </div>
 
       {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between px-4 py-2 bg-[var(--background)]">
+      <div className="md:hidden flex items-center justify-between px-4 py-2 bg-[var(--background)]" role="complementary" aria-label="Botones de autenticación móvil">
         {/* Botones a la derecha */}
         <div className="flex items-center space-x-2">
           <Link
@@ -146,6 +163,8 @@ const Header = () => {
               borderColor: 'var(--primary-color)',
               color: 'var(--primary-color)',
             }}
+            aria-label="Iniciar sesión en tu cuenta"
+            title="Iniciar sesión"
           >
             Iniciar sesión
           </Link>
@@ -154,6 +173,8 @@ const Header = () => {
             href="/register"
             className="px-3 py-1 text-xs rounded-md text-white hover:opacity-80 transition-opacity duration-200"
             style={{ backgroundColor: 'var(--primary-color)' }}
+            aria-label="Crear una nueva cuenta"
+            title="Registrarse"
           >
             Registrarse
           </Link>
@@ -164,9 +185,10 @@ const Header = () => {
       <nav
         className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-lg z-50 md:hidden"
         style={{ backgroundColor: 'var(--background)' }}
-        aria-label="Mobile navigation"
+        aria-label="Navegación móvil principal"
+        role="navigation"
       >
-        <div className="flex justify-around items-center py-2">
+        <div className="flex justify-around items-center py-2" role="menubar">
           <Link
             href="/Servicios"
             className={`flex flex-col items-center py-2 px-3 rounded-xl transition-all duration-300 transform ${
@@ -175,8 +197,12 @@ const Header = () => {
                 : 'text-gray-600 hover:text-white hover:bg-gray-500'
             }`}
             onClick={() => handleLinkClick('services')}
+            role="menuitem"
+            aria-label="Ver servicios disponibles"
+            aria-current={pathname.startsWith('/Servicios') ? 'page' : undefined}
+            title="Servicios"
           >
-            <span className="text-lg mb-1">⚙️</span>
+            <span className="text-lg mb-1" aria-hidden="true">⚙️</span>
             <span className="text-xs font-medium">Servicios</span>
           </Link>
 
@@ -188,8 +214,12 @@ const Header = () => {
                 : 'text-gray-600 hover:text-white hover:bg-gray-500'
             }`}
             onClick={() => handleLinkClick('job-offers')}
+            role="menuitem"
+            aria-label="Ver ofertas de trabajo"
+            aria-current={pathname.startsWith('/Ofertas') ? 'page' : undefined}
+            title="Ofertas de trabajo"
           >
-            <span className="text-lg mb-1">💼</span>
+            <span className="text-lg mb-1" aria-hidden="true">💼</span>
             <span className="text-xs font-medium">Trabajos</span>
           </Link>
 
@@ -201,8 +231,12 @@ const Header = () => {
                 : 'text-gray-600 hover:text-white hover:bg-gray-500'
             }`}
             onClick={() => handleLinkClick('help')}
+            role="menuitem"
+            aria-label="Obtener ayuda y soporte"
+            aria-current={pathname.startsWith('/Help') ? 'page' : undefined}
+            title="Ayuda"
           >
-            <span className="text-lg mb-1">❓</span>
+            <span className="text-lg mb-1" aria-hidden="true">❓</span>
             <span className="text-xs font-medium">Ayuda</span>
           </Link>
         </div>
