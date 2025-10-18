@@ -18,7 +18,7 @@ export default function Home() {
   const [fixers, setFixers] = useState<Fixer[]>([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/fixers")
+    axios.get("https://servineo-backend-4.onrender.com/api/fixers")
          .then(res => setFixers(res.data))
          .catch(err => console.log("Error al cargar fixers:", err));
   }, []);
