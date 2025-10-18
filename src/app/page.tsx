@@ -6,6 +6,8 @@ import Mapa from "./Home/Mapa/Mapa";
 import Buscador from './Home/Buscador/Buscador';
 import ServiciosPage from "./servicios/servicios";
 
+import UserProfile from "./Home/UserProfile/userProfile";
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -103,6 +105,7 @@ export default function Home() {
       
       {/* Footer Component */}
       <Footer />
+      <UserProfile />
     </div>
   );
 }

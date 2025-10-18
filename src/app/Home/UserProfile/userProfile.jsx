@@ -2,22 +2,43 @@
 
 import { useEffect } from "react";
 import "@/app/Home/UserProfile/userProfile.css";
-import Header from "@/app/Home/header.jsx";
+import Header from "@/app/Home/Header/header.tsx";
 import { initUserProfileLogic } from "./userProfileLogic";
 
 export default function UserProfile() {
   useEffect(() => {
-  if (typeof window !== "undefined") {
-    const waitForHeader = setInterval(() => {
-      const authButtons = document.getElementById("authButtons");
+    if (typeof window === "undefined") return;
+
+    const checkReady = setInterval(() => {
       const profileIcon = document.getElementById("profileIcon");
-      if (authButtons && profileIcon) {
-        clearInterval(waitForHeader);
-        initUserProfileLogic();
+      const profileMenu = document.getElementById("profileMenu");
+      const authButtons = document.getElementById("authButtons");
+
+      if (profileIcon && profileMenu && authButtons) {
+        console.log("✅ Header cargado, inicializando lógica del perfil...");
+        clearInterval(checkReady);
+
+        try {
+          initUserProfileLogic();
+        } catch (err) {
+          console.error("Error en initUserProfileLogic:", err);
+        }
+
+        // Ejecutar lógica de apertura automática si hay ?edit=1
+        setTimeout(() => {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get("edit") === "1" && typeof window.openEdit === "function") {
+            window.openEdit();
+            const url = new URL(window.location.href);
+            url.searchParams.delete("edit");
+            window.history.replaceState({}, "", url.toString());
+          }
+        }, 200);
       }
-    }, 100);
-  }
-}, []);
+    }, 200);
+ return () => clearInterval(checkReady);
+  }, []);
+
 
   return (
     <main>

@@ -1,4 +1,5 @@
 
+
 /* ===================== ESTILOS: GENERALES ===================== */
 * {
   margin: 0;
@@ -15,28 +16,11 @@ body {
 }
 
 /* ===================== SECCIÓN: HEADER / LOGO / NAV ===================== */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #1AA7ED, #2B31E0);
-  color: #fff;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 10;
-}
 
 header h1 {
   font-size: 22px;
 }
 
-nav {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
 
 .btn {
   background: #2B6AF0;
@@ -117,12 +101,12 @@ nav {
 }
 
 #logoutBtn.menu-item:hover {
-  background: #E85D5D;
+  background: #5E2BE0;
   color: #fff;
 }
 
 #convertFixer.menu-item:hover {
-  background: #4BBF9A;
+  background: #1AA7ED;
   color: #fff;
 }
 
@@ -235,9 +219,9 @@ nav {
   }
 
   .btn {
-    background: #000 !important;
+    background: #2B31E0 !important;
     color: #fff !important;
-    border: 2px solid #000 !important;
+    border: 2px solid #2B31E0 !important;
   }
 
   .menu-item:hover {
@@ -280,9 +264,9 @@ nav {
   transition: width .2s;
 }
 
-.strength-weak { background: #E85D5D; }
-.strength-medium { background: #F2C94C; }
-.strength-strong { background: #4BBF9A; }
+.strength-weak { background: #5E2BE0; }
+.strength-medium { background: #2B6AF0; }
+.strength-strong { background: #1AA7ED; }
 
 /* Espacio para contenido bajo el header */
 main {
