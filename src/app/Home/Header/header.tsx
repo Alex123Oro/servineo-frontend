@@ -58,7 +58,27 @@ const Header = () => {
             </button>
           </div>
 
-          <nav className="hidden lg:flex gap-6" role="navigation" aria-label="Menú principal">
+          <nav
+            className="hidden lg:flex gap-6"
+            role="navigation"
+            aria-label="Menú principal"
+            onKeyDown={(e) => {
+              const items = Array.from(
+                e.currentTarget.querySelectorAll<HTMLAnchorElement>('a, [href]'),
+              );
+              const index = items.indexOf(document.activeElement as HTMLAnchorElement);
+
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                const next = (index + 1) % items.length;
+                items[next].focus();
+              } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prev = (index - 1 + items.length) % items.length;
+                items[prev].focus();
+              }
+            }}
+          >
             <Link
               href="/servicios"
               className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
