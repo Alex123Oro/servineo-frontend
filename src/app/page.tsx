@@ -10,7 +10,7 @@ import { TrabajosRecientes } from '../components/TrabajosRecientes';
 import Footer from './Home/Footer/Footer';
 import Buscador from './Home/Buscador/Buscador';
 import ServiciosPage from "./servicios/servicios";
-
+// Importa otros componentes según sea necesario
 // Dynamic import para Leaflet Map (evita errores SSR)
 const Map = dynamic(() => import("@/app/busqueda/components/map/Map"), { ssr: false });
 
@@ -18,7 +18,7 @@ export default function Home() {
   const [fixers, setFixers] = useState<Fixer[]>([]);
 
   useEffect(() => {
-    axios.get("https://servineo-backend-4.onrender.com/api/fixers")
+    axios.get("http://localhost:3000/api/fixers")
          .then(res => setFixers(res.data))
          .catch(err => console.log("Error al cargar fixers:", err));
   }, []);

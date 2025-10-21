@@ -8,248 +8,97 @@ const OfertasPage = () => {
   const jobs = [
     {
       id: 1,
-      destacado: false,
-      imagen: '/images/pintura.jpg',
-      titulo: 'Pintura de techos',
-      descripcion: 'Pintado y mantenimiento de techos interiores.',
-      categoria: 'pintura',
-      nombreFixer: 'Fernando',
-      apellidoFixer: 'Aguilar',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '7 horas',
-      calificacion: 4.4,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 210, max: 260 },
-    },
-    {
-      id: 2,
-      destacado: true,
-      imagen: '/images/limpieza.jpg',
-      titulo: 'Limpieza de alfombras',
-      descripcion: 'Servicio especializado en limpieza de alfombras.',
-      categoria: 'aseo',
-      nombreFixer: 'Lucia',
-      apellidoFixer: 'Fernandez',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '5 horas',
-      calificacion: 4.7,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 130, max: 210 },
-    },
-    {
-      id: 3,
-      destacado: false,
-      imagen: '/images/carpintero.jpg',
-      titulo: 'Reparación de sillas',
-      descripcion: 'Arreglo de sillas y muebles dañados.',
-      categoria: 'carpinteria',
-      nombreFixer: 'Pedro',
-      apellidoFixer: 'Salazar',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '2 días',
-      calificacion: 4.2,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 180, max: 250 },
-    },
-    {
-      id: 4,
-      destacado: true,
-      imagen: '/images/electricista.jpg',
-      titulo: 'Instalación de lámparas',
-      descripcion: 'Montaje y conexión de lámparas y focos.',
-      categoria: 'electricidad',
-      nombreFixer: 'Andrea',
-      apellidoFixer: 'Vargas',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '8 horas',
-      calificacion: 4.8,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 100, max: 160 },
-    },
-    {
-      id: 5,
-      destacado: false,
-      imagen: '/images/tuberias.jpg',
-      titulo: 'Instalación de grifos',
-      descripcion: 'Colocación y reparación de grifos en baños y cocinas.',
-      categoria: 'plomeria',
-      nombreFixer: 'Carlos',
-      apellidoFixer: 'Rojas',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 hora',
-      calificacion: 4.5,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 60, max: 90 },
-    },
-    {
-      id: 6,
-      destacado: true,
-      imagen: '/images/pintura.jpg',
-      titulo: 'Pintura decorativa',
-      descripcion: 'Diseños y acabados decorativos en paredes.',
-      categoria: 'pintura',
-      nombreFixer: 'Sofia',
-      apellidoFixer: 'Torrez',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '4 horas',
-      calificacion: 4.9,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 220, max: 270 },
-    },
-    {
-      id: 7,
-      destacado: false,
-      imagen: '/images/limpieza.jpg',
-      titulo: 'Limpieza profunda',
-      descripcion: 'Limpieza detallada de oficinas y departamentos.',
-      categoria: 'aseo',
-      nombreFixer: 'Maria',
-      apellidoFixer: 'Lopez',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '6 horas',
-      calificacion: 4.6,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 120, max: 200 },
-    },
-    {
-      id: 8,
-      destacado: true,
-      imagen: '/images/carpintero.jpg',
-      titulo: 'Puertas personalizadas',
-      descripcion: 'Fabricación e instalación de puertas de madera.',
-      categoria: 'carpinteria',
-      nombreFixer: 'Juan',
-      apellidoFixer: 'Perez',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '3 horas',
-      calificacion: 4.7,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 250, max: 350 },
-    },
-    {
-      id: 9,
-      destacado: false,
-      imagen: '/images/electricista.jpg',
-      titulo: 'Reparación de enchufes',
-      descripcion: 'Solución de problemas en enchufes y tomacorrientes.',
-      categoria: 'electricidad',
-      nombreFixer: 'Luis',
-      apellidoFixer: 'Gómez',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '2 horas',
-      calificacion: 4.3,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 80, max: 120 },
-    },
-    {
-      id: 10,
       destacado: true,
       imagen: '/images/tuberias.jpg',
-      titulo: 'Reparacion de tuberias',
-      descripcion: 'Fuga de tuberias en cocina, baño, etc.',
-      categoria: 'plomeria',
+      titulo: 'Reparación de tuberías',
+      descripcion: 'Fuga de tuberías en cocina, baño, etc.',
+      categoria: 'Plomería',
       nombreFixer: 'Carlos',
       apellidoFixer: 'Mamani',
-      ubicacion: 'cochabamba',
+      ubicacion: 'Cochabamba',
       tiempoPublicado: '2 horas',
       calificacion: 4.8,
       telefono: 75986518,
-      activo: true,
       precio: { min: 50, max: 80 },
     },
 
     {
-      id: 11,
+      id: 2,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
-      descripcion: 'Construccion de estanterias',
-      categoria: 'carpinteria',
+      descripcion: 'Construcción de estanterías',
+      categoria: 'Carpintería',
       nombreFixer: 'Miguel',
       apellidoFixer: 'Condori',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 dia',
+      ubicacion: 'Cochabamba',
+      tiempoPublicado: '1 día',
       calificacion: 4.2,
       telefono: 75986518,
-      activo: true,
       precio: { min: 200, max: 300 },
     },
-
     {
-      id: 12,
+      id: 3,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
-      descripcion: 'Construccion de estanterias',
-      categoria: 'carpinteria',
+      descripcion: 'Construcción de estanterías',
+      categoria: 'Carpintería',
       nombreFixer: 'Miguel',
       apellidoFixer: 'Condori',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 dia',
-      calificacion: 3.9,
+      ubicacion: 'Cochabamba',
+      tiempoPublicado: '1 día',
+      calificacion: 4.2,
       telefono: 75986518,
-      activo: true,
       precio: { min: 200, max: 300 },
     },
     {
-      id: 13,
+      id: 4,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
-      descripcion: 'Construccion de estanterias',
-      categoria: 'carpinteria',
+      descripcion: 'Construcción de estanterías',
+      categoria: 'Carpintería',
       nombreFixer: 'Miguel',
       apellidoFixer: 'Condori',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 dia',
-      calificacion: 5.0,
+      ubicacion: 'Cochabamba',
+      tiempoPublicado: '1 día',
+      calificacion: 4.2,
       telefono: 75986518,
-      activo: true,
       precio: { min: 200, max: 300 },
     },
     {
-      id: 14,
+      id: 5,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
-      descripcion: 'Construccion de estanterias',
-      categoria: 'carpinteria',
+      descripcion: 'Construcción de estanterías',
+      categoria: 'Carpintería',
       nombreFixer: 'Miguel',
       apellidoFixer: 'Condori',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 dia',
-      calificacion: 4.9,
+      ubicacion: 'Cochabamba',
+      tiempoPublicado: '1 día',
+      calificacion: 4.2,
       telefono: 75986518,
-      activo: true,
       precio: { min: 200, max: 300 },
     },
     {
-      id: 15,
+      id: 6,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
-      descripcion: 'Construccion de estanterias',
-      categoria: 'carpinteria',
+      descripcion: 'Construcción de estanterías',
+      categoria: 'Carpintería',
       nombreFixer: 'Miguel',
       apellidoFixer: 'Condori',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 dia',
-      calificacion: 4.1,
+      ubicacion: 'Cochabamba',
+      tiempoPublicado: '1 día',
+      calificacion: 4.2,
       telefono: 75986518,
-      activo: true,
       precio: { min: 200, max: 300 },
     },
     {
-      id: 16,
+      id: 7,
       destacado: true,
       imagen: '/images/carpinteria2.jpg',
       titulo: 'Muebles a medida',
@@ -257,260 +106,141 @@ const OfertasPage = () => {
       categoria: 'carpinteria',
       nombreFixer: 'Miguel',
       apellidoFixer: 'Condori',
-      ubicacion: 'cochabamba',
+      ubicacion: 'Cochabamba',
       tiempoPublicado: '1 dia',
       calificacion: 4.5,
       telefono: 75986518,
-      activo: true,
       precio: { min: 200, max: 300 },
     },
     {
-      id: 17,
+      id: 8,
       destacado: false,
       imagen: '/images/pintura.jpg',
       titulo: 'Pintura para casas',
       descripcion: 'Servicio de pintura para hogares o cualquier superficie',
-      categoria: 'pintura',
+      categoria: 'Pintura',
       nombreFixer: 'Miguel',
       apellidoFixer: 'Condori',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 dia',
+      ubicacion: 'Cochabamba',
+      tiempoPublicado: '1 día',
       calificacion: 4.8,
       telefono: 75986518,
-      activo: true,
       precio: { min: 200, max: 250 },
     },
-
     {
-      id: 18,
+      id: 9,
       destacado: true,
       imagen: '/images/limpieza.jpg',
       titulo: 'Limpieza y aseo',
       descripcion: 'Servicio de limpieza a hogares y lugares diversos',
-      categoria: 'aseo',
+      categoria: 'Limpieza',
       nombreFixer: 'Miguel',
       apellidoFixer: 'Condori',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 dia',
+      ubicacion: 'Cochabamba',
+      tiempoPublicado: '1 día',
       calificacion: 4.8,
       telefono: 75986518,
-      activo: true,
       precio: { min: 100, max: 180 },
     },
+
     {
-      id: 19,
-      destacado: true,
-      imagen: '/images/carpintero.jpg',
-      titulo: 'Muebles a medida',
-      descripcion: 'Construccion de estanterias',
-      categoria: 'carpinteria',
-      nombreFixer: 'Miguel',
-      apellidoFixer: 'Condori',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 dia',
-      calificacion: 4.1,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 200, max: 300 },
-    },
-    {
-      id: 20,
+      id: 10,
       destacado: false,
       imagen: '/images/electricista.jpg',
-      titulo: 'Instalacion electrica',
-      descripcion: 'Instalacion de puntos de luz electricos',
-      categoria: 'electricidad',
+      titulo: 'Instalación eléctrica',
+      descripcion: 'Instalación de puntos de luz eléctricos',
+      categoria: 'Electricidad',
       nombreFixer: 'Ana',
       apellidoFixer: 'Quispe',
-      ubicacion: 'cochabamba',
+      ubicacion: 'Cochabamba',
       tiempoPublicado: '5 horas',
       calificacion: 4.0,
       telefono: 75986518,
-      activo: true,
       precio: { min: 120, max: 150 },
     },
-    {
-      id: 21,
-      destacado: false,
-      imagen: '/images/carpintero.jpg',
-      titulo: 'Reparación de sillas',
-      descripcion: 'Arreglo de sillas y muebles dañados.',
-      categoria: 'carpinteria',
-      nombreFixer: 'Pedro',
-      apellidoFixer: 'Salazar',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '2 días',
-      calificacion: 4.2,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 180, max: 250 },
-    },
-    {
-      id: 22,
-      destacado: true,
-      imagen: '/images/electricista.jpg',
-      titulo: 'Instalación de lámparas',
-      descripcion: 'Montaje y conexión de lámparas y focos.',
-      categoria: 'electricidad',
-      nombreFixer: 'Andrea',
-      apellidoFixer: 'Vargas',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '8 horas',
-      calificacion: 4.8,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 100, max: 160 },
-    },
-    {
-      id: 23,
-      destacado: false,
-      imagen: '/images/tuberias.jpg',
-      titulo: 'Instalación de grifos',
-      descripcion: 'Colocación y reparación de grifos en baños y cocinas.',
-      categoria: 'plomeria',
-      nombreFixer: 'Carlos',
-      apellidoFixer: 'Rojas',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '1 hora',
-      calificacion: 4.5,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 60, max: 90 },
-    },
-    {
-      id: 24,
-      destacado: true,
-      imagen: '/images/limpieza.jpg',
-      titulo: 'Limpieza de alfombras',
-      descripcion: 'Servicio especializado en limpieza de alfombras.',
-      categoria: 'aseo',
-      nombreFixer: 'Lucia',
-      apellidoFixer: 'Fernandez',
-      ubicacion: 'cochabamba',
-      tiempoPublicado: '5 horas',
-      calificacion: 4.7,
-      telefono: 75986518,
-      activo: true,
-      precio: { min: 130, max: 210 },
-    },
+
+    // Puedes agregar más trabajos aquí
   ];
 
   const categoriaColors: { [key: string]: string } = {
-    plomeria: 'text-[#1AA7ED] bg-[#E6F7FB]',
-    electricidad: 'text-[#2B31E0] bg-[#E6E7FB]',
-    carpinteria: 'text-[#2B6AE0] bg-[#E6F0FB]',
-    limpieza: 'text-[#2BDDE0] bg-[#E6FBFA]',
-    pintura: 'text-[#5E2BE0] bg-[#ECE6FB]',
-    default: 'text-[#2B31E0] bg-[#E6E7FB]',
+    Plomería: 'text-blue-700 bg-blue-100',
+    Electricidad: 'text-yellow-700 bg-yellow-100',
+    Carpintería: 'text-amber-800 bg-amber-100',
+    Limpieza: 'text-green-700 bg-green-100',
+    Pintura: 'text-red-700 bg-red-100',
+    Default: 'text-gray-700 bg-gray-100',
   };
 
   const handleWhatsApp = (telefono: number) => {
-    const url = `https://wa.me/591${telefono}?text=${encodeURIComponent(
-      'Hola, quisiera más información acerca del servicio.',
-    )}`;
+    const url = `https://wa.me/591${telefono}?text=${encodeURIComponent('Hola, quisiera más información acerca del servicio')}`;
     window.open(url, '_blank');
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] pt-24 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 pt-24 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 text-center mb-12">
+        <h1 className="text-4xl font-bold text-gray-800 text-center mb-12">
           Ofertas de Trabajo Disponibles
         </h1>
-        <div className="flex justify-center mb-4">
-          <input
-            type="text"
-            placeholder="Buscar servicios..."
-            className="w-full sm:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
 
-        {/* FILTRO DE CATEGORIAS ALINEADO A LA IZQUIERDA */}
-        <div className="flex justify-start mb-6 ml-4">
-          <select className="w-40 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-            <option value="">Todos</option>
-            <option value="plomeria">Plomería</option>
-            <option value="electricidad">Electricidad</option>
-            <option value="carpinteria">Carpintería</option>
-            <option value="limpieza">Limpieza</option>
-            <option value="pintura">Pintura</option>
-            <option value="aseo">Aseo</option>
-          </select>
-        </div>
-
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 justify-items-center">
+        <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           {jobs.map((job) => {
-            const categoriaClass =
-              categoriaColors[job.categoria.toLowerCase()] || categoriaColors['default'];
+            const categoriaClass = categoriaColors[job.categoria] || categoriaColors['Default'];
             return (
               <div
                 key={job.id}
-                className="flex flex-col rounded-[10px] justify-around border border-solid border-black/15 shadow-md transition-shadow duration-300 hover:shadow-lg hover:shadow-black/30 bg-white p-3 min-h-[370px] max-w-[260px] min-w-[260px]"
+                className="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="flex flex-row justify-between mb-[5px]">
-                  {job.destacado ? (
-                    <span className="border border-solid pr-[5px] pl-[5px] text-[#5E2BE0] rounded-[8px] text-[12px] font-semibold">
-                      Destacado
-                    </span>
-                  ) : (
-                    <span className="opacity-0">-</span>
-                  )}
-                  <span
-                    className={`border border-solid border-white/0 rounded-[10px] p-[1px] pr-[5px] pl-[5px] text-[13px] font-semibold ${categoriaClass}`}
+                <div className="relative h-48 w-full">
+                  <Image
+                    src={job.imagen}
+                    alt={job.titulo}
+                    fill
+                    className="object-cover cursor-pointer"
+                  />
+                  <div
+                    className={`absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded-full ${categoriaClass}`}
                   >
                     {job.categoria}
-                  </span>
-                </div>
-
-                <Image
-                  className="object-cover rounded-lg cursor-pointer"
-                  src={job.imagen}
-                  alt={job.titulo}
-                  width={300}
-                  height={200}
-                />
-
-                <div className="flex flex-row justify-between items-center mt-2">
-                  <strong className="text-[95%]">{job.titulo}</strong>
-                  <span className="text-[11px] opacity-70">hace {job.tiempoPublicado}</span>
-                </div>
-
-                <hr className="opacity-20 my-1" />
-
-                <strong
-                  className="opacity-80 text-sm truncate whitespace-nowrap overflow-hidden"
-                  title={job.descripcion}
-                >
-                  {job.descripcion}
-                </strong>
-
-                <div className="flex flex-row gap-[5px] mt-1 text-sm">
-                  <strong className="opacity-70">Fixer:</strong>
-                  <span className="opacity-70">
-                    {job.nombreFixer} {job.apellidoFixer}
-                  </span>
-                </div>
-
-                <div className="flex flex-row justify-between items-center gap-[5px] opacity-70 text-sm mt-1">
-                  <div className="flex flex-row items-center">
-                    <span>📞 +591 {job.telefono}</span>
                   </div>
-                  <div>
+                </div>
+
+                <div className="p-4">
+                  <h3 className="text-lg font-bold text-gray-800 mb-2 truncate">{job.titulo}</h3>
+                  <p className="text-sm text-gray-600 mb-3 h-8 overflow-hidden">
+                    {job.descripcion}
+                  </p>
+
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center">
+                      <span className="mr-1">⭐</span>
+                      <span>{job.calificacion}</span>
+                    </div>
+                    <span className="font-semibold text-gray-700">Bs. {job.precio.max}</span>
+                  </div>
+
+                  <div className="flex items-center text-xs text-gray-500 mb-4">
+                    <span className="font-semibold mr-1">Fixer:</span>
                     <span>
-                      Bs. {job.precio.min}-{job.precio.max}
+                      {job.nombreFixer} {job.apellidoFixer}
                     </span>
                   </div>
-                </div>
 
-                <div className="flex flex-row justify-between items-center mt-2">
+                  <div className="flex items-center text-xs text-gray-500 mb-4">
+                    <span>📞 +591 {job.telefono}</span>
+                  </div>
+
+                  <div className="flex items-center text-xs text-gray-500 mb-4">
+                    <span>📍 {job.ubicacion}</span>
+                    <span className="ml-3">⏰ {job.tiempoPublicado}</span>
+                  </div>
+
                   <button
                     onClick={() => handleWhatsApp(job.telefono)}
-                    className="flex flex-row items-center justify-center cursor-pointer gap-[3px] bg-[#28DDE0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px] text-sm font-semibold"
+                    className="w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors duration-300 flex items-center justify-center"
                   >
-                    <FaWhatsapp />
-                    WhatsApp
+                    <FaWhatsapp className="mr-2" /> WhatsApp
                   </button>
-                  <span>⭐{job.calificacion}</span>
                 </div>
               </div>
             );

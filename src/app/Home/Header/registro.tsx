@@ -25,7 +25,7 @@ const Registro: React.FC<RegistroProps> = ({ isOpen, onClose }) => {
 
         <h2 className="text-2xl font-bold text-center text-blue-700 mb-3">Bienvenido a Servineo</h2>
         <p className="text-center text-gray-600 mb-6 text-sm md:text-base">
-          Para acceder a la opción <span className="font-semibold text-blue-700">"Ayuda"</span>,
+          Para acceder a la opción <span className="font-semibold text-blue-700">{'"'}Ayuda{'"'}</span>,
           inicia sesión o crea una cuenta.
         </p>
 

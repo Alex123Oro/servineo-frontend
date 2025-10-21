@@ -1,6 +1,20 @@
 'use client';
 import React from "react";
 
+// Tipos para los subcomponentes
+type SectionBlockProps = {
+  index: string | number;
+  title: string;
+  gradient: string;
+  borderColor: string;
+  children?: React.ReactNode;
+};
+
+type InfoItemProps = {
+  title: string;
+  text: string;
+};
+
 export default function PrivacyPage() {
   return (
     <main className="bg-[var(--background)] text-[var(--foreground)] min-h-screen">
@@ -234,7 +248,7 @@ export default function PrivacyPage() {
 }
 
 /* Subcomponentes para limpieza */
-function SectionBlock({ index, title, gradient, borderColor, children }:any) {
+function SectionBlock({ index, title, gradient, borderColor, children }: SectionBlockProps) {
   return (
     <div
       className="pl-5 border-l-4 rounded-lg bg-white p-5 shadow-sm"
@@ -255,7 +269,7 @@ function SectionBlock({ index, title, gradient, borderColor, children }:any) {
   );
 }
 
-function InfoItem({ title, text }:any) {
+function InfoItem({ title, text }: InfoItemProps) {
   return (
     <div className="bg-[var(--light-gray)] p-3 rounded-lg shadow-sm">
       <h4 className="font-semibold text-[var(--primary)] text-sm mb-1">

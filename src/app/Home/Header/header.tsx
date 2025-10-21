@@ -58,36 +58,7 @@ const Header = () => {
             </button>
           </div>
 
-          <nav
-            className="hidden lg:flex gap-6"
-            role="navigation"
-            aria-label="Menú principal"
-            onKeyDown={(e) => {
-              // Obtenemos enlaces y botones
-              const navItems = Array.from(
-                document.querySelectorAll<HTMLElement>(
-                  'nav[aria-label="Menú principal"] a, nav[aria-label="Menú principal"] [href]',
-                ),
-              );
-              const buttonItems = Array.from(
-                document.querySelectorAll<HTMLElement>('.flex.items-center.gap-4 button'),
-              );
-
-              const allItems: HTMLElement[] = [...navItems, ...buttonItems];
-
-              const index = allItems.indexOf(document.activeElement as HTMLElement);
-
-              if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                const next = (index + 1) % allItems.length;
-                allItems[next].focus();
-              } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                const prev = (index - 1 + allItems.length) % allItems.length;
-                allItems[prev].focus();
-              }
-            }}
-          >
+          <nav className="hidden lg:flex gap-6" role="navigation" aria-label="Menú principal">
             <Link
               href="/servicios"
               className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
@@ -110,33 +81,7 @@ const Header = () => {
             </a>
           </nav>
 
-          <div
-            className="flex items-center gap-4"
-            onKeyDown={(e) => {
-              const navItems = Array.from(
-                document.querySelectorAll<HTMLElement>(
-                  'nav[aria-label="Menú principal"] a, nav[aria-label="Menú principal"] [href]',
-                ),
-              );
-              const buttonItems = Array.from(
-                document.querySelectorAll<HTMLElement>('.flex.items-center.gap-4 button'),
-              );
-
-              const allItems: HTMLElement[] = [...navItems, ...buttonItems];
-
-              const index = allItems.indexOf(document.activeElement as HTMLElement);
-
-              if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                const next = (index + 1) % allItems.length;
-                allItems[next].focus();
-              } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                const prev = (index - 1 + allItems.length) % allItems.length;
-                allItems[prev].focus();
-              }
-            }}
-          >
+          <div className="flex items-center gap-4">
             {!isLoggedIn ? (
               <>
                 <button
