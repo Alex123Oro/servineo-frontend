@@ -234,7 +234,7 @@ export default function PrivacyPage() {
 }
 
 /* Subcomponentes para limpieza */
-function SectionBlock({ index, title, gradient, borderColor, children }) {
+function SectionBlock({ index, title, gradient, borderColor, children }:any) {
   return (
     <div
       className="pl-5 border-l-4 rounded-lg bg-white p-5 shadow-sm"
@@ -255,7 +255,7 @@ function SectionBlock({ index, title, gradient, borderColor, children }) {
   );
 }
 
-function InfoItem({ title, text }) {
+function InfoItem({ title, text }:any) {
   return (
     <div className="bg-[var(--light-gray)] p-3 rounded-lg shadow-sm">
       <h4 className="font-semibold text-[var(--primary)] text-sm mb-1">
