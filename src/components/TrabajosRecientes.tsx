@@ -7,7 +7,7 @@ import { JobListEmpty } from './JobListEmpty'
 
 export const TrabajosRecientes = () => {
 
-    // cambiar la paginación a 8 items por página
+    // cambiar la paginación a 8 items por páginas
     const [visible, setVisible] = useState(8)
     const [initial, setInitial] = useState(0)
     const [handleOption, setHandleOption] = useState("todo")
