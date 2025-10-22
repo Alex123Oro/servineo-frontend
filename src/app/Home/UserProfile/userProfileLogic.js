@@ -1,15 +1,15 @@
-import { mockUser } from "@/app/UI/mockUser";
+// /app/Home/UserProfile/userProfileLogic.js
+import { mockUser } from "@/app/Home/UserProfile/UI/mockUser";
+
 export function initUserProfileLogic() {
-  // 🚫 Evitar ejecución en el servidor (Next.js)
   if (typeof window === "undefined") return;
-
-  const deviceIdKey = 'booka_device_id';
+const deviceIdKey = 'booka_device_id';
   let deviceId;
-
-  // ================== IDENTIFICADOR DE DISPOSITIVO ==================
+  
+// ================== IDENTIFICADOR DE DISPOSITIVO ==================
   deviceId = sessionStorage.getItem(deviceIdKey);
-  if (!deviceId) {
-    deviceId = 'dev-' + Math.random().toString(36).slice(2, 10);
+if (!deviceId) {
+    deviceId = "dev-" + Math.random().toString(36).slice(2, 10);
     sessionStorage.setItem(deviceIdKey, deviceId);
   }
   window.deviceId = deviceId;
@@ -35,10 +35,8 @@ export function initUserProfileLogic() {
     saveUsersStore();
   }
 
-  // ================== ELEMENTOS DEL DOM ==================
+  // ================== ELEMENTOS DEL DOM (sólo donde se necesite y con seguridad) ==================
   const authButtons = document.getElementById("authButtons");
-  const profileIcon = document.getElementById("profileIcon");
-  const profileMenu = document.getElementById("profileMenu");
   const editModal = document.getElementById("editModal");
 
   const nameInput = document.getElementById("nameInput");
@@ -74,96 +72,54 @@ export function initUserProfileLogic() {
     document.addEventListener(evt, resetInactivityTimer, { passive: true });
   });
   resetInactivityTimer();
+  // ================== RENDER UI  ==================
+function renderUI() {
+  const user = getUser();
+  const profileIcon = document.getElementById("profileIcon");
+  const menuPhotoEl = document.getElementById("menuPhoto");
+  const menuNameEl = document.getElementById("menuName");
+  const menuEmailEl = document.getElementById("menuEmail");
 
-  // ================== RENDER UI ==================
-  function renderUI() {
-    const user = getUser();
-    if (user.loggedIn) {
-      authButtons.style.display = "none";
-      profileIcon.style.display = "block";
-      profileIcon.src = user.photo || "/avatar.png";
-      menuPhoto.src = user.photo || "/avatar.png";
-      menuName.textContent = user.name || "Sin nombre";
-      menuEmail.textContent = user.email || "";
-      profileIcon.setAttribute('aria-expanded', profileMenu.classList.contains('show'));
-    } else {
-      authButtons.style.display = "flex";
-      profileIcon.style.display = "none";
-      closeMenu();
-    }
+
+  if (user.loggedIn) {
+    if (profileIcon) profileIcon.src = user.photo || "/avatar.png";
+    if (menuPhotoEl) menuPhotoEl.src = user.photo || "/avatar.png";
+    if (menuNameEl) menuNameEl.textContent = user.name || "Sin nombre";
+    if (menuEmailEl) menuEmailEl.textContent = user.email || "";
   }
-
-  // ================== LOGIN DEMO ==================
-
-function login() {
-  setUserForDevice(mockUser);
-  renderUI();
 }
 
+  // ================== LOGIN DEMO ==================
+  function login() {
+    const u = Object.assign({}, mockUser);
+    u.loggedIn = true;
+    setUserForDevice(u);
+    
+    window.userProfile = u;
+    window.isAuthenticated = true;
+    renderUI();
+  }
 
   // ================== LOGOUT ==================
   function logout() {
     const u = getUser();
     if (u && u.loggedIn) {
-      usersStore = JSON.parse(localStorage.getItem('booka_users')) || { sessions: {}, lastUpdated: Date.now() };
-      delete usersStore.sessions[deviceId];
+      usersStore = JSON.parse(localStorage.getItem("booka_users")) || { sessions: {}, lastUpdated: Date.now() };
       usersStore.sessions[deviceId] = { loggedIn: false };
       usersStore.lastUpdated = Date.now();
-      localStorage.setItem('booka_users', JSON.stringify(usersStore));
-      localStorage.setItem('booka_broadcast', JSON.stringify({ ts: Date.now(), sender: deviceId, action: 'logout', device: deviceId }));
+      localStorage.setItem("booka_users", JSON.stringify(usersStore));
+      localStorage.setItem("booka_broadcast", JSON.stringify({ ts: Date.now(), sender: deviceId, action: 'logout', device: deviceId }));
       setTimeout(() => localStorage.removeItem('booka_broadcast'), 50);
+      window.userProfile = null;
+      window.isAuthenticated = false;
       renderUI();
+
+      // 🔔 Notificar al Header (evento global para React)
+      window.dispatchEvent(new Event("booka-logout"));
     }
   }
 
-  // ================== MENÚ PERFIL ==================
-  function toggleMenu(e) {
-    e.stopPropagation();
-    profileMenu.classList.toggle("show");
-    profileMenu.setAttribute('aria-hidden', profileMenu.classList.contains('show') ? 'false' : 'true');
-    profileIcon.setAttribute('aria-expanded', profileMenu.classList.contains('show'));
-  }
-  function closeMenu() {
-    profileMenu.classList.remove("show");
-    profileMenu.setAttribute('aria-hidden', 'true');
-    profileIcon.setAttribute('aria-expanded', 'false');
-  }
-  document.addEventListener("click", e => {
-    if (!profileMenu.contains(e.target) && e.target !== profileIcon) closeMenu();
-  });
-
-  // ================== EDITAR PERFIL ==================
-  function openEdit() {
-    const u = getUser();
-    nameInput.value = u.name || "";
-    emailInput.value = u.email || "";
-    phoneInput.value = u.phone || "";
-    notifToggle.checked = !!u.notif;
-    const barInner = pwBar.querySelector('i');
-    if (barInner) { barInner.style.width = "0%"; barInner.className = ""; }
-    document.getElementById("passwordSection").style.display = "block";
-    document.getElementById("passwordChangeFields").style.display = "none";
-    nameErr.style.display = emailErr.style.display = phoneErr.style.display = pwErr.style.display = 'none';
-    editModal.classList.add("show");
-    closeMenu();
-  }
-  function closeEdit() { editModal.classList.remove("show"); }
-
-  // ================== CAMBIO DE CONTRASEÑA ==================
-  function togglePasswordChange() {
-    document.getElementById("passwordSection").style.display = "none";
-    document.getElementById("passwordChangeFields").style.display = "flex";
-  }
-  function cancelPasswordChange() {
-    document.getElementById("passwordSection").style.display = "block";
-    document.getElementById("passwordChangeFields").style.display = "none";
-    currentPassword.value = "";
-    newPassword.value = "";
-    const barInner = pwBar.querySelector('i');
-    if (barInner) { barInner.style.width = "0%"; barInner.className = ""; }
-    pwErr.style.display = 'none';
-  }
-
+  // ================== UTILIDADES ==================
   function passwordStrength(pw) {
     let score = 0;
     if (!pw) return 0;
@@ -174,43 +130,110 @@ function login() {
     return score;
   }
 
-  function togglePasswordVisibility(inputId, btn) {
-    const input = document.getElementById(inputId);
-    if (input.type === "password") { input.type = "text"; btn.textContent = "🙈"; }
-    else { input.type = "password"; btn.textContent = "👁"; }
+  function processImageFile(file, maxSize = 400) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = e => {
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          const ratio = w / h;
+          if (w > maxSize || h > maxSize) {
+            if (ratio > 1) { w = maxSize; h = Math.round(maxSize / ratio); }
+            else { h = maxSize; w = Math.round(maxSize * ratio); }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.9));
+        };
+        img.onerror = err => reject(err);
+        // @ts-ignore
+        img.src = e.target.result;
+      };
+      reader.onerror = err => reject(err);
+      reader.readAsDataURL(file);
+    });
   }
 
+  // ================== GUARDAR / ACTUALIZAR PERFIL ==================
+  async function saveProfile() {
+    const u = getUser();
+    if (!nameInput || !emailInput || !phoneInput) {
+      console.warn("Campos de edición no encontrados");
+      return;
+    }
+
+    let valid = true;
+    if (!nameInput.value.trim()) { if (nameErr) { nameErr.textContent = "El nombre es obligatorio."; nameErr.style.display = 'block'; } valid = false; }
+    if (!/\S+@\S+\.\S+/.test(emailInput.value)) { if (emailErr) { emailErr.textContent = "Correo inválido."; emailErr.style.display = 'block'; } valid = false; }
+    if (phoneInput && !/^[0-9+\s()-]{6,20}$/.test(phoneInput.value) && phoneInput.value.trim() !== "") { if (phoneErr) { phoneErr.textContent = "Teléfono inválido."; phoneErr.style.display = 'block'; } valid = false; }
+
+    if (!valid) return;
+
+    const updated = Object.assign({}, u);
+    updated.name = nameInput.value.trim();
+    updated.email = emailInput.value.trim();
+    updated.phone = phoneInput.value.trim();
+    updated.notif = !!(notifToggle && notifToggle.checked);
+
+    const file = photoInput && photoInput.files && photoInput.files[0];
+    if (file) {
+      try {
+        const dataUrl = await processImageFile(file, 400);
+        updated.photo = dataUrl;
+      } catch (err) {
+        console.error(err);
+        alert("No se pudo procesar la imagen.");
+        return;
+      }
+} else if (!file && u.photo && !updated.photo) {
+  updated.photo = u.photo;
+}
+
+    updated.loggedIn = true;
+    
+    setUserForDevice(updated);
+    window.userProfile = updated;
+     window.dispatchEvent(new CustomEvent("booka-profile-updated", { detail: updated }));
+    renderUI();
+
+  
+
+    if (editModal) editModal.classList.remove("show");
+    alert("Perfil guardado correctamente.");
+  }
+
+  // ================== CAMBIO DE CONTRASEÑA ==================
   function savePasswordChange() {
+    if (!currentPassword || !newPassword) return;
     const u = getUser();
     const current = currentPassword.value.trim();
     const newPw = newPassword.value.trim();
-    pwErr.style.display = "none";
     if (!current || current !== u.password) {
-      pwErr.textContent = "Contraseña actual incorrecta.";
-      pwErr.style.display = "block";
+      if (pwErr) { pwErr.textContent = "Contraseña actual incorrecta."; pwErr.style.display = 'block'; }
       return;
     }
     const s = passwordStrength(newPw);
     if (s < 2) {
-      pwErr.textContent = "Contraseña demasiado débil. Usa mayúsculas, números o símbolos.";
-      pwErr.style.display = "block";
+      if (pwErr) { pwErr.textContent = "Contraseña demasiado débil."; pwErr.style.display = 'block'; }
       return;
     }
     u.password = newPw;
     setUserForDevice(u);
     alert("Contraseña cambiada correctamente.");
-    cancelPasswordChange();
-    editModal.classList.remove("show");
+    if (editModal) editModal.classList.remove("show");
   }
 
-  // ================== VER PERFIL ==================
+  // ================== VER PERFIL, EDITAR Y CONVERTIR ==================
   function goToProfile() {
-    const u = getUser();
-    if (!u || !u.loggedIn) { alert("Primero inicia sesión para ver tu perfil."); return; }
-
+    const u = window.userProfile || getUser() || mockUser;
+    // no bloquear por login: si u existe, usamos sus datos (mockUser será fallback)
     const nuevaVentana = window.open("", "_blank");
     if (!nuevaVentana) { alert("Permite las ventanas emergentes para ver tu perfil."); return; }
-
     const contenido = `
       <!DOCTYPE html>
       <html lang="es">
@@ -242,103 +265,67 @@ function login() {
     nuevaVentana.document.open();
     nuevaVentana.document.write(contenido);
     nuevaVentana.document.close();
-    closeMenu();
   }
 
-  // ================== CONVERTIR EN FIXER ==================
+  function openEdit() {
+    const u = window.userProfile || getUser() || mockUser;
+    if (nameInput) nameInput.value = u.name || "";
+    if (emailInput) emailInput.value = u.email || "";
+    if (phoneInput) phoneInput.value = u.phone || "";
+    if (notifToggle) notifToggle.checked = !!u.notif;
+    if (pwBar) {
+      const barInner = pwBar.querySelector('i');
+      if (barInner) { barInner.style.width = "0%"; barInner.className = ""; }
+    }
+    if (editModal) {
+      editModal.classList.add("show");
+      // ensure password section default
+      const pwSection = document.getElementById("passwordSection");
+      const pwFields = document.getElementById("passwordChangeFields");
+      nameErr.style.display = emailErr.style.display = phoneErr.style.display = pwErr.style.display = 'none';
+    editModal.classList.add("show");
+    }
+  }
+
+  function closeEdit() { editModal.classList.remove("show"); }
+
+
   function convertFixer() {
-    if (confirm("¿Deseas convertirte en Fixer?")) {
+    const u = window.userProfile || getUser() || mockUser;
+    if (confirm(`¿Deseas convertirte en Fixer, ${u.name || 'usuario'}?`)) {
       window.location.href = "registroFixer.html";
     }
   }
 
-  // ================== VALIDACIONES ==================
-  function validateEmail(v) { return /\S+@\S+\.\S+/.test(v); }
-  function validatePhone(v) { return !v || /^[0-9+\s()-]{6,20}$/.test(v); }
-
-  // ================== PROCESADO DE IMAGEN ==================
-  function processImageFile(file, maxSize = 400) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const reader = new FileReader();
-      reader.onload = e => {
-        img.onload = () => {
-          let w = img.width, h = img.height;
-          const ratio = w / h;
-          if (w > maxSize || h > maxSize) {
-            if (ratio > 1) { w = maxSize; h = Math.round(maxSize / ratio); }
-            else { h = maxSize; w = Math.round(maxSize * ratio); }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          ctx.drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.9));
-        };
-        img.onerror = err => reject(err);
-        img.src = e.target.result;
-      };
-      reader.onerror = err => reject(err);
-      reader.readAsDataURL(file);
-    });
+  // ================== OTROS CONTROLES ==================
+  function togglePasswordChange() {
+    const pwSection = document.getElementById("passwordSection");
+    const pwFields = document.getElementById("passwordChangeFields");
+    if (pwSection) pwSection.style.display = "none";
+    if (pwFields) pwFields.style.display = "flex";
+  }
+  function cancelPasswordChange() {
+    const pwSection = document.getElementById("passwordSection");
+    const pwFields = document.getElementById("passwordChangeFields");
+    if (pwSection) pwSection.style.display = "block";
+    if (pwFields) pwFields.style.display = "none";
+    if (currentPassword) currentPassword.value = "";
+    if (newPassword) newPassword.value = "";
+    if (pwBar) {
+      const barInner = pwBar.querySelector('i');
+      if (barInner) { barInner.style.width = "0%"; barInner.className = ""; }
+    }
+    if (pwErr) pwErr.style.display = "none";
+  }
+  function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    if (input.type === "password") { input.type = "text"; if (btn) btn.textContent = "🙈"; }
+    else { input.type = "password"; if (btn) btn.textContent = "👁"; }
   }
 
-  // ================== GUARDAR PERFIL ==================
-  async function saveProfile() {
-    let valid = true;
-    nameErr.style.display = emailErr.style.display = phoneErr.style.display = pwErr.style.display = 'none';
-    const u = getUser();
-
-    if (!nameInput.value.trim()) { nameErr.textContent = "El nombre es obligatorio."; nameErr.style.display = 'block'; valid = false; }
-    if (!validateEmail(emailInput.value)) { emailErr.textContent = "Correo inválido."; emailErr.style.display = 'block'; valid = false; }
-    if (!validatePhone(phoneInput.value)) { phoneErr.textContent = "Teléfono inválido."; phoneErr.style.display = 'block'; valid = false; }
-
-    if (document.getElementById("passwordChangeFields").style.display !== "none" && newPassword.value) {
-      if (!currentPassword.value || currentPassword.value !== u.password) {
-        pwErr.textContent = "Contraseña actual incorrecta."; pwErr.style.display = 'block'; valid = false;
-      } else {
-        const s = passwordStrength(newPassword.value);
-        if (s < 2) { pwErr.textContent = "Contraseña demasiado débil."; pwErr.style.display = 'block'; valid = false; }
-        else u.password = newPassword.value;
-      }
-    }
-
-    if (!valid) return;
-
-    const updated = Object.assign({}, u);
-    updated.name = nameInput.value.trim();
-    updated.email = emailInput.value.trim();
-    updated.phone = phoneInput.value.trim();
-    updated.notif = notifToggle.checked;
-
-    const file = photoInput.files[0];
-    if (file) {
-      try {
-        const dataUrl = await processImageFile(file, 400);
-        updated.photo = dataUrl;
-      } catch (err) {
-        console.error(err);
-        alert("No se pudo procesar la imagen.");
-        return;
-      }
-    }
-
-    setUserForDevice(updated);
-    renderUI();
-    editModal.classList.remove("show");
-    alert("Perfil guardado correctamente.");
-  }
-
-  // ================== SINCRONIZACIÓN ENTRE PESTAÑAS ==================
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'booka_users' || e.key === 'booka_broadcast') { renderUI(); }
-  });
-
-  // ================== INICIALIZAR ==================
-  renderUI();
-  if (newPassword) {
+  // ================== EVENTOS ==================
+  if (newPassword && pwBar) {
     newPassword.addEventListener('input', () => {
       const s = passwordStrength(newPassword.value);
       const percent = (s / 4) * 100;
@@ -347,25 +334,46 @@ function login() {
     });
   }
 
-  // ================== ACCESIBILIDAD ==================
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeEdit(); closeMenu(); } });
-  document.querySelectorAll('.menu-item').forEach(mi => { mi.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); mi.click(); } }); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      // cerrar modal si está abierto
+      if (editModal) editModal.classList.remove("show");
+    }
+  });
 
-  // ================== EXPONER FUNCIONES A WINDOW ==================
-  window.login = login;
-  window.logout = logout;
-  window.toggleMenu = toggleMenu;
-  window.closeMenu = closeMenu;
-  window.openEdit = openEdit;
-  window.closeEdit = closeEdit;
-  window.saveProfile = saveProfile;
-  window.goToProfile = goToProfile;
-  window.convertFixer = convertFixer;
-  window.togglePasswordChange = togglePasswordChange;
-  window.cancelPasswordChange = cancelPasswordChange;
-  window.savePasswordChange = savePasswordChange;
-  window.togglePasswordVisibility = togglePasswordVisibility;
-  window.closeProfileModal = closeEdit;
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'booka_users' || e.key === 'booka_broadcast') { renderUI(); }
+  });
+
+  // ================== INICIALIZAR ==================
+const existing = getUser();
+
+if (existing && existing.loggedIn) {
+  window.userProfile = existing;
+  window.isAuthenticated = true;
+} else {
+  window.userProfile = mockUser;
+  window.isAuthenticated = false;
 }
 
+renderUI();
 
+
+  // ================== EXPONER FUNCIONES A WINDOW ==================
+  
+  window.login = login;
+  window.logout = logout;
+  window.goToProfile = goToProfile;
+  window.openEdit = openEdit;
+  window.convertFixer = convertFixer;
+  window.saveProfile = saveProfile;
+  window.savePasswordChange = savePasswordChange;
+  window.togglePasswordVisibility = togglePasswordVisibility;
+  window.cancelPasswordChange = cancelPasswordChange;
+  window.togglePasswordChange = togglePasswordChange;
+  window.closeProfileModal = () => { if (editModal) editModal.classList.remove("show"); };
+  window.closeEdit = closeEdit;
+
+  console.log("✅ Funciones globales de perfil registradas.");
+}
