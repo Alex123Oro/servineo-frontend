@@ -1,9 +1,17 @@
 'use client';
-import React from 'react';
+import React, { JSX } from 'react';
 
-export default function CookiesPage() {
+// Tipos para el componente de sección de política
+type PolicySectionProps = {
+  title: string;
+  content: string[];
+  iconPath: string;
+  gradient: string;
+};
+
+export default function CookiesPage(): JSX.Element {
   // Componente para una sección de política de cookies
-  const PolicySection = ({ title, content, iconPath, gradient }) => (
+  const PolicySection: React.FC<PolicySectionProps> = ({ title, content, iconPath, gradient }) => (
     <div className="bg-[var(--background)] rounded-xl shadow-md border border-[var(--light-gray)] overflow-hidden">
       {/* Header de sección con gradiente */}
       <div className={`bg-gradient-to-r ${gradient} text-white p-4 flex items-center gap-3`}>

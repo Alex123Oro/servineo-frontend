@@ -375,5 +375,4 @@ renderUI();
   window.closeProfileModal = () => { if (editModal) editModal.classList.remove("show"); };
   window.closeEdit = closeEdit;
 
-  console.log("✅ Funciones globales de perfil registradas.");
 }

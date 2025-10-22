@@ -9,7 +9,6 @@ import { initUserProfileLogic } from '@/app/Home/UserProfile/userProfileLogic';
 import '@/app/Home/UserProfile/userProfile.css';
 import { mockUser } from '@/app/Home/UserProfile/UI/mockUser';
 
-// Declaración global para el sistema de perfil
 declare global {
   interface Window {
     login?: () => void;
@@ -136,7 +135,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(() => {
   };
   win.closeMenu = () => setIsMenuOpen(false);
 
-  // 🔄 Sincronización global entre rutas y pestañas (reutilizable)
+  // Sincronización global entre rutas y pestañas 
 let broadcast: BroadcastChannel;
 if (!(window as any)._bookaBroadcast) {
   (window as any)._bookaBroadcast = new BroadcastChannel('booka_auth_channel');
@@ -159,7 +158,6 @@ broadcast = (window as any)._bookaBroadcast;
 
     broadcast.onmessage = (event) => syncAuthState(event.data);
 
-    // Reforzar login/logout para emitir eventos globales
     const originalLogin = win.login;
     win.login = () => {
       originalLogin?.();
@@ -175,7 +173,7 @@ broadcast = (window as any)._bookaBroadcast;
       broadcast.postMessage({ type: 'LOGOUT' });
     };
 
-    // 🧠 NUEVO FIX: Escucha cambios locales de login sin refrescar
+    //  Escucha cambios locales de login sin refrescar
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'booka_users') {
         try {
@@ -306,7 +304,7 @@ broadcast = (window as any)._bookaBroadcast;
     }
   };
 
-    // 🔄 Reforzar sincronización de sesión al cambiar de página
+    //  Reforzar sincronización de sesión al cambiar de página
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
@@ -330,7 +328,7 @@ broadcast = (window as any)._bookaBroadcast;
     }
   }, [pathname]);
 
-  // 🧩 Escucha actualizaciones de login/logout globales
+  // Escucha actualizaciones de login/logout globales
 useEffect(() => {
   const handleAuthUpdate = (e: Event) => {
     const detail = (e as CustomEvent).detail;

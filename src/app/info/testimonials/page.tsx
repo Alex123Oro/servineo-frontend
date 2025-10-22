@@ -135,7 +135,7 @@ export default function TestimonialsPage() {
                 </div>
   
                 <p className="text-sm text-[var(--foreground)] leading-relaxed italic">
-                  "{testimonial.text}"
+                  {'"'}{testimonial.text}{'"'}
                 </p>
   
                 <div className="mt-4 pt-3 border-t border-[var(--light-gray)] flex items-center gap-2 text-xs text-[var(--accent)]">
@@ -167,4 +167,3 @@ export default function TestimonialsPage() {
       </main>
     );
   }
-  
