@@ -11,6 +11,10 @@ const Header = () => {
     });
   };
 
+  const redirectProfile = () => {
+    window.open('/Home/UserProfile',"_blank")
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white bg-opacity-95 shadow-lg backdrop-blur-md transition-all duration-300 border-b border-gray-100">
       {/* Desktop Header (solo desde lg en adelante) */}
@@ -30,12 +34,12 @@ const Header = () => {
           <Link href="/ofertas" className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full">
             Ofertas de trabajo
           </Link>
-          <Link href="/ayuda" className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full">
+          <Link href="/Help" className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full">
             Ayuda
           </Link>
         </nav>
         <div className="flex items-center gap-4">
-          <button className="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-300 hover:shadow-sm font-medium">
+          <button onClick={redirectProfile} className="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-300 hover:shadow-sm font-medium">
             Iniciar sesión
           </button>
           <button className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5">
