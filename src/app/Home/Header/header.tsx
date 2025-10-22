@@ -72,7 +72,8 @@ const [isAuthenticated, setIsAuthenticated] = useState(() => {
     
     try {
     const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-    const deviceId = sessionStorage.getItem('booka_device_id');
+    const deviceId = localStorage.getItem('booka_device_id')
+
     const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
 
     if (userSession && userSession.loggedIn) {
@@ -88,51 +89,61 @@ const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const win = window as any;
 
     win.login = () => {
-    const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-    const deviceId = sessionStorage.getItem('booka_device_id');
+     const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
+     const deviceId = localStorage.getItem('booka_device_id');
+
     if (!deviceId) {
-      console.warn("No se encontró deviceId en sessionStorage.");
-      return;
-    }
-
-    const newSession = { ...mockUser, loggedIn: true };
-
+    console.warn("No se encontró deviceId en localStorage.");
+    return;
+  }
     if (!usersStore.sessions) usersStore.sessions = {};
-    usersStore.sessions[deviceId] = newSession;
+    const existingSession = usersStore.sessions[deviceId] || {};
 
-    localStorage.setItem('booka_users', JSON.stringify(usersStore));
-
-    win.userProfile = newSession;
-    win.isAuthenticated = true;
-    setUser(newSession);
-    setIsAuthenticated(true);
-
-      window.dispatchEvent(new CustomEvent("booka-auth-updated", { detail: newSession }));
+    const updatedSession = {
+    ...existingSession,
+    loggedIn: true,
   };
- win.logout = () => {
-    const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-    const deviceId = sessionStorage.getItem('booka_device_id');
-    if (!deviceId) {
-      console.warn("No se encontró deviceId en sessionStorage.");
-      return;
-    }
+      if (Object.keys(existingSession).length === 0) {
+      Object.assign(updatedSession, mockUser);
+      }
+  
+      usersStore.sessions[deviceId] = updatedSession;
+      usersStore.lastUpdated = Date.now();
+      localStorage.setItem('booka_users', JSON.stringify(usersStore));
 
-    if (usersStore.sessions && usersStore.sessions[deviceId]) {
-      delete usersStore.sessions[deviceId];
+    win.userProfile = updatedSession;
+  win.isAuthenticated = true;
+  setUser(updatedSession);
+  setIsAuthenticated(true);
+
+      window.dispatchEvent(
+    new CustomEvent("booka-auth-updated", { detail: updatedSession })
+  );
+};
+
+
+    win.logout = () => {
+  const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
+  const deviceId = localStorage.getItem('booka_device_id');
+
+  if (!deviceId) {
+    console.warn("No se encontró deviceId en localStorage.");
+    return;
+  }
+
+     if (usersStore.sessions && usersStore.sessions[deviceId]) {
+      usersStore.sessions[deviceId].loggedIn = false;
+      usersStore.lastUpdated = Date.now();
       localStorage.setItem('booka_users', JSON.stringify(usersStore));
     }
 
-    win.userProfile = null;
-    win.isAuthenticated = false;
-    setUser(mockUser);
-    setIsAuthenticated(false);
-  };
-
-    win.toggleMenu = (e?: any) => {
-    e?.stopPropagation?.();
-    setIsMenuOpen((prev) => !prev);
-     window.dispatchEvent(new CustomEvent("booka-auth-updated", { detail: null }));
-  };
+     win.userProfile = null;
+     win.isAuthenticated = false;
+     setIsAuthenticated(false);
+ 
+    const savedSession = usersStore.sessions?.[deviceId] || mockUser;
+  setUser(savedSession);
+};
   win.closeMenu = () => setIsMenuOpen(false);
 
   // Sincronización global entre rutas y pestañas 
@@ -162,7 +173,8 @@ broadcast = (window as any)._bookaBroadcast;
     win.login = () => {
       originalLogin?.();
       const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-      const deviceId = sessionStorage.getItem('booka_device_id');
+      const deviceId = localStorage.getItem('booka_device_id')
+
       const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
       broadcast.postMessage({ type: 'LOGIN', user: userSession });
     };
@@ -178,7 +190,8 @@ broadcast = (window as any)._bookaBroadcast;
       if (event.key === 'booka_users') {
         try {
           const usersStore = JSON.parse(event.newValue || '{}');
-          const deviceId = sessionStorage.getItem('booka_device_id');
+          const deviceId = localStorage.getItem('booka_device_id')
+
           const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
 
           if (userSession && userSession.loggedIn) {
@@ -309,7 +322,8 @@ broadcast = (window as any)._bookaBroadcast;
     if (typeof window === 'undefined') return;
     try {
       const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-      const deviceId = sessionStorage.getItem('booka_device_id');
+      const deviceId = localStorage.getItem('booka_device_id')
+
       const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
 
       if (userSession && userSession.loggedIn) {

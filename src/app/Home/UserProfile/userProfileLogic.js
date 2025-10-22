@@ -7,13 +7,12 @@ const deviceIdKey = 'booka_device_id';
   let deviceId;
   
 // ================== IDENTIFICADOR DE DISPOSITIVO ==================
-  deviceId = sessionStorage.getItem(deviceIdKey);
-if (!deviceId) {
+  deviceId = localStorage.getItem(deviceIdKey);
+  if (!deviceId) {
     deviceId = "dev-" + Math.random().toString(36).slice(2, 10);
-    sessionStorage.setItem(deviceIdKey, deviceId);
+    localStorage.setItem(deviceIdKey, deviceId);
   }
   window.deviceId = deviceId;
-
   // ================== ALMACENAMIENTO LOCAL ==================
   let usersStore = JSON.parse(localStorage.getItem('booka_users')) || { sessions: {}, lastUpdated: Date.now() };
   if (!usersStore.sessions[deviceId]) usersStore.sessions[deviceId] = { loggedIn: false };
@@ -228,45 +227,7 @@ function renderUI() {
     if (editModal) editModal.classList.remove("show");
   }
 
-  // ================== VER PERFIL, EDITAR Y CONVERTIR ==================
-  function goToProfile() {
-    const u = window.userProfile || getUser() || mockUser;
-    // no bloquear por login: si u existe, usamos sus datos (mockUser será fallback)
-    const nuevaVentana = window.open("", "_blank");
-    if (!nuevaVentana) { alert("Permite las ventanas emergentes para ver tu perfil."); return; }
-    const contenido = `
-      <!DOCTYPE html>
-      <html lang="es">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <title>Perfil - Booka</title>
-        <style>
-          body{font-family:Roboto,Arial;padding:20px;background:#f7f7f7;}
-          .card{max-width:520px;margin:40px auto;padding:20px;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.08);text-align:center;}
-          img{width:140px;height:140px;border-radius:50%;object-fit:cover;border:4px solid #2B6AF0;margin-bottom:15px;}
-          h2{color:#2B6AF0;margin-bottom:10px;}
-          p{font-size:16px;margin:6px 0;color:#333;}
-          .btn{background:#2B6AF0;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;transition:.2s;font-weight:600;margin-top:10px;}
-          .btn:hover{background:#2BDDE0;color:#000;}
-        </style>
-      </head>
-      <body>
-        <div class="card">
-          <h2>Mi perfil</h2>
-          <img src="${u.photo || '/avatar.png'}" alt="Foto de perfil">
-          <p><strong>Nombre:</strong> ${u.name || 'Sin nombre'}</p>
-          <p><strong>Correo:</strong> ${u.email || ''}</p>
-          <p><strong>Teléfono:</strong> ${u.phone || ''}</p>
-          <button class="btn" onclick="window.close()">Cerrar</button>
-        </div>
-      </body>
-      </html>`;
-    nuevaVentana.document.open();
-    nuevaVentana.document.write(contenido);
-    nuevaVentana.document.close();
-  }
-
+  // ================== EDITAR Y CONVERTIR ==================
   function openEdit() {
     const u = window.userProfile || getUser() || mockUser;
     if (nameInput) nameInput.value = u.name || "";
@@ -279,7 +240,6 @@ function renderUI() {
     }
     if (editModal) {
       editModal.classList.add("show");
-      // ensure password section default
       const pwSection = document.getElementById("passwordSection");
       const pwFields = document.getElementById("passwordChangeFields");
       nameErr.style.display = emailErr.style.display = phoneErr.style.display = pwErr.style.display = 'none';
@@ -364,7 +324,6 @@ renderUI();
   
   window.login = login;
   window.logout = logout;
-  window.goToProfile = goToProfile;
   window.openEdit = openEdit;
   window.convertFixer = convertFixer;
   window.saveProfile = saveProfile;
