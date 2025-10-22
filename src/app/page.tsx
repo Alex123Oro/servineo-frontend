@@ -18,7 +18,7 @@ export default function Home() {
   const [fixers, setFixers] = useState<Fixer[]>([]);
 
   useEffect(() => {
-    axios.get("https://servineo-backend-4.onrender.com/api/fixers")
+    axios.get("http://localhost:5000/api/fixers")
          .then(res => setFixers(res.data))
          .catch(err => console.log("Error al cargar fixers:", err));
   }, []);
@@ -102,7 +102,7 @@ export default function Home() {
             Encuentra Servicios Cerca de Ti
           </h2>
           {/* Pasamos fixers al mapa */}
-          <Map fixers={fixers} /> 
+          <Map  /> 
         </div>
       </section>
       
