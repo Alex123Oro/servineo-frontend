@@ -35,23 +35,20 @@ const Header = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useState(() => {
-  if (typeof window !== 'undefined') {
-    const storedUser = localStorage.getItem('booka_user');
-    return storedUser ? JSON.parse(storedUser) : mockUser;
-  }
-  return mockUser;
-});
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('booka_user');
+      return storedUser ? JSON.parse(storedUser) : mockUser;
+    }
+    return mockUser;
+  });
 
-const [isAuthenticated, setIsAuthenticated] = useState(() => {
-  if (typeof window !== 'undefined') {
-    const storedUser = localStorage.getItem('booka_user');
-    return !!storedUser; 
-  }
-  return false;
-});
-
-
-
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('booka_user');
+      return !!storedUser;
+    }
+    return false;
+  });
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -60,8 +57,22 @@ const [isAuthenticated, setIsAuthenticated] = useState(() => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-  setIsClient(true);
-}, []);
+    setIsClient(true);
+  }, []);
+  //logica modal registro
+  useEffect(() => {
+    const checkAuth = () => {
+      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
+      const deviceId = (window as any).deviceId || 'dev-default';
+      const session = usersStore.sessions?.[deviceId];
+      setIsAuthenticated(!!session?.loggedIn);
+    };
+
+    window.addEventListener('storage', checkAuth);
+    checkAuth();
+
+    return () => window.removeEventListener('storage', checkAuth);
+  }, []);
   // ========= LÓGICA DE PERFIL =========
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -69,89 +80,86 @@ const [isAuthenticated, setIsAuthenticated] = useState(() => {
     if (typeof initUserProfileLogic === 'function') {
       initUserProfileLogic();
     }
-    
+
     try {
-    const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-    const deviceId = localStorage.getItem('booka_device_id')
+      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
+      const deviceId = localStorage.getItem('booka_device_id');
 
-    const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
+      const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
 
-    if (userSession && userSession.loggedIn) {
-      setUser(userSession);
-      setIsAuthenticated(true);
-      window.userProfile = userSession;
-      window.isAuthenticated = true;
+      if (userSession && userSession.loggedIn) {
+        setUser(userSession);
+        setIsAuthenticated(true);
+        window.userProfile = userSession;
+        window.isAuthenticated = true;
+      }
+    } catch (err) {
+      console.warn('No se pudo restaurar sesión:', err);
     }
-  } catch (err) {
-    console.warn('No se pudo restaurar sesión:', err);
-  }
 
     const win = window as any;
 
     win.login = () => {
-     const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-     const deviceId = localStorage.getItem('booka_device_id');
+      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
+      const deviceId = localStorage.getItem('booka_device_id');
 
-    if (!deviceId) {
-    console.warn("No se encontró deviceId en localStorage.");
-    return;
-  }
-    if (!usersStore.sessions) usersStore.sessions = {};
-    const existingSession = usersStore.sessions[deviceId] || {};
-
-    const updatedSession = {
-    ...existingSession,
-    loggedIn: true,
-  };
-      if (Object.keys(existingSession).length === 0) {
-      Object.assign(updatedSession, mockUser);
+      if (!deviceId) {
+        console.warn('No se encontró deviceId en localStorage.');
+        return;
       }
-  
+      if (!usersStore.sessions) usersStore.sessions = {};
+      const existingSession = usersStore.sessions[deviceId] || {};
+
+      const updatedSession = {
+        ...existingSession,
+        loggedIn: true,
+      };
+      if (Object.keys(existingSession).length === 0) {
+        Object.assign(updatedSession, mockUser);
+      }
+
       usersStore.sessions[deviceId] = updatedSession;
       usersStore.lastUpdated = Date.now();
       localStorage.setItem('booka_users', JSON.stringify(usersStore));
 
-    win.userProfile = updatedSession;
-  win.isAuthenticated = true;
-  setUser(updatedSession);
-  setIsAuthenticated(true);
+      win.userProfile = updatedSession;
+      win.isAuthenticated = true;
+      setUser(updatedSession);
+      setIsAuthenticated(true);
 
-      window.dispatchEvent(
-    new CustomEvent("booka-auth-updated", { detail: updatedSession })
-  );
-};
-
+      window.dispatchEvent(new CustomEvent('booka-auth-updated', { detail: updatedSession }));
+    };
 
     win.logout = () => {
-  const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-  const deviceId = localStorage.getItem('booka_device_id');
+      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
+      const deviceId = localStorage.getItem('booka_device_id');
 
-  if (!deviceId) {
-    console.warn("No se encontró deviceId en localStorage.");
-    return;
-  }
+      if (!deviceId) {
+        console.warn('No se encontró deviceId en localStorage.');
+        return;
+      }
 
-     if (usersStore.sessions && usersStore.sessions[deviceId]) {
-      usersStore.sessions[deviceId].loggedIn = false;
-      usersStore.lastUpdated = Date.now();
-      localStorage.setItem('booka_users', JSON.stringify(usersStore));
+      if (usersStore.sessions && usersStore.sessions[deviceId]) {
+        usersStore.sessions[deviceId].loggedIn = false;
+        usersStore.lastUpdated = Date.now();
+        localStorage.setItem('booka_users', JSON.stringify(usersStore));
+      }
+
+      win.userProfile = null;
+      win.isAuthenticated = false;
+      setIsAuthenticated(false);
+
+      const savedSession = usersStore.sessions?.[deviceId] || mockUser;
+      setUser(savedSession);
+    };
+    win.closeMenu = () => setIsMenuOpen(false);
+
+    // Sincronización global entre rutas y pestañas
+    let broadcast: BroadcastChannel;
+    if (!(window as any)._bookaBroadcast) {
+      (window as any)._bookaBroadcast = new BroadcastChannel('booka_auth_channel');
     }
-
-     win.userProfile = null;
-     win.isAuthenticated = false;
-     setIsAuthenticated(false);
- 
-    const savedSession = usersStore.sessions?.[deviceId] || mockUser;
-  setUser(savedSession);
-};
-  win.closeMenu = () => setIsMenuOpen(false);
-
-  // Sincronización global entre rutas y pestañas 
-let broadcast: BroadcastChannel;
-if (!(window as any)._bookaBroadcast) {
-  (window as any)._bookaBroadcast = new BroadcastChannel('booka_auth_channel');
-}
-broadcast = (window as any)._bookaBroadcast;
+    broadcast = (window as any)._bookaBroadcast;
 
     const syncAuthState = (data: any) => {
       if (data?.type === 'LOGIN') {
@@ -173,7 +181,7 @@ broadcast = (window as any)._bookaBroadcast;
     win.login = () => {
       originalLogin?.();
       const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-      const deviceId = localStorage.getItem('booka_device_id')
+      const deviceId = localStorage.getItem('booka_device_id');
 
       const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
       broadcast.postMessage({ type: 'LOGIN', user: userSession });
@@ -190,7 +198,7 @@ broadcast = (window as any)._bookaBroadcast;
       if (event.key === 'booka_users') {
         try {
           const usersStore = JSON.parse(event.newValue || '{}');
-          const deviceId = localStorage.getItem('booka_device_id')
+          const deviceId = localStorage.getItem('booka_device_id');
 
           const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
 
@@ -234,38 +242,38 @@ broadcast = (window as any)._bookaBroadcast;
           setIsAuthenticated(!!globalUser?.loggedIn);
         }
       } catch (err) {
-        console.warn("Error procesando booka-profile-updated", err);
+        console.warn('Error procesando booka-profile-updated', err);
       }
     };
 
-    window.addEventListener("booka-logout", handleLogoutEvent);
-    window.addEventListener("booka-profile-updated", handleProfileUpdated);
+    window.addEventListener('booka-logout', handleLogoutEvent);
+    window.addEventListener('booka-profile-updated', handleProfileUpdated);
 
     // ========= LIMPIEZA =========
     return () => {
-      window.removeEventListener("booka-logout", handleLogoutEvent);
-      window.removeEventListener("booka-profile-updated", handleProfileUpdated);
-      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener('booka-logout', handleLogoutEvent);
+      window.removeEventListener('booka-profile-updated', handleProfileUpdated);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
   useEffect(() => {
-  if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return;
 
-  const win = window as any;
+    const win = window as any;
 
-  win.toggleMenu = (e?: any) => {
-    e?.stopPropagation?.();
-    setIsMenuOpen((prev) => !prev);
-  };
-  win.closeMenu = () => setIsMenuOpen(false);
+    win.toggleMenu = (e?: any) => {
+      e?.stopPropagation?.();
+      setIsMenuOpen((prev) => !prev);
+    };
+    win.closeMenu = () => setIsMenuOpen(false);
 
-  return () => {
-    try {
-      delete window.toggleMenu;
-      delete window.closeMenu;
-    } catch {}
-  };
-}, [pathname]);
+    return () => {
+      try {
+        delete window.toggleMenu;
+        delete window.closeMenu;
+      } catch {}
+    };
+  }, [pathname]);
 
   // Cerrar menú al hacer clic fuera
   useEffect(() => {
@@ -283,7 +291,6 @@ broadcast = (window as any)._bookaBroadcast;
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, [isMenuOpen]);
-  
 
   // ========= Funciones de perfil =========
   const onLogout = () => {
@@ -317,12 +324,12 @@ broadcast = (window as any)._bookaBroadcast;
     }
   };
 
-    //  Reforzar sincronización de sesión al cambiar de página
+  //  Reforzar sincronización de sesión al cambiar de página
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
       const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-      const deviceId = localStorage.getItem('booka_device_id')
+      const deviceId = localStorage.getItem('booka_device_id');
 
       const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
 
@@ -338,33 +345,33 @@ broadcast = (window as any)._bookaBroadcast;
         window.isAuthenticated = false;
       }
     } catch (err) {
-      console.warn("Error sincronizando sesión al cambiar de ruta:", err);
+      console.warn('Error sincronizando sesión al cambiar de ruta:', err);
     }
   }, [pathname]);
 
   // Escucha actualizaciones de login/logout globales
-useEffect(() => {
-  const handleAuthUpdate = (e: Event) => {
-    const detail = (e as CustomEvent).detail;
-    if (detail && detail.loggedIn) {
-      setUser(detail);
-      setIsAuthenticated(true);
-      window.userProfile = detail;
-      window.isAuthenticated = true;
-    } else {
-      setUser(mockUser);
-      setIsAuthenticated(false);
-      window.userProfile = null;
-      window.isAuthenticated = false;
-    }
-  };
+  useEffect(() => {
+    const handleAuthUpdate = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail && detail.loggedIn) {
+        setUser(detail);
+        setIsAuthenticated(true);
+        window.userProfile = detail;
+        window.isAuthenticated = true;
+      } else {
+        setUser(mockUser);
+        setIsAuthenticated(false);
+        window.userProfile = null;
+        window.isAuthenticated = false;
+      }
+    };
 
-  window.addEventListener("booka-auth-updated", handleAuthUpdate);
-  return () => window.removeEventListener("booka-auth-updated", handleAuthUpdate);
-}, []);
-
+    window.addEventListener('booka-auth-updated', handleAuthUpdate);
+    return () => window.removeEventListener('booka-auth-updated', handleAuthUpdate);
+  }, []);
 
   if (!isClient) return null;
+  //logica modal registro
 
   // ========= Render =========
   return (
@@ -378,7 +385,7 @@ useEffect(() => {
           <div className="flex items-center">
             <button
               onClick={() => (pathname === '/' ? scrollToTop() : router.push('/'))}
-              className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105"
+              className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 nav-focus-item"
               aria-label="Ir al inicio"
             >
               <div className="relative overflow-hidden rounded-full shadow-md">
@@ -448,49 +455,39 @@ useEffect(() => {
             </a>
           </nav>
           <div
-  className="flex items-center gap-4"
-  onKeyDown={(e) => {
-    const navItems = Array.from(
-      document.querySelectorAll<HTMLElement>(
-        'nav[aria-label="Menú principal"] a, nav[aria-label="Menú principal"] [href]',
-      ),
-    );
-    const buttonItems = Array.from(
-      document.querySelectorAll<HTMLElement>('.flex.items-center.gap-4 button'),
-    );
-    const allItems: HTMLElement[] = [...navItems, ...buttonItems];
-    const index = allItems.indexOf(document.activeElement as HTMLElement);
+            className="flex items-center gap-4"
+            onKeyDown={(e) => {
+              const navItems = Array.from(
+                document.querySelectorAll<HTMLElement>(
+                  'nav[aria-label="Menú principal"] a, nav[aria-label="Menú principal"] [href]',
+                ),
+              );
+              const buttonItems = Array.from(
+                document.querySelectorAll<HTMLElement>('.flex.items-center.gap-4 button'),
+              );
+              const allItems: HTMLElement[] = [...navItems, ...buttonItems];
+              const index = allItems.indexOf(document.activeElement as HTMLElement);
 
-    if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      const next = (index + 1) % allItems.length;
-      allItems[next].focus();
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      const prev = (index - 1 + allItems.length) % allItems.length;
-      allItems[prev].focus();
-    }
-  }}
->
-
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                const next = (index + 1) % allItems.length;
+                allItems[next].focus();
+              } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prev = (index - 1 + allItems.length) % allItems.length;
+                allItems[prev].focus();
+              }
+            }}
+          >
             {!isAuthenticated ? (
               <>
                 <button
-  onClick={() => window.login?.()}
-  className="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-300 hover:shadow-sm font-medium"
-  aria-label="Iniciar sesión"
->
-  Iniciar sesión
-</button>
-
-                <button
-  onClick={() => window.login?.()}
-  className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
-  aria-label="Registrarse"
->
-  Registrarse
-</button>
-
+                  onClick={() => window.login?.()}
+                  className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
+                  aria-label="Registrarse"
+                >
+                  Acceder
+                </button>
               </>
             ) : (
               <img
@@ -531,17 +528,11 @@ useEffect(() => {
                 <>
                   <button
                     onClick={() => window.login?.()}
-                    className="px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-100 font-medium"
-                    aria-label="Iniciar sesión"
-                  >
-                    Iniciar
-                  </button>
-                  <button
-                    onClick={() => window.login?.()}
-                    className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm font-medium"
+                    className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2
+             transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
                     aria-label="Registrarse"
                   >
-                    Registrarse
+                    Acceder
                   </button>
                 </>
               ) : (
@@ -607,18 +598,24 @@ useEffect(() => {
       >
         <div className="menu-header">
           <span>Perfil</span>
-          <span className="close-btn" onClick={() => window.closeMenu?.()}>×</span>
+          <span className="close-btn" onClick={() => window.closeMenu?.()}>
+            ×
+          </span>
         </div>
         <img className="profile-preview" src={user.photo} alt="Foto" />
         <p className="font-medium">{user.name}</p>
         <p className="text-gray-500 text-sm mb-2">{user.email}</p>
-    <p className="text-gray-500 text-sm mb-2">
-  {user.phone || 'Sin número registrado'}
-</p>
+        <p className="text-gray-500 text-sm mb-2">{user.phone || 'Sin número registrado'}</p>
 
-        <div className="menu-item" onClick={onOpenEdit}>Editar perfil</div>
-        <div className="menu-item" onClick={onConvertFixer}>Convertirse en Fixer</div>
-        <div className="menu-item" onClick={onLogout}>Cerrar sesión</div>
+        <div className="menu-item" onClick={onOpenEdit}>
+          Editar perfil
+        </div>
+        <div className="menu-item" onClick={onConvertFixer}>
+          Convertirse en Fixer
+        </div>
+        <div className="menu-item" onClick={onLogout}>
+          Cerrar sesión
+        </div>
       </div>
 
       <Registro isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
