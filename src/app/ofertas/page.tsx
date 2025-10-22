@@ -329,11 +329,16 @@ const OfertasPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] pt-24 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 text-center mb-12">
-          Ofertas de Trabajo Disponibles
-        </h1>
+    <div className="min-h-screen bg-[#F9FAFB] pt-24 py-8">
+      <section className="w-full py-16 bg-gradient-to-b from-blue-600 to-blue-800 text-white">
+        <div className="max-w-7xl mx-auto text-center px-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">Ofertas de Trabajo</h1>
+          <p className="text-lg md:text-xl mb-12 max-w-3xl mx-auto opacity-90">
+            Explora las oportunidades disponibles y encuentra el profesional que necesitas
+          </p>
+        </div>
+      </section>
+      <div className="max-w-7xl mx-auto mt-12">
         {/* BUSCADOR CENTRADO */}
         <div className="flex justify-center mb-6">
           <input
