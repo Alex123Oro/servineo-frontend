@@ -16,9 +16,11 @@ const Map = dynamic(() => import("@/app/busqueda/components/map/Map"), { ssr: fa
 
 export default function Home() {
   const [fixers, setFixers] = useState<Fixer[]>([]);
+  // Nuevo: estado controlado para el buscador
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/fixers")
+    axios.get("/api/fixers")
          .then(res => setFixers(res.data))
          .catch(err => console.log("Error al cargar fixers:", err));
   }, []);
@@ -42,7 +44,8 @@ export default function Home() {
 
           {/* Buscador Component */}
           <div className="mb-10 shadow-xl rounded-xl bg-white p-2">
-            <Buscador />
+            {/* Controlamos el valor desde Home */}
+            <Buscador value={searchText} onChange={setSearchText} />
           </div>
 
           {/* Popular Searches */}
@@ -50,9 +53,12 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
               <span className="font-semibold text-gray-700 text-lg">Búsquedas populares:</span>
               <div className="flex flex-wrap justify-center gap-2">
-                {['Plomero', 'Electricista', 'Pintor', 'Carpintero', 'Limpieza', 'Jardineria', 'Soldador', 'Albañil'].map((tag) => (
+                {["Plomero", "Electricista", "Pintor", "Carpintero", "Limpieza", "Jardineria", "Soldador", "Albañil"].map((tag) => (
                   <button 
                     key={tag} 
+                    type="button"
+                    onClick={() => setSearchText(tag)}
+                    aria-label={`Escribir ${tag} en el buscador`}
                     className="px-4 py-2 text-sm bg-white border border-gray-200 text-gray-800 rounded-full hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-all duration-300 shadow-sm hover:shadow"
                   >
                     {tag}
