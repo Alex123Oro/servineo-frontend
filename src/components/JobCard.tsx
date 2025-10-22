@@ -4,7 +4,7 @@ import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { FiPhone } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
-import { error } from 'console';
+import Link from 'next/link';
 
 interface Props {   
     idJob: number,
@@ -16,8 +16,7 @@ interface Props {
     nombre: string,
     apellido: string,
     ubicacion: string,
-    fechaDePublicacion: string,
-    tiempo: string | number, // cambiado para evitar `any`
+    fechaDePublicacion: any,
     calificacion: number,
     telefono: number,
     precio: {
@@ -27,15 +26,20 @@ interface Props {
 }
 
 
-export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categoria, nombre, apellido, ubicacion, fechaDePublicacion, tiempo, calificacion, telefono, precio}:Props) => {
+export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categoria, nombre, apellido, ubicacion, fechaDePublicacion, calificacion, telefono, precio}:Props) => {
     
     const [expandido, setExpandido] = useState(false)
     const [fechaLocal, setFechaLocal] = useState("")
     const [tiempoPasado, setTiempoPasado] = useState("")
     // estado para controlar si hay algun error al cargar la imagen
-    const [errorImage, setErrorImage] = useState(false)
+    const [diasPasados, setDiasPasados] = useState(0)
+    const [imageLink, setImageLink] = useState(imgPath)
     
     const {min, max} = precio
+
+    useEffect(() => {
+        setImageLink(imgPath)
+    }, [idJob, imgPath])
 
     useEffect(() => {
         const date = new Date(fechaDePublicacion);
@@ -57,6 +61,7 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
         const minutos = Math.floor(segundos / 60)
         const horas = Math.floor(minutos / 60)
         const dias = Math.floor(horas / 24)
+        setDiasPasados(dias)
         const meses = Math.floor(dias / 30)
         const años = Math.floor(dias / 365)
 
@@ -86,10 +91,6 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
 
         window.open(url, "_blank")
     }
-    
-    const redireccion = () => {
-        window.open(`/Home/jobPage?idJob=${idJob}`, "_blank")
-    }
 
     const categoriaColors: {[key: string]: string} = {
         "plomeria": "text-[#1AA7ED] bg-[#E6F7FB]",
@@ -109,9 +110,9 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
         <div className={`flex flex-col rounded-[10px] gap-1 justify-around border border-solid border-black/15 shadow-md transition-shadow duration-300 hover:shadow-lg hover:shadow-black/30 mr-[5px] mb-[5px] p-3 min-h-auto max-w-[280px] min-w-0 w-full`}>
             <div className='flex flex-row justify-between mb-[5px]'>
                 { 
-                    <span className={destacado ? `opacity-[100%] border border-solid pr-[5px] pl-[5px] text-[#5E2BE0] rounded-[8px]` : `opacity-[0%]`}
+                    <span className={(diasPasados < 10) ? `opacity-[100%] border border-solid pr-[5px] pl-[5px] text-[#5E2BE0] rounded-[8px]` : `opacity-[0%]`}
                     > 
-                        Destacado 
+                        Nuevo 
                     </span> 
                 }
                 <span
@@ -121,7 +122,9 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
                 </span>
             </div>
 
-            <Image onClick={redireccion} className='object-cover rounded-lg cursor-pointer bg-[#2BDDE0]' src={errorImage ? '/images/imagenNoDisponble.jpg' : imgPath} width={300} height={200} alt='imagen del trabajo' priority={true} onError={() => setErrorImage(true)}/>   
+            <Link href={`/Home/jobPage?idJob=${idJob}`}>
+                <Image className='object-cover rounded-lg cursor-pointer bg-[#2BDDE0]' src={imageLink} width={300} height={200} alt='' priority={true} onError={() => setImageLink('/images/imagenNoDisponible.jpg')}/>   
+            </Link>
 
             <div className='flex flex-row justify-between items-center'>
                 <strong className='text-[95%]'> {titulo} </strong>

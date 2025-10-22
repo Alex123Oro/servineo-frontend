@@ -24,10 +24,10 @@ export default function JobPageClient() {
   }
 
   return (
-    <div className='p-[20px] pt-[30px]'>
+    <div className='p-[20px] pt-[30px] mt-[50px]'>
       <h1 className='text-[25px] text-2xl font-bold text-gray-900 mb-[20px]'> {job.titulo} </h1>
 
-      <div className='flex gap-[9px]'>
+      <div className='flex gap-[9px] grid grid-cols-1'>
         <Image className='object-cover rounded-lg' src={job.imagen} alt='Imagen del trabajo' width={300} height={400}/>
         <div className='flex flex-col gap-[5px]'>
           <span className='opacity-80 text-[20px]'> {job.descripcion} </span>
