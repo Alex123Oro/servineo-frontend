@@ -30,7 +30,7 @@ export const TrabajosRecientes = () => {
 
   return (
     <>
-      <h1 className='text-[25px] text-center text-2xl font-bold text-gray-900 mb-[20px] mt-[10px]'> Trabajos recientes </h1>
+      <h1 className='text-[38px] text-center text-2xl font-bold text-gray-900 mb-[20px] mt-[10px]'> Trabajos recientes </h1>
       
       <div className='flex flex-row ml-[10px] '>
         <span className='text-[20px] font-bold text-gray-900 mb-[20px] mr-[5px]'> Buscar por categoria: </span>
@@ -51,7 +51,7 @@ export const TrabajosRecientes = () => {
       {
         jobs.length > 0 && 
           // grid: 1 col en móvil, 2 en sm, 4 en md+; con gap y padding. Mostrará hasta 8 items por página -> 2 filas x 4 columnas.
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 p-4 sm:justify-center justify-items-center">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 mb-[10px] sm:justify-center justify-items-center">
             {
               jobs
                 .slice()
@@ -70,7 +70,8 @@ export const TrabajosRecientes = () => {
                       categoria={item.categoria}
                       nombre={item.nombreFixer} 
                       apellido={item.apellidoFixer} 
-                      ubicacion={item.ubicacion} 
+                      ubicacion={item.ubicacion}
+                      fechaDePublicacion={item.fechaDePublicacion} 
                       tiempo={item.tiempoPublicado} 
                       calificacion={item.calificacion}
                       telefono={item.telefono}
