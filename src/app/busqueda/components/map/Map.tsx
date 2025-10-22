@@ -68,7 +68,7 @@ export default function Map() {
   if (loading) return <div>Cargando mapa...</div>;
 
   return (
-    <div className="relative" style={{ height: "60vh", width: "100%" }}>
+    <div className="relative z-0" style={{ height: "60vh", width: "100%", marginTop: "80px" }}>
       <MapContainer
         center={position}
         zoom={zoom}
