@@ -1,22 +1,27 @@
 
 'use client';
 
+import Link from 'next/link';
+import { useState } from 'react';
+
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
-  const serviciosLinks = [
-    'Plomeria', 'Electricidad', 'Carpinteria', 'Pintura', 
-    'Limpieza', 'Jardinería', 'Soldadura', 'Albañileria'
-  ];
+
+  const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const empresaLinks = [
-    'Sobre nosotros', 'Cómo funciona', 'Testimonios', 'Blog', 
-    'Prensa', 'Trabaja con nosotros'
+    { name: 'Sobre nosotros', path: '/info/about' },
+    { name: 'Trabaja con nosotros', path: '/info/join' },
+    { name: 'Testimonios', path: '/info/testimonials' },
+    { name: 'Apoyo', path: '/info/support' }
   ];
+  
 
   const legalLinks = [
-    'Términos y condiciones', 'Política de privacidad',
-    'Política de cookies', 'Resolución de disputas'
+    { name: 'Política de privacidad', path: '/info/privacy' },
+    { name: 'Acuerdos de usuario', path: '/info/terms' },       /* fue Terminos y condiciones */
+    { name: 'Política de cookies', path: '/info/cookies' } 
   ];
 
   return (
@@ -35,35 +40,36 @@ export default function Footer() {
         {/* Contenido principal */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-base">
           
-          {/* Servicios */}
-          <div>
-            <h3 className="text-xl font-semibold text-white mb-6">Servicios</h3>
-            <ul className="space-y-3">
-              {serviciosLinks.map((link, i) => (
-                <li key={i}>
-                  <a
-                    href="#"
-                    className="text-white hover:text-gray-200 transition-colors"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          
 
           {/* Empresa */}
           <div>
             <h3 className="text-xl font-semibold text-white mb-6">Empresa</h3>
             <ul className="space-y-3">
-              {empresaLinks.map((link, i) => (
+            {empresaLinks.map((link, i) => (
+              <li key={i}>
+                <Link href={link.path}>
+                  <span className="text-white hover:text-gray-200 transition-colors cursor-pointer">
+                    {link.name}
+                  </span>
+                </Link>
+              </li>
+            ))}
+
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-6">Legal</h3>
+            <ul className="space-y-3">
+              {legalLinks.map((link, i) => (
                 <li key={i}>
-                  <a
-                    href="#"
-                    className="text-white hover:text-gray-200 transition-colors"
-                  >
-                    {link}
-                  </a>
+                  <Link href={link.path}>
+                    <span className="text-white hover:text-gray-200 transition-colors cursor-pointer">
+                      {link.name}
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -88,81 +94,34 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Legal */}
+          {/* Redes sociales */}
+         
           <div>
-            <h3 className="text-xl font-semibold text-white mb-6">Legal</h3>
-            <ul className="space-y-3">
-              {legalLinks.map((link, i) => (
-                <li key={i}>
-                  <a
-                    href="#"
-                    className="text-white hover:text-gray-200 transition-colors"
-                  >
-                    {link}
-                  </a>
-                </li>
+            <h3 className="text-lg font-semibold text-white mb-4">Síguenos</h3>
+            <div className="flex flex-row md:flex-col mt-2 md:space-y-3 space-x-4 md:space-x-0">
+              {[Facebook, Instagram, Twitter].map((Icon, i) => (
+                <a
+                  key={i}
+                  href="#"
+                  className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
+                >
+                  <Icon className="h-6 w-6" />
+                </a>
               ))}
-            </ul>
+            </div>
           </div>
+
+
         </div>
 
        
-        {/* App Download & Social Media */}
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 border-t border-gray-700 pt-12">
-          {/* App Download */}
-          <div className="text-center lg:text-left">
-            <h3 className="text-xl font-semibold text-white mb-2">Descarga nuestra app</h3>
-            <p className="text-white text-base mb-6">Gestiona tus servicios desde tu móvil.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <div className="bg-black rounded-lg p-3 px-6 cursor-pointer hover:bg-gray-800 transition flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-                  <span className="text-black font-bold text-sm">🍎</span>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-400">Disponible en</div>
-                  <div className="font-semibold text-white text-lg">App Store</div>
-                </div>
-              </div>
-              <div className="bg-black rounded-lg p-3 px-6 cursor-pointer hover:bg-gray-800 transition flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-                  <span className="text-black font-bold text-sm">▶</span>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-400">Consíguelo en</div>
-                  <div className="font-semibold text-white text-lg">Google Play</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Social Media & Newsletter */}
-          <div className="text-center lg:text-right">
-            <div className="mb-6">
-              <h3 className="text-xl font-semibold text-white mb-4">Síguenos:</h3>
-              <div className="flex justify-center lg:justify-end space-x-4">
-                {[Facebook, Instagram, Twitter].map((Icon, i) => (
-                  <a key={i} href="#" className="text-white hover:text-gray-200 transition-colors">
-                    <Icon className="h-8 w-8" />
-                  </a>
-                ))}
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <input
-                type="email"
-                placeholder="Tu email para noticias"
-                className="px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 transition-colors w-full sm:w-64"
-              />
-              <button className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition-colors whitespace-nowrap">
-                Suscribirse
-              </button>
-            </div>
-          </div>
-        </div>
+     
        
         {/* Línea divisora */}
         <div className="border-t border-gray-700" />
+
+      
+
 
         {/* Bottom Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-sm pt-8">

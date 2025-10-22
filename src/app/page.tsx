@@ -1,14 +1,31 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import axios from "axios";
+import { Fixer } from "@/app/busqueda/interface/Fixer_Interface";
+
 import Carrusel from "./Home/Carrusel/Carrusel";
 import { TrabajosRecientes } from '../components/TrabajosRecientes';
 import Footer from './Home/Footer/Footer';
-import Mapa from "./Home/Mapa/Mapa";
-
 import Buscador from './Home/Buscador/Buscador';
 import ServiciosPage from "./servicios/servicios";
+// Importa otros componentes según sea necesario
+// Dynamic import para Leaflet Map (evita errores SSR)
+const Map = dynamic(() => import("@/app/busqueda/components/map/Map"), { ssr: false });
 
 export default function Home() {
+  const [fixers, setFixers] = useState<Fixer[]>([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:3000/api/fixers")
+         .then(res => setFixers(res.data))
+         .catch(err => console.log("Error al cargar fixers:", err));
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      
       {/* Hero Section */}
       <section className="w-full pt-28 pb-16 px-4 md:px-12 text-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -24,9 +41,9 @@ export default function Home() {
           </p>
 
           {/* Buscador Component */}
-        <div className="mb-10 shadow-xl rounded-xl bg-white p-2">
-          <Buscador />
-        </div>
+          <div className="mb-10 shadow-xl rounded-xl bg-white p-2">
+            <Buscador />
+          </div>
 
           {/* Popular Searches */}
           <div className="mb-16">
@@ -84,7 +101,8 @@ export default function Home() {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center">
             Encuentra Servicios Cerca de Ti
           </h2>
-          <Mapa />
+          {/* Pasamos fixers al mapa */}
+          <Map fixers={fixers} /> 
         </div>
       </section>
       
