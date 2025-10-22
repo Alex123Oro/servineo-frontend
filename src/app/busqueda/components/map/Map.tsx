@@ -1,4 +1,5 @@
 'use client';
+'use client';
 
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Popup } from "react-leaflet";
@@ -6,6 +7,7 @@ import { Fixer } from "@/app/busqueda/interface/Fixer_Interface";
 import { LatLngExpression } from "leaflet";
 
 import RecenterMap from "./RecenterMap";
+import UserMarker from "./UserMaker";
 import UserMarker from "./UserMaker";
 import FixerMarker from "./FixerMaker";
 import MapEvents from "./MapEvents";
@@ -15,6 +17,8 @@ import { distanceKm } from "@/app/busqueda/utils/distance";
 
 const defaultPosition: [number, number] = [-17.39381, -66.15693];
 
+export default function Map() {
+  const [fixers, setFixers] = useState<Fixer[]>([]);
 export default function Map() {
   const [fixers, setFixers] = useState<Fixer[]>([]);
   const [position, setPosition] = useState<[number, number]>(defaultPosition);
@@ -32,7 +36,18 @@ export default function Map() {
       })
       .finally(() => setLoading(false));
   }, []);
+  // 🔹 Cargar fixers desde JSON local
+  useEffect(() => {
+    import('@/jsons/fixers.json')
+      .then((module) => setFixers(module.default))
+      .catch((err) => {
+        console.error("Error cargando fixers:", err);
+        setError("No se pudieron cargar los fixers locales");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
+  // 🔹 Posición inicial y geolocalización
   // 🔹 Posición inicial y geolocalización
   useEffect(() => {
     const savedPos = localStorage.getItem("mapPosition");
@@ -49,6 +64,7 @@ export default function Map() {
   }, []);
 
   // 🔹 Guardar posición y zoom en localStorage
+  // 🔹 Guardar posición y zoom en localStorage
   useEffect(() => {
     localStorage.setItem("mapPosition", JSON.stringify(position));
     localStorage.setItem("mapZoom", zoom.toString());
@@ -60,7 +76,7 @@ export default function Map() {
     setPosition([lat, lng]);
   };
 
-  // 🔹 Filtrar fixers cercanos (≤8 km) y disponibles
+  // 🔹 Filtrar fixers cercanos (≤5 km)
   const nearbyFixers = fixers.filter(
     (f) => f.available && distanceKm(position, [f.lat, f.lng]) <= 8
   );
