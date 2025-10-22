@@ -21,7 +21,12 @@ export default function Home() {
   // Nuevo: estado controlado para el buscador
   const [searchText, setSearchText] = useState("");
 
-  
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/fixers")
+         .then(res => setFixers(res.data))
+         .catch(err => console.log("Error al cargar fixers:", err));
+  }, []);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

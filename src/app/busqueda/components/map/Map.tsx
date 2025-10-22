@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Popup } from "react-leaflet";
@@ -7,7 +6,6 @@ import { Fixer } from "@/app/busqueda/interface/Fixer_Interface";
 import { LatLngExpression } from "leaflet";
 
 import RecenterMap from "./RecenterMap";
-import UserMarker from "./UserMaker";
 import UserMarker from "./UserMaker";
 import FixerMarker from "./FixerMaker";
 import MapEvents from "./MapEvents";
@@ -19,11 +17,10 @@ const defaultPosition: [number, number] = [-17.39381, -66.15693];
 
 export default function Map() {
   const [fixers, setFixers] = useState<Fixer[]>([]);
-export default function Map() {
-  const [fixers, setFixers] = useState<Fixer[]>([]);
   const [position, setPosition] = useState<[number, number]>(defaultPosition);
   const [zoom, setZoom] = useState(14);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // 🔹 Cargar fixers desde JSON local
   useEffect(() => {
@@ -35,43 +32,35 @@ export default function Map() {
       })
       .finally(() => setLoading(false));
   }, []);
-  // 🔹 Cargar fixers desde JSON local
-  useEffect(() => {
-    import('@/jsons/fixers.json')
-      .then((module) => setFixers(module.default))
-      .catch((err) => {
-        console.error("Error cargando fixers:", err);
-        setError("No se pudieron cargar los fixers locales");
-      })
-      .finally(() => setLoading(false));
-  }, []);
-  // 🔹 Cargar fixers desde JSON local
-  useEffect(() => {
-    import('@/jsons/fixers.json')
-      .then((module) => setFixers(module.default))
-      .catch((err) => {
-        console.error("Error cargando fixers:", err);
-        alert("No se pudieron cargar los fixers locales 😢");
-      })
-      .finally(() => setLoading(false));
-  }, []);
 
-  // 🔹 Posición inicial y geolocalización
   // 🔹 Posición inicial y geolocalización
   useEffect(() => {
     const savedPos = localStorage.getItem("mapPosition");
     const savedZoom = localStorage.getItem("mapZoom");
     if (savedPos) setPosition(JSON.parse(savedPos));
     if (savedZoom) setZoom(Number(savedZoom));
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
+        () => setError("No se pudo obtener tu ubicación")
+      );
+    } else setError("No se pudo obtener tu ubicación");
   }, []);
 
-  // 🔹 Guardar posición y zoom en localStorage
   // 🔹 Guardar posición y zoom en localStorage
   useEffect(() => {
     localStorage.setItem("mapPosition", JSON.stringify(position));
     localStorage.setItem("mapZoom", zoom.toString());
   }, [position, zoom]);
 
+  // 🔹 Actualizar posición desde eventos del mapa
+  const handleMove = (pos: LatLngExpression) => {
+    const [lat, lng] = Array.isArray(pos) ? pos : [pos.lat, pos.lng];
+    setPosition([lat, lng]);
+  };
+
+  // 🔹 Filtrar fixers cercanos (≤5 km)
   // 🔹 Actualizar posición desde eventos del mapa
   const handleMove = (pos: LatLngExpression) => {
     const [lat, lng] = Array.isArray(pos) ? pos : [pos.lat, pos.lng];
