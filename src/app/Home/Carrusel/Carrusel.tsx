@@ -164,8 +164,8 @@ const Carrusel = () => {
           <Image
             src={failedMap[index] ? fallbackSrc : slide.image}
             alt={slide.title}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: 'cover' }}
             className={styles.image}
             priority={index === 0}
             placeholder="blur"
@@ -173,7 +173,7 @@ const Carrusel = () => {
             onError={() => {
               setFailedMap(prev => ({ ...prev, [index]: true }));
             }}
-            onLoadingComplete={() => {
+            onLoad={() => {
               setLoadingMap(prev => ({ ...prev, [index]: false }));
             }}
           />
