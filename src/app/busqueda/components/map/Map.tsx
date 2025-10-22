@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Popup } from "react-leaflet";
@@ -6,32 +6,34 @@ import { Fixer } from "@/app/busqueda/interface/Fixer_Interface";
 import { LatLngExpression } from "leaflet";
 
 import RecenterMap from "./RecenterMap";
-import UserMarker from "./UserMaker"  ;
+import UserMarker from "./UserMaker";
 import FixerMarker from "./FixerMaker";
 import MapEvents from "./MapEvents";
 import MapCircle from "./MapCircle";
 import LocationButton from "./LocationButton";
 import { distanceKm } from "@/app/busqueda/utils/distance";
 
-interface MapProps {
-  fixers: Fixer[];
-}
-
 const defaultPosition: [number, number] = [-17.39381, -66.15693];
 
-export default function Map({ fixers }: MapProps) {
+export default function Map() {
+  const [fixers, setFixers] = useState<Fixer[]>([]);
   const [position, setPosition] = useState<[number, number]>(defaultPosition);
   const [zoom, setZoom] = useState(14);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Actualiza posición desde eventos del mapa
-  const handleMove = (pos: LatLngExpression) => {
-    const [lat, lng] = Array.isArray(pos) ? pos : [pos.lat, pos.lng];
-    setPosition([lat, lng]);
-  };
+  // 🔹 Cargar fixers desde JSON local
+  useEffect(() => {
+    import('@/jsons/fixers.json')
+      .then((module) => setFixers(module.default))
+      .catch((err) => {
+        console.error("Error cargando fixers:", err);
+        setError("No se pudieron cargar los fixers locales");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  // Lee posición y zoom guardados en localStorage y geolocalización
+  // 🔹 Posición inicial y geolocalización
   useEffect(() => {
     const savedPos = localStorage.getItem("mapPosition");
     const savedZoom = localStorage.getItem("mapZoom");
@@ -44,17 +46,21 @@ export default function Map({ fixers }: MapProps) {
         () => setError("No se pudo obtener tu ubicación")
       );
     } else setError("No se pudo obtener tu ubicación");
-
-    setLoading(false);
   }, []);
 
-  // Guarda la posición y zoom actuales en localStorage
+  // 🔹 Guardar posición y zoom en localStorage
   useEffect(() => {
     localStorage.setItem("mapPosition", JSON.stringify(position));
     localStorage.setItem("mapZoom", zoom.toString());
   }, [position, zoom]);
 
-  // Filtra solo fixers disponibles dentro de 5 km
+  // 🔹 Actualizar posición desde eventos del mapa
+  const handleMove = (pos: LatLngExpression) => {
+    const [lat, lng] = Array.isArray(pos) ? pos : [pos.lat, pos.lng];
+    setPosition([lat, lng]);
+  };
+
+  // 🔹 Filtrar fixers cercanos (≤5 km)
   const nearbyFixers = fixers.filter(
     (f) => f.available && distanceKm(position, [f.lat, f.lng]) <= 5
   );
@@ -84,7 +90,6 @@ export default function Map({ fixers }: MapProps) {
 
         <MapEvents onClick={handleMove} />
 
-        {/* Popup si no hay fixers cercanos */}
         {nearbyFixers.length === 0 && (
           <Popup position={position} closeButton={false} autoPan={true}>
             ⚠️ No se encontraron fixers cercanos

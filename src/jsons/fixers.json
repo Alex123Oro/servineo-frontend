@@ -1,0 +1,30 @@
+[
+  { "id": 1, "nombre": "Juan Perez", "servicio": "Plomería", "lat": -17.393, "lng": -66.156, "zona": "Plaza 14", "available": true},
+  { "id": 2, "nombre": "Maria Lopez", "servicio": "Electricidad", "lat": -17.392, "lng": -66.158, "zona": "Plaza 14", "available": false },
+  { "id": 3, "nombre": "Carlos Sanchez", "servicio": "Carpintería", "lat": -17.394, "lng": -66.157, "zona": "Plaza 14", "available": false },
+  { "id": 4, "nombre": "Ana Torres", "servicio": "Pintura", "lat": -17.395, "lng": -66.159, "zona": "Plaza 14", "available": false },
+  { "id": 5, "nombre": "Luis Fernandez", "servicio": "Jardinería", "lat": -17.391, "lng": -66.154, "zona": "Plaza 14", "available": false },
+  { "id": 6, "nombre": "Sofia Ramirez", "servicio": "Cerrajería", "lat": -17.390, "lng": -66.155, "zona": "Plaza 14", "available": false },
+
+  { "id": 7, "nombre": "Diego Morales", "servicio": "Albañilería", "lat": -17.402, "lng": -66.155, "zona": "Laguna Alalay", "available": false },
+  { "id": 8, "nombre": "Laura Gutierrez", "servicio": "Electricidad", "lat": -17.403, "lng": -66.156, "zona": "Laguna Alalay", "available": false },
+  { "id": 9, "nombre": "Pedro Rojas", "servicio": "Plomería", "lat": -17.404, "lng": -66.157, "zona": "Laguna Alalay", "available": false },
+  { "id": 10, "nombre": "Valeria Castillo", "servicio": "Carpintería", "lat": -17.405, "lng": -66.158, "zona": "Laguna Alalay", "available": false },
+  { "id": 11, "nombre": "Fernando Alvarez", "servicio": "Pintura", "lat": -17.406, "lng": -66.159, "zona": "Laguna Alalay", "available": false },
+
+  { "id": 12, "nombre": "Camila Diaz", "servicio": "Jardinería", "lat": -17.410, "lng": -66.170, "zona": "Villa Pagador", "available": false },
+  { "id": 13, "nombre": "Ricardo Salazar", "servicio": "Cerrajería", "lat": -17.411, "lng": -66.171, "zona": "Villa Pagador", "available": false },
+  { "id": 14, "nombre": "Isabella Cruz", "servicio": "Electricidad", "lat": -17.412, "lng": -66.172, "zona": "Villa Pagador", "available": false },
+  { "id": 15, "nombre": "Martin Herrera", "servicio": "Albañilería", "lat": -17.413, "lng": -66.173, "zona": "Villa Pagador", "available": false },
+  { "id": 16, "nombre": "Patricia Vargas", "servicio": "Plomería", "lat": -17.414, "lng": -66.174, "zona": "Villa Pagador", "available": false },
+
+  { "id": 17, "nombre": "Jorge Medina", "servicio": "Pintura", "lat": -17.370, "lng": -66.180, "zona": "Colcapirhua", "available": false },
+  { "id": 18, "nombre": "Daniela Rivas", "servicio": "Electricidad", "lat": -17.371, "lng": -66.181, "zona": "Colcapirhua", "available": false },
+  { "id": 19, "nombre": "Hector Paredes", "servicio": "Jardinería", "lat": -17.372, "lng": -66.182, "zona": "Colcapirhua", "available": false },
+  { "id": 20, "nombre": "Monica Cabrera", "servicio": "Carpintería", "lat": -17.373, "lng": -66.183, "zona": "Colcapirhua", "available": false },
+
+  { "id": 21, "nombre": "Alfredo Jimenez", "servicio": "Cerrajería", "lat": -17.430, "lng": -66.145, "zona": "Cota Cota", "available": false },
+  { "id": 22, "nombre": "Gabriela Solis", "servicio": "Plomería", "lat": -17.431, "lng": -66.146, "zona": "Cota Cota", "available": false },
+  { "id": 23, "nombre": "Victor Huanca", "servicio": "Electricidad", "lat": -17.432, "lng": -66.147, "zona": "Cota Cota", "available": false },
+  { "id": 24, "nombre": "Liliana Pinto", "servicio": "Pintura", "lat": -17.433, "lng": -66.148, "zona": "Cota Cota", "available": false }
+]

@@ -104,7 +104,7 @@ export default function Home() {
             Encuentra Servicios Cerca de Ti
           </h2>
           {/* Pasamos fixers al mapa */}
-          <Map fixers={fixers} /> 
+          <Map  /> 
         </div>
       </section>
       
