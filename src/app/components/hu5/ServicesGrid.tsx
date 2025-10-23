@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "../../styles/hu5/ServicesGrid.module.css";
 
-
 type Service = {
   id: string;
   name: string;
@@ -81,13 +80,15 @@ export default function ServicesGrid({ pageSize = 12 }: { pageSize?: number }) {
   );
 
   // Mantener scroll al volver
-  useEffect(() => {
+ useEffect(() => {
     const key = "hu5-services-scroll";
     const saved = sessionStorage.getItem(key);
-    if (saved && listRef.current) listRef.current.scrollTo({ top: parseInt(saved, 10) });
-    return () => { if (listRef.current) sessionStorage.setItem(key, String(listRef.current.scrollTop)); };
+    const currentRef = listRef.current; // Guardar referencia
+    if (saved && currentRef) currentRef.scrollTo({ top: parseInt(saved, 10) });
+    return () => { 
+      if (currentRef) sessionStorage.setItem(key, String(currentRef.scrollTop)); 
+    };
   }, []);
-
   const slice = filtered.slice(0, visible);
   const canLoadMore = filtered.length > visible;
 
