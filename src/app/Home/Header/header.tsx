@@ -288,9 +288,7 @@ const Header = () => {
       if (
         isMenuOpen &&
         menuRef.current &&
-        iconRef.current &&
-        !menuRef.current.contains(e.target as Node) &&
-        !iconRef.current.contains(e.target as Node)
+        !menuRef.current.contains(e.target as Node)
       ) {
         setIsMenuOpen(false);
       }
@@ -509,7 +507,7 @@ const Header = () => {
             ) : (
               <div className="relative">
                 <button
-                  onClick={() => setIsMenuOpen((v) => !v)}
+                  onClick={(e) => (window as any).toggleMenu?.(e)}
                   className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition"
                   aria-label="Abrir menú de perfil"
                 >
@@ -522,55 +520,7 @@ const Header = () => {
                   />
                   <span className="font-medium text-gray-800">{user.name.split(' ')[0]}</span>
                 </button>
-
-                {isMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-80 rounded-xl shadow-2xl bg-white border border-gray-100 overflow-hidden">
-                    <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                      <Image
-                        src={user.photo}
-                        alt="Avatar"
-                        width={40}
-                        height={40}
-                        className="rounded-full border-2 border-white"
-                      />
-                      <div>
-                        <div className="font-semibold">{user.name}</div>
-                        <div className="text-sm opacity-90">{user.email}</div>
-                      </div>
-                    </div>
-
-                    <div className="p-2">
-                      <button
-                        onClick={() => router.push('/Home/UserProfile')}
-                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
-                      >
-                        Ver perfil completo
-                      </button>
-                      <button
-                        onClick={() => router.push('/Home/UserProfile')}
-                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
-                      >
-                        Configuración de Perfil
-                      </button>
-                      <button
-                        onClick={() => router.push('/info/join')}
-                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
-                      >
-                        Convertirse en Fixer
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsLoggedIn(false);
-                          setIsMenuOpen(false);
-                          router.push('/');
-                        }}
-                        className="w-full text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
-                      >
-                        Cerrar sesión
-                      </button>
-                    </div>
-                  </div>
-                )}
+                {/* Eliminado menú desplegable pequeño duplicado */}
               </div>
             )}
           </div>
@@ -619,7 +569,7 @@ const Header = () => {
               ) : (
                 <div className="relative">
                   <button
-                    onClick={() => setIsMenuOpen((v) => !v)}
+                    onClick={(e) => (window as any).toggleMenu?.(e)}
                     className="flex items-center gap-1 px-2 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm font-medium"
                     aria-label="Abrir menú de perfil"
                   >
@@ -632,32 +582,7 @@ const Header = () => {
                     />
                     <span>{user.name.split(' ')[0]}</span>
                   </button>
-                  {isMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-72 rounded-xl shadow-2xl bg-white border border-gray-100 overflow-hidden">
-                      <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                        <Image src={user.photo} alt="Avatar" width={36} height={36} className="rounded-full border-2 border-white" />
-                        <div>
-                          <div className="font-semibold">{user.name}</div>
-                          <div className="text-xs opacity-90">{user.email}</div>
-                        </div>
-                      </div>
-                      <div className="p-2">
-                        <button onClick={() => router.push('/Home/UserProfile')} className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100">Ver perfil completo</button>
-                        <button onClick={() => router.push('/Home/UserProfile')} className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100">Configuración de Perfil</button>
-                        <button onClick={() => router.push('/info/join')} className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100">Convertirse en Fixer</button>
-                        <button
-                          onClick={() => { 
-                            setIsLoggedIn(false); 
-                            setIsMenuOpen(false); 
-                            router.push('/'); 
-                          }}
-                          className="w-full text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
-                        >
-                          Cerrar sesión
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  {/* Eliminado menú desplegable pequeño duplicado en móvil */}
                 </div>
               )}
             </div>

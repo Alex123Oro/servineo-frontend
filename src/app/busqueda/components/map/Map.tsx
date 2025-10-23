@@ -60,9 +60,9 @@ export default function Map() {
     setPosition([lat, lng]);
   };
 
-  // 🔹 Filtrar fixers cercanos (≤5 km)
+  // 🔹 Filtrar fixers cercanos (≤8 km) y disponibles
   const nearbyFixers = fixers.filter(
-    (f) => f.available && distanceKm(position, [f.lat, f.lng]) <= 5
+    (f) => f.available && distanceKm(position, [f.lat, f.lng]) <= 8
   );
 
   if (loading) return <div>Cargando mapa...</div>;
@@ -82,7 +82,7 @@ export default function Map() {
 
         <RecenterMap position={position} />
         <UserMarker position={position} />
-        <MapCircle center={position} radius={5000} />
+        <MapCircle center={position} radius={8000} />
 
         {nearbyFixers.map((f) => (
           <FixerMarker key={f.id} fixer={f} />
