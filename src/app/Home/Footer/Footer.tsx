@@ -29,22 +29,23 @@ export default function Footer() {
         
         {/* Servineo logo + descripción */}
         <div className="text-center">
-          <h2 className="text-4xl font-bold mb-4 text-white">Servineo</h2>
+          <h2 className="text-4xl font-bold mb-4 text-[var(--secondary)]">Servineo</h2>
           <p className="text-white max-w-3xl mx-auto leading-relaxed text-lg">
             La plataforma líder para conectar hogares con profesionales calificados en Cochabamba. 
             Calidad garantizada y servicio confiable.
           </p>
         </div>
 
+        <div className="h-4"></div>
+        
         {/* Contenido principal */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-base">
-          
-          
+            
 
           {/* Empresa */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-6">Empresa</h3>
-            <ul className="space-y-3">
+            <h3 className="text-xl font-semibold text-[var(--secondary)] mb-2">Empresa</h3>
+            <ul className="space-y-3 mt-2">
             {empresaLinks.map((link, i) => (
               <li key={i}>
                 <Link href={link.path} className={styles.footerLink}>
@@ -58,8 +59,8 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-6">Legal</h3>
-            <ul className="space-y-3">
+            <h3 className="text-xl font-semibold text-[var(--secondary)] mb-2">Legal</h3>
+            <ul className="space-y-3 mt-2">
               {legalLinks.map((link, i) => (
                 <li key={i}>
                   <Link href={link.path} className={styles.footerLink}>
@@ -72,11 +73,23 @@ export default function Footer() {
 
           {/* Contacto */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-6">Contáctanos</h3>
-            <div className="space-y-4 text-white">
+            <h3 className="text-xl font-semibold text-[var(--secondary)] mb-2">Contáctanos</h3>
+            <div className="space-y-4 mt-2 text-white">
+             
               <div className="flex items-center" aria-label="Ubicación: Cochabamba, Bolivia">
-                <MapPin className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true"/>
-                <span>Cochabamba, Bolivia</span>
+                <MapPin
+                  className="h-5 w-5 text-blue-400 mr-4 transition-all duration-300 group-hover:text-[var(--secondary)] group-hover:drop-shadow-[0_0_8px_var(--secondary)]"
+                  aria-hidden="true"
+                />
+                <a
+                  href="https://maps.app.goo.gl/n7LWKTiuy92PBoAx8?g_st=aw"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[var(--secondary)] transition-colors"
+                  aria-label="Ver ubicación en Google Maps"
+                >
+                  Cochabamba, Bolivia
+                </a>
               </div>
 
               {/* WhatsApp (reemplaza el teléfono) */}
@@ -86,7 +99,7 @@ export default function Footer() {
                   href="https://wa.me/59163765632"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gray-200 transition-colors"
+                   className="hover:text-[var(--secondary)] transition-colors"
                   aria-label="Enviar mensaje por WhatsApp al +591 63765632"
                 >
                   +591 637-65632
@@ -108,7 +121,7 @@ export default function Footer() {
                 <Mail className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true" />
                 <a
                   href="mailto:espinozapacaflora@gmail.com?subject=Consulta de servicios&body=Hola, me gustaría saber más sobre sus servicios."
-                  className="hover:text-gray-200 transition-colors"
+                   className="hover:text-[var(--secondary)] transition-colors"
                   aria-label="Enviar correo electrónico a espinozapacaflora@gmail.com"
                 >
                   contacto@servineo.bo
@@ -121,8 +134,8 @@ export default function Footer() {
          
           {/* Redes sociales */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-6">Síguenos</h3>
-            <div className="flex flex-row md:flex-col mt-2 md:space-y-3 space-x-4 md:space-x-0">
+            <h3 className="text-xl font-semibold text-[var(--secondary)] mb-2">Síguenos</h3>
+            <div className="flex flex-row md:flex-col mt-3 md:space-y-3 space-x-4 md:space-x-0">
               {/* Facebook */}
               <a
                 href="https://facebook.com/DptoInformaticaSistemas/"
