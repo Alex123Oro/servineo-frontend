@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "../../styles/hu5/ServicesGrid.module.css";
-
+import Image from 'next/image';
 type Service = {
   id: string;
   name: string;
@@ -139,10 +139,16 @@ export default function ServicesGrid({ pageSize = 12 }: { pageSize?: number }) {
           >
             <div className={styles.imgbox}>
               {s.imageUrl ? (
-                <img
+                <Image
                   src={s.imageUrl}
                   alt={`Imagen de ${s.name}`}
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                  width={300}
+                  height={200}
+                  className={styles.img}
+                  onError={(e) => { 
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = "none";
+                  }}
                 />
               ) : (
                 <div className={styles.placeholderIcon} aria-hidden="true">🔧</div>
