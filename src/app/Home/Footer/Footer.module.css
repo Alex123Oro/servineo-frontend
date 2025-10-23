@@ -1,0 +1,41 @@
+
+.footerLink {
+    position: relative;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .footerLink::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--secondary); /* celeste #1AA7ED */
+    transition: width 0.3s ease;
+    border-radius: 2px;
+  }
+  
+  .footerLink:hover {
+    color: var(--secondary);
+  }
+  
+  .footerLink:hover::after {
+    width: 100%;
+  }
+  
+  .footerLink:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+    color: var(--secondary);
+  }
+  
+  .footerLink:focus-visible::after {
+    width: 100%;
+  }
+
+  /* FooterNeon.css */
+
