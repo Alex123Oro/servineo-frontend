@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import jobs from '../jsons/jobs.json'
 import { JobCard } from './JobCard'
 import { JobListEmpty } from './JobListEmpty'
