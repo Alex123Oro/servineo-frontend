@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { FiHome, FiTool, FiBox, FiHelpCircle } from 'react-icons/fi';
+import { FiHome, FiTool, FiBriefcase, FiHelpCircle } from 'react-icons/fi';
 import Registro from './registro';
 import { initUserProfileLogic } from '@/app/Home/UserProfile/userProfileLogic';
 import '@/app/Home/UserProfile/userProfile.css';
@@ -32,10 +32,9 @@ declare global {
 const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
 
   const [user, setUser] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -611,53 +610,53 @@ const Header = () => {
         role="navigation"
         aria-label="Barra inferior de navegación"
       >
-        {/* INICIO */}
-        <button
-          onClick={() => router.push('/')}
-          className={`flex flex-col items-center ${
-            pathname === '/' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-            aria-label="Ir a inicio"
-          }`}
-        >
-          <FiHome className="text-2xl" />
-          <span className="text-xs mt-1">Inicio</span>
-        </button>
+       {/* INICIO */}
+<button
+  onClick={() => router.push('/')}
+  className={`flex flex-col items-center ${
+    pathname === '/' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+  }`}
+  aria-label="Ir a inicio"
+>
+  <FiHome className="text-2xl" />
+  <span className="text-xs mt-1">Inicio</span>
+</button>
 
-        {/* SERVICIOS */}
-        <button
-          onClick={() => router.push('/servicios')}
-          className={`flex flex-col items-center ${
-            pathname === '/servicios' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-             aria-label="Ir a servicios"
-          }`}
-        >
-          <FiTool className="text-2xl" />
-          <span className="text-xs mt-1">Servicios</span>
-        </button>
+{/* SERVICIOS */}
+<button
+  onClick={() => router.push('/servicios')}
+  className={`flex flex-col items-center ${
+    pathname === '/servicios' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+  }`}
+  aria-label="Ir a servicios"
+>
+  <FiTool className="text-2xl" />
+  <span className="text-xs mt-1">Servicios</span>
+</button>
 
-        {/* OFERTAS */}
-        <button
-          onClick={() => router.push('/ofertas')}
-          className={`flex flex-col items-center ${
-            pathname === '/ofertas' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-            aria-label="Ir a ofertas"
-          }`}
-        >
-          <FiBox className="text-2xl" />
-          <span className="text-xs mt-1">Ofertas</span>
-        </button>
+{/* OFERTAS */}
+<button
+  onClick={() => router.push('/ofertas')}
+  className={`flex flex-col items-center ${
+    pathname === '/ofertas' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+  }`}
+  aria-label="Ir a ofertas"
+>
+  <FiBriefcase className="text-2xl" />
+  <span className="text-xs mt-1">Ofertas</span>
+</button>
 
-        {/* AYUDA */}
-        <button
-          onClick={handleAyudaClick}
-          className={`flex flex-col items-center ${
-            pathname === '/ayuda' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-            aria-label="Abrir ayuda"
-          }`}
-        >
-          <FiHelpCircle className="text-2xl" />
-          <span className="text-xs mt-1">Ayuda</span>
-        </button>
+{/* AYUDA */}
+<button
+  onClick={handleAyudaClick}
+  className={`flex flex-col items-center ${
+    pathname === '/ayuda' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+  }`}
+  aria-label="Abrir ayuda"
+>
+  <FiHelpCircle className="text-2xl" />
+  <span className="text-xs mt-1">Ayuda</span>
+</button>
       </div>
 
       {/* Menú de perfil */}
