@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 
 interface Props {   
     idJob: number,
-    destacado: boolean,
     imgPath: string,
     titulo: string,
     descripcion: string,
