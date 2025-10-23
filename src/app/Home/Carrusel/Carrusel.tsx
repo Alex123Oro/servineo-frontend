@@ -49,11 +49,53 @@ const slides: Slide[] = [
   }
 ];
 
+const PREFETCH_TIMEOUT_MS = 3000; // Si no carga en 3s, activar fallback
+const fallbackSrc = "/fallback-image.svg";
+// Blur genérico (tiny SVG) para placeholder
+const blurDataURL =
+  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMDAnIGhlaWdodD0nMTAwJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJyB5MT0nMCcgeDI9JzEnIHkyPScxJz48c3RvcCBvZmZzZXQ9JzAnIHN0b3AtY29sb3I9JyMwZWF1ZWknLz48c3RvcCBvZmZzZXQ9JzEnIHN0b3AtY29sb3I9JyMxZTNhOGEnLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgZmlsbD0ndXJsKCNnKScvPjwvc3ZnPiI7";
+
 const Carrusel = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  // Fallback por slide
+  const [failedMap, setFailedMap] = useState<Record<number, boolean>>({});
+  // Loading por slide (para skeleton/blur)
+  const [loadingMap, setLoadingMap] = useState<Record<number, boolean>>(
+    () => Object.fromEntries(slides.map((_, i) => [i, true]))
+  );
 
   const [touchStart, setTouchStart] = useState<number>(0);
   const [touchEnd, setTouchEnd] = useState<number>(0);
+
+  // Prefetch con verificación por timeout
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    slides.forEach((slide, index) => {
+      try {
+        const img = new window.Image();
+        let settled = false;
+        const timer = window.setTimeout(() => {
+          if (!settled) {
+            // Si no se resolvió en X ms, marcamos fallback
+            setFailedMap(prev => ({ ...prev, [index]: true }));
+          }
+        }, PREFETCH_TIMEOUT_MS);
+
+        img.onload = () => {
+          settled = true;
+          window.clearTimeout(timer);
+        };
+        img.onerror = () => {
+          settled = true;
+          window.clearTimeout(timer);
+          setFailedMap(prev => ({ ...prev, [index]: true }));
+        };
+        img.src = slide.image;
+      } catch (e) {
+        setFailedMap(prev => ({ ...prev, [index]: true }));
+      }
+    });
+  }, []);
 
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -104,7 +146,7 @@ const Carrusel = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
-    }, 8000); // Change slide every 5 seconds
+    }, 8000); // Change slide every 8 seconds
     return () => clearInterval(interval);
   }, [currentIndex]);
 
@@ -120,13 +162,26 @@ const Carrusel = () => {
           key={index}
           className={`${styles.slide} ${index === currentIndex ? styles.active : ''}`}>
           <Image
-            src={slide.image}
+            src={failedMap[index] ? fallbackSrc : slide.image}
             alt={slide.title}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: 'cover' }}
             className={styles.image}
-            priority={index === 0} // Carga la primera imagen con prioridad
+            priority={index === 0}
+            placeholder="blur"
+            blurDataURL={blurDataURL}
+            onError={() => {
+              setFailedMap(prev => ({ ...prev, [index]: true }));
+            }}
+            onLoad={() => {
+              setLoadingMap(prev => ({ ...prev, [index]: false }));
+            }}
           />
+
+          {loadingMap[index] && (
+            <div className={styles.skeleton} />
+          )}
+
           <div className={styles.overlay}></div>
           <div className={styles.content}>
             <span className={styles.category}>{slide.category}</span>

@@ -5,17 +5,21 @@ import dynamic from "next/dynamic";
 import axios from "axios";
 import { Fixer } from "@/app/busqueda/interface/Fixer_Interface";
 
+import UserProfile from "./Home/UserProfile/userProfile";
+
 import Carrusel from "./Home/Carrusel/Carrusel";
 import { TrabajosRecientes } from '../components/TrabajosRecientes';
 import Footer from './Home/Footer/Footer';
 import Buscador from './Home/Buscador/Buscador';
 import ServiciosPage from "./servicios/servicios";
-
+// Importa otros componentes según sea necesario
 // Dynamic import para Leaflet Map (evita errores SSR)
 const Map = dynamic(() => import("@/app/busqueda/components/map/Map"), { ssr: false });
 
 export default function Home() {
   const [fixers, setFixers] = useState<Fixer[]>([]);
+  // Nuevo: estado controlado para el buscador
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     axios.get("http://localhost:5000/api/fixers")
@@ -42,7 +46,8 @@ export default function Home() {
 
           {/* Buscador Component */}
           <div className="mb-10 shadow-xl rounded-xl bg-white p-2">
-            <Buscador />
+            {/* Controlamos el valor desde Home */}
+            <Buscador value={searchText} onChange={setSearchText} />
           </div>
 
           {/* Popular Searches */}
@@ -50,9 +55,12 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
               <span className="font-semibold text-gray-700 text-lg">Búsquedas populares:</span>
               <div className="flex flex-wrap justify-center gap-2">
-                {['Plomero', 'Electricista', 'Pintor', 'Carpintero', 'Limpieza', 'Jardineria', 'Soldador', 'Albañil'].map((tag) => (
+                {["Plomero", "Electricista", "Pintor", "Carpintero", "Limpieza", "Jardineria", "Soldador", "Albañil"].map((tag) => (
                   <button 
                     key={tag} 
+                    type="button"
+                    onClick={() => setSearchText(tag)}
+                    aria-label={`Escribir ${tag} en el buscador`}
                     className="px-4 py-2 text-sm bg-white border border-gray-200 text-gray-800 rounded-full hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-all duration-300 shadow-sm hover:shadow"
                   >
                     {tag}
@@ -103,6 +111,7 @@ export default function Home() {
           </h2>
           {/* Pasamos fixers al mapa */}
           <Map  /> 
+          <Map  /> 
         </div>
       </section>
       
@@ -121,6 +130,7 @@ export default function Home() {
       
       {/* Footer Component */}
       <Footer />
+      <UserProfile />
     </div>
   );
 }

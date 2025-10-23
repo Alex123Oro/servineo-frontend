@@ -1,9 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FiPhone } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
+import Link from 'next/link';
 
 interface Props {   
     idJob: number,
@@ -15,7 +16,7 @@ interface Props {
     nombre: string,
     apellido: string,
     ubicacion: string,
-    tiempo: string | number, // cambiado para evitar `any`
+    fechaDePublicacion: any,
     calificacion: number,
     telefono: number,
     precio: {
@@ -25,11 +26,63 @@ interface Props {
 }
 
 
-export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categoria, nombre,apellido, ubicacion, tiempo, calificacion, telefono, precio}:Props) => {
+export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categoria, nombre, apellido, ubicacion, fechaDePublicacion, calificacion, telefono, precio}:Props) => {
     
     const [expandido, setExpandido] = useState(false)
-
+    const [fechaLocal, setFechaLocal] = useState("")
+    const [tiempoPasado, setTiempoPasado] = useState("")
+    // estado para controlar si hay algun error al cargar la imagen
+    const [diasPasados, setDiasPasados] = useState(0)
+    const [imageLink, setImageLink] = useState(imgPath)
+    
     const {min, max} = precio
+
+    useEffect(() => {
+        setImageLink(imgPath)
+    }, [idJob, imgPath])
+
+    useEffect(() => {
+        const date = new Date(fechaDePublicacion);
+        const formatted = new Intl.DateTimeFormat("es-BO", {
+        dateStyle: "medium"
+        }).format(date)
+
+        setFechaLocal(formatted)
+    }, [fechaDePublicacion])
+
+    useEffect(() => {
+        const calcularTiempo = () => {
+        const fechaPasada = new Date(fechaDePublicacion);
+        const ahora = new Date();
+
+        const diffMs = ahora.getTime() - fechaPasada.getTime()
+
+        const segundos = Math.floor(diffMs / 1000)
+        const minutos = Math.floor(segundos / 60)
+        const horas = Math.floor(minutos / 60)
+        const dias = Math.floor(horas / 24)
+        setDiasPasados(dias)
+        const meses = Math.floor(dias / 30)
+        const años = Math.floor(dias / 365)
+
+        let resultado = "";
+
+        if (años > 0) resultado = `hace ${años} año${años > 1 ? "s" : ""}`
+        else if (meses > 0) resultado = `hace ${meses} mes${meses > 1 ? "es" : ""}`
+        else if (dias > 0) resultado = `hace ${dias} día${dias > 1 ? "s" : ""}`
+        else if (horas > 0) resultado = `hace ${horas} hora${horas > 1 ? "s" : ""}`
+        else if (minutos > 0) resultado = `hace ${minutos} minuto${minutos > 1 ? "s" : ""}`
+        else resultado = "hace unos segundos"
+
+        setTiempoPasado(resultado)
+    }
+
+    calcularTiempo();
+
+        // para actualizar cada minuto
+        const intervalo = setInterval(calcularTiempo, 60 * 1000);
+        return () => clearInterval(intervalo);
+    }, [fechaDePublicacion]);
 
     const handleClick = () => {
         const phoneNumber = `${591}${telefono}`
@@ -37,10 +90,6 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
         const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
 
         window.open(url, "_blank")
-    }
-    
-    const redireccion = () => {
-        window.open(`/Home/jobPage?idJob=${idJob}`, "_blank")
     }
 
     const categoriaColors: {[key: string]: string} = {
@@ -58,12 +107,12 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
 
   return (
     <>
-        <div className={`flex flex-col rounded-[10px] justify-around border border-solid border-black/15 shadow-md transition-shadow duration-300 hover:shadow-lg hover:shadow-black/30 mr-[5px] mb-[5px] p-3 min-h-[370px] max-w-[260px] min-w-[260px]`}>
+        <div className={`flex flex-col rounded-[10px] gap-1 justify-around border border-solid border-black/15 shadow-md transition-shadow duration-300 hover:shadow-lg hover:shadow-black/30 mr-[5px] mb-[5px] p-3 min-h-auto max-w-[280px] min-w-0 w-full`}>
             <div className='flex flex-row justify-between mb-[5px]'>
                 { 
-                    <span className={destacado ? `opacity-[100%] border border-solid pr-[5px] pl-[5px] text-[#5E2BE0] rounded-[8px]` : `opacity-[0%]`}
+                    <span className={(diasPasados < 10) ? `opacity-[100%] border border-solid pr-[5px] pl-[5px] text-[#5E2BE0] rounded-[8px]` : `opacity-[0%]`}
                     > 
-                        Destacado 
+                        Nuevo 
                     </span> 
                 }
                 <span
@@ -73,11 +122,13 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
                 </span>
             </div>
 
-            <Image onClick={redireccion} className='object-cover rounded-lg cursor-pointer' src={imgPath} width={300} height={200} alt='imagen del trabajo' priority={true}/>
+            <Link href={`/Home/jobPage?idJob=${idJob}`}>
+                <Image className='object-cover rounded-lg cursor-pointer bg-[#2BDDE0]' src={imageLink} width={300} height={200} alt='' priority={true} onError={() => setImageLink('/images/imagenNoDisponible.jpg')}/>   
+            </Link>
 
             <div className='flex flex-row justify-between items-center'>
                 <strong className='text-[95%]'> {titulo} </strong>
-                <span className='text-[11px]'>hace {tiempo}</span>
+                <span className='text-[11px]'>{tiempoPasado}</span>
             </div>
             
             <hr className='opacity-20'/>
@@ -89,6 +140,11 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
             > 
                 {descripcion} 
             </strong>
+
+            <div className='opacity-70'>
+                <span> Publicado el </span>
+                <span> {fechaLocal} </span>
+            </div>
 
             <div className='flex flex-row gap-[5px]'>
                 <strong className='opacity-70'> Fixer: </strong>
@@ -108,7 +164,7 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
 
             <div className='flex flex-row justify-between items-center'>
                 <button 
-                    className='flex flex-row items-center justify-center cursor-pointer gap-[3px] bg-[#28DDE0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px]'
+                    className='flex flex-row items-center justify-center cursor-pointer gap-[3px] bg-[#759AE0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px]'
                     onClick={handleClick}
                 >
                     <FaWhatsapp />
