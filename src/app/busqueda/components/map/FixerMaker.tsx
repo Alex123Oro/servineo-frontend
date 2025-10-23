@@ -1,3 +1,7 @@
+
+
+
+
 "use client";
 
 import { Marker, Popup, Tooltip } from "react-leaflet";
@@ -22,7 +26,7 @@ const palette = {
   iconBorderAvailable: "#00C851", // verde disponible
   iconBorderBusy: "#ff4444",      // rojo ocupado
 };
-
+  
 export default function FixerMarker({ fixer }: FixerMarkerProps) {
   const icon = L.divIcon({
     className: "custom-marker",
