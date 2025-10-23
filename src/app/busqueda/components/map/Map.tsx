@@ -2,7 +2,6 @@
 
 
 
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -58,15 +57,8 @@ export default function Map() {
   };
 
   // 🔹 Filtrar fixers cercanos (≤5 km)
-  // 🔹 Actualizar posición desde eventos del mapa
-  const handleMove = (pos: LatLngExpression) => {
-    const [lat, lng] = Array.isArray(pos) ? pos : [pos.lat, pos.lng];
-    setPosition([lat, lng]);
-  };
-
-  // 🔹 Filtrar fixers cercanos (≤5 km)
   const nearbyFixers = fixers.filter(
-    (f) => f.available && distanceKm(position, [f.lat, f.lng]) <= 8
+    (f) => f.available && distanceKm(position, [f.lat, f.lng]) <= 5
   );
 
   if (loading) return <div>Cargando mapa...</div>;
@@ -86,7 +78,7 @@ export default function Map() {
 
         <RecenterMap position={position} />
         <UserMarker position={position} />
-        <MapCircle center={position} radius={8000} />
+        <MapCircle center={position} radius={5000} />
 
         {nearbyFixers.map((f) => (
           <FixerMarker key={f.id} fixer={f} />
@@ -109,3 +101,5 @@ export default function Map() {
     </div>
   );
 }
+
+
