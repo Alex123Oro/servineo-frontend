@@ -99,14 +99,14 @@ const Carrusel = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [currentIndex]);
+  }, [nextSlide,prevSlide]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
     }, 8000); // Change slide every 5 seconds
     return () => clearInterval(interval);
-  }, [currentIndex]);
+  }, [nextSlide]);
 
   return (
     <div 
