@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { FiHome, FiBriefcase, FiHelpCircle, FiClipboard } from 'react-icons/fi';
+import { FiHome, FiTool, FiBox, FiHelpCircle } from 'react-icons/fi';
 import Registro from './registro';
 import { initUserProfileLogic } from '@/app/Home/UserProfile/userProfileLogic';
 import '@/app/Home/UserProfile/userProfile.css';
@@ -34,6 +34,9 @@ const Header = () => {
   const router = useRouter();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const [user, setUser] = useState(() => {
     if (typeof window !== 'undefined') {
       const storedUser = localStorage.getItem('booka_user');
@@ -59,6 +62,7 @@ const Header = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+  
   //logica modal registro
   useEffect(() => {
     const checkAuth = () => {
@@ -73,6 +77,7 @@ const Header = () => {
 
     return () => window.removeEventListener('storage', checkAuth);
   }, []);
+  
   // ========= LÓGICA DE PERFIL =========
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -151,6 +156,9 @@ const Header = () => {
 
       const savedSession = usersStore.sessions?.[deviceId] || mockUser;
       setUser(savedSession);
+      
+      // Redirigir a la página de inicio
+      router.push('/');
     };
     win.closeMenu = () => setIsMenuOpen(false);
 
@@ -256,6 +264,7 @@ const Header = () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+  
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -322,6 +331,10 @@ const Header = () => {
     } else {
       router.push('/ayuda');
     }
+  };
+
+  const handleLogin = () => {
+    window.login?.();
   };
 
   //  Reforzar sincronización de sesión al cambiar de página
@@ -433,27 +446,39 @@ const Header = () => {
               }
             }}
           >
-            <Link
+            <Link 
               href="/servicios"
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:transition-all 
+                ${pathname === '/servicios' 
+                  ? 'text-blue-600 after:w-full after:bg-blue-600' 
+                  : 'text-gray-700 hover:text-blue-600 after:w-0 after:bg-blue-600 hover:after:w-full'}`}
             >
               Servicios
             </Link>
+
             <Link
               href="/ofertas"
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:transition-all 
+                ${pathname === '/ofertas' 
+                  ? 'text-blue-600 after:w-full after:bg-blue-600' 
+                  : 'text-gray-700 hover:text-blue-600 after:w-0 after:bg-blue-600 hover:after:w-full'}`}
             >
               Ofertas de trabajo
             </Link>
+
             <a
               href="/ayuda"
               onClick={handleAyudaClick}
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
-              aria-label="Abrir ayuda"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:transition-all 
+                ${pathname === '/ayuda' 
+                  ? 'text-blue-600 after:w-full after:bg-blue-600' 
+                  : 'text-gray-700 hover:text-blue-600 after:w-0 after:bg-blue-600 hover:after:w-full'}`}
+                    aria-label="Abrir ayuda"
             >
               Ayuda
             </a>
           </nav>
+          
           <div
             className="flex items-center gap-4"
             onKeyDown={(e) => {
@@ -482,21 +507,86 @@ const Header = () => {
             {!isAuthenticated ? (
               <>
                 <button
-                  onClick={() => window.login?.()}
+                  onClick={handleLogin}
+                  className="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-300 hover:shadow-sm font-medium"
+                  aria-label="Iniciar sesión"
+                >
+                  Iniciar sesión
+                </button>
+                <button
+                  onClick={() => setIsModalOpen(true)}
                   className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
                   aria-label="Registrarse"
                 >
-                  Acceder
+                  Registrarse
                 </button>
               </>
             ) : (
-              <img
-                ref={iconRef}
+              <div className="relative">
+                <button
+                  onClick={() => setIsMenuOpen((v) => !v)}
+                  className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition"
+                  aria-label="Abrir menú de perfil"
+                >
+                  <Image
                 src={user.photo}
-                alt="Foto de perfil"
-                className="profile-icon cursor-pointer"
-                onClick={(e) => window.toggleMenu?.(e)}
-              />
+                    alt="Avatar"
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
+                  <span className="font-medium text-gray-800">{user.name.split(' ')[0]}</span>
+                </button>
+
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-80 rounded-xl shadow-2xl bg-white border border-gray-100 overflow-hidden">
+                    <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                      <Image
+                        src={user.photo}
+                        alt="Avatar"
+                        width={40}
+                        height={40}
+                        className="rounded-full border-2 border-white"
+                      />
+                      <div>
+                        <div className="font-semibold">{user.name}</div>
+                        <div className="text-sm opacity-90">{user.email}</div>
+                      </div>
+                    </div>
+
+                    <div className="p-2">
+                      <button
+                        onClick={() => router.push('/Home/UserProfile')}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
+                      >
+                        Ver perfil completo
+                      </button>
+                      <button
+                        onClick={() => router.push('/Home/UserProfile')}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
+                      >
+                        Configuración de Perfil
+                      </button>
+                      <button
+                        onClick={() => router.push('/info/join')}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
+                      >
+                        Convertirse en Fixer
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsLoggedIn(false);
+                          setIsMenuOpen(false);
+                          router.push('/');
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -527,22 +617,63 @@ const Header = () => {
               {!isAuthenticated ? (
                 <>
                   <button
-                    onClick={() => window.login?.()}
-                    className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2
-             transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
+                  onClick={handleLogin}
+                  className="px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-100 font-medium"
+                  aria-label="Iniciar sesión"
+                >
+                  Iniciar
+                </button>
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm font-medium"
                     aria-label="Registrarse"
                   >
-                    Acceder
+                    Registrarse
                   </button>
                 </>
               ) : (
-                <img
-                  ref={iconRef}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsMenuOpen((v) => !v)}
+                    className="flex items-center gap-1 px-2 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm font-medium"
+                    aria-label="Abrir menú de perfil"
+                  >
+                    <Image
                   src={user.photo}
-                  alt="Foto de perfil"
-                  className="profile-icon cursor-pointer"
-                  onClick={(e) => window.toggleMenu?.(e)}
-                />
+                      alt="Avatar"
+                      width={24}
+                      height={24}
+                      className="rounded-full"
+                    />
+                    <span>{user.name.split(' ')[0]}</span>
+                  </button>
+                  {isMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-72 rounded-xl shadow-2xl bg-white border border-gray-100 overflow-hidden">
+                      <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                        <Image src={user.photo} alt="Avatar" width={36} height={36} className="rounded-full border-2 border-white" />
+                        <div>
+                          <div className="font-semibold">{user.name}</div>
+                          <div className="text-xs opacity-90">{user.email}</div>
+                        </div>
+                      </div>
+                      <div className="p-2">
+                        <button onClick={() => router.push('/Home/UserProfile')} className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100">Ver perfil completo</button>
+                        <button onClick={() => router.push('/Home/UserProfile')} className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100">Configuración de Perfil</button>
+                        <button onClick={() => router.push('/info/join')} className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100">Convertirse en Fixer</button>
+                        <button
+                          onClick={() => { 
+                            setIsLoggedIn(false); 
+                            setIsMenuOpen(false); 
+                            router.push('/'); 
+                          }}
+                          className="w-full text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
+                        >
+                          Cerrar sesión
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -555,34 +686,49 @@ const Header = () => {
         role="navigation"
         aria-label="Barra inferior de navegación"
       >
+        {/* INICIO */}
         <button
           onClick={() => router.push('/')}
-          className="flex flex-col items-center text-gray-700 hover:text-blue-600"
-          aria-label="Ir a inicio"
+          className={`flex flex-col items-center ${
+            pathname === '/' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+            aria-label="Ir a inicio"
+          }`}
         >
           <FiHome className="text-2xl" />
           <span className="text-xs mt-1">Inicio</span>
         </button>
+
+        {/* SERVICIOS */}
         <button
           onClick={() => router.push('/servicios')}
-          className="flex flex-col items-center text-gray-700 hover:text-blue-600"
-          aria-label="Ir a servicios"
+          className={`flex flex-col items-center ${
+            pathname === '/servicios' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+             aria-label="Ir a servicios"
+          }`}
         >
-          <FiBriefcase className="text-2xl" />
+          <FiTool className="text-2xl" />
           <span className="text-xs mt-1">Servicios</span>
         </button>
+
+        {/* OFERTAS */}
         <button
           onClick={() => router.push('/ofertas')}
-          className="flex flex-col items-center text-gray-700 hover:text-blue-600"
-          aria-label="Ir a ofertas"
+          className={`flex flex-col items-center ${
+            pathname === '/ofertas' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+            aria-label="Ir a ofertas"
+          }`}
         >
-          <FiClipboard className="text-2xl" />
+          <FiBox className="text-2xl" />
           <span className="text-xs mt-1">Ofertas</span>
         </button>
+
+        {/* AYUDA */}
         <button
           onClick={handleAyudaClick}
-          className="flex flex-col items-center text-gray-700 hover:text-blue-600"
-          aria-label="Abrir ayuda"
+          className={`flex flex-col items-center ${
+            pathname === '/ayuda' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+            aria-label="Abrir ayuda"
+          }`}
         >
           <FiHelpCircle className="text-2xl" />
           <span className="text-xs mt-1">Ayuda</span>
