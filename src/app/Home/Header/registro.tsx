@@ -12,37 +12,37 @@ const Registro: React.FC<RegistroProps> = ({ isOpen, onClose }) => {
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Si existe un usuario en memoria, úsalo; si no, usa el mock
-      const profile = window.userProfile || mockUser;
-      setUser(profile);
+      try {
+        const profile = (window as any)?.userProfile || mockUser;
+        setUser(profile);
+      } catch (e) {
+        console.error('Error al obtener userProfile:', e);
+        setUser(mockUser);
+      }
     }
   }, []);
 
   if (!isOpen) return null;
 
   const handleContinuar = () => {
-    // Guardar sesión simulada
-    const u = { ...user, loggedIn: true };
+    try {
+      const u = { ...user, loggedIn: true };
 
-    const deviceId = (window as any).deviceId || 'dev-default';
-    const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}') || {
-      sessions: {},
-      lastUpdated: Date.now(),
-    };
+      const deviceId = (window as any)?.deviceId || 'dev-default';
+      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{"sessions":{}}');
 
-    usersStore.sessions[deviceId] = u;
-    usersStore.lastUpdated = Date.now();
-    localStorage.setItem('booka_users', JSON.stringify(usersStore));
+      usersStore.sessions[deviceId] = u;
+      usersStore.lastUpdated = Date.now();
+      localStorage.setItem('booka_users', JSON.stringify(usersStore));
 
-    // Actualizar variables globales
-    window.userProfile = u;
-    window.isAuthenticated = true;
+      (window as any).userProfile = u;
+      (window as any).isAuthenticated = true;
 
-    // Notificar a Header que hay sesión activa
-    window.dispatchEvent(new Event('storage'));
-
-    // Cerrar modal
-    onClose();
+      window.dispatchEvent(new Event('storage'));
+      onClose();
+    } catch (err) {
+      console.error('Error al continuar sesión:', err);
+    }
   };
 
   return (
