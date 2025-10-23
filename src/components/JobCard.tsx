@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React from 'react'
 import { FiPhone } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
@@ -16,7 +16,7 @@ interface Props {
     nombre: string,
     apellido: string,
     ubicacion: string,
-    tiempo: any,
+    tiempo: string,
     calificacion: number,
     telefono: number,
     precio: {
@@ -26,11 +26,11 @@ interface Props {
 }
 
 
-export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categoria, nombre,apellido, ubicacion, tiempo, calificacion, telefono, precio}:Props) => {
+export const JobCard = ({idJob, imgPath, titulo, descripcion, categoria, nombre,apellido, ubicacion, tiempo, calificacion, telefono, precio}:Props) => {
     
     const route = useRouter()
 
-    const {min, max} = precio
+    const {max} = precio
 
     const handleClick = () => {
         const phoneNumber = `${591}${telefono}`
