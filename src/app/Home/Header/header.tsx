@@ -3,11 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { FiHome, FiBriefcase, FiHelpCircle, FiClipboard } from 'react-icons/fi';
+import { FiHome, FiTool, FiBox, FiHelpCircle } from 'react-icons/fi';
 import Registro from './registro';
 import { initUserProfileLogic } from '@/app/Home/UserProfile/userProfileLogic';
 import '@/app/Home/UserProfile/userProfile.css';
-import { mockUser } from '@/app/UI/mockUser';
+import { mockUser } from '@/app/Home/UserProfile/UI/mockUser';
 
 declare global {
   interface Window {
@@ -32,6 +32,7 @@ declare global {
 const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -52,6 +53,7 @@ const Header = () => {
     return false;
   });
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const iconRef = useRef<HTMLImageElement | null>(null);
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -60,7 +62,7 @@ const Header = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
+  
   //logica modal registro
   useEffect(() => {
     const checkAuth = () => {
@@ -75,7 +77,7 @@ const Header = () => {
 
     return () => window.removeEventListener('storage', checkAuth);
   }, []);
-
+  
   // ========= LÓGICA DE PERFIL =========
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -262,7 +264,7 @@ const Header = () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
-
+  
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -382,6 +384,7 @@ const Header = () => {
   }, []);
 
   if (!isClient) return null;
+  //logica modal registro
 
   // ========= Render =========
   return (
@@ -443,27 +446,39 @@ const Header = () => {
               }
             }}
           >
-            <Link
+            <Link 
               href="/servicios"
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:transition-all 
+                ${pathname === '/servicios' 
+                  ? 'text-blue-600 after:w-full after:bg-blue-600' 
+                  : 'text-gray-700 hover:text-blue-600 after:w-0 after:bg-blue-600 hover:after:w-full'}`}
             >
               Servicios
             </Link>
+
             <Link
               href="/ofertas"
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:transition-all 
+                ${pathname === '/ofertas' 
+                  ? 'text-blue-600 after:w-full after:bg-blue-600' 
+                  : 'text-gray-700 hover:text-blue-600 after:w-0 after:bg-blue-600 hover:after:w-full'}`}
             >
               Ofertas de trabajo
             </Link>
+
             <a
               href="/ayuda"
               onClick={handleAyudaClick}
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
-              aria-label="Abrir ayuda"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:transition-all 
+                ${pathname === '/ayuda' 
+                  ? 'text-blue-600 after:w-full after:bg-blue-600' 
+                  : 'text-gray-700 hover:text-blue-600 after:w-0 after:bg-blue-600 hover:after:w-full'}`}
+                    aria-label="Abrir ayuda"
             >
               Ayuda
             </a>
           </nav>
+          
           <div
             className="flex items-center gap-4"
             onKeyDown={(e) => {
@@ -514,7 +529,7 @@ const Header = () => {
                   aria-label="Abrir menú de perfil"
                 >
                   <Image
-                    src={user.photo}
+                src={user.photo}
                     alt="Avatar"
                     width={32}
                     height={32}
@@ -602,13 +617,13 @@ const Header = () => {
               {!isAuthenticated ? (
                 <>
                   <button
-                    onClick={handleLogin}
-                    className="px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-100 font-medium"
-                    aria-label="Iniciar sesión"
-                  >
-                    Iniciar
-                  </button>
-                  <button
+                  onClick={handleLogin}
+                  className="px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-100 font-medium"
+                  aria-label="Iniciar sesión"
+                >
+                  Iniciar
+                </button>
+                <button
                     onClick={() => setIsModalOpen(true)}
                     className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm font-medium"
                     aria-label="Registrarse"
@@ -624,7 +639,7 @@ const Header = () => {
                     aria-label="Abrir menú de perfil"
                   >
                     <Image
-                      src={user.photo}
+                  src={user.photo}
                       alt="Avatar"
                       width={24}
                       height={24}
@@ -671,34 +686,49 @@ const Header = () => {
         role="navigation"
         aria-label="Barra inferior de navegación"
       >
+        {/* INICIO */}
         <button
           onClick={() => router.push('/')}
-          className="flex flex-col items-center text-gray-700 hover:text-blue-600"
-          aria-label="Ir a inicio"
+          className={`flex flex-col items-center ${
+            pathname === '/' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+            aria-label="Ir a inicio"
+          }`}
         >
           <FiHome className="text-2xl" />
           <span className="text-xs mt-1">Inicio</span>
         </button>
+
+        {/* SERVICIOS */}
         <button
           onClick={() => router.push('/servicios')}
-          className="flex flex-col items-center text-gray-700 hover:text-blue-600"
-          aria-label="Ir a servicios"
+          className={`flex flex-col items-center ${
+            pathname === '/servicios' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+             aria-label="Ir a servicios"
+          }`}
         >
-          <FiBriefcase className="text-2xl" />
+          <FiTool className="text-2xl" />
           <span className="text-xs mt-1">Servicios</span>
         </button>
+
+        {/* OFERTAS */}
         <button
           onClick={() => router.push('/ofertas')}
-          className="flex flex-col items-center text-gray-700 hover:text-blue-600"
-          aria-label="Ir a ofertas"
+          className={`flex flex-col items-center ${
+            pathname === '/ofertas' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+            aria-label="Ir a ofertas"
+          }`}
         >
-          <FiClipboard className="text-xs mt-1" />
+          <FiBox className="text-2xl" />
           <span className="text-xs mt-1">Ofertas</span>
         </button>
+
+        {/* AYUDA */}
         <button
           onClick={handleAyudaClick}
-          className="flex flex-col items-center text-gray-700 hover:text-blue-600"
-          aria-label="Abrir ayuda"
+          className={`flex flex-col items-center ${
+            pathname === '/ayuda' ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+            aria-label="Abrir ayuda"
+          }`}
         >
           <FiHelpCircle className="text-2xl" />
           <span className="text-xs mt-1">Ayuda</span>
