@@ -24,7 +24,7 @@ export default function JobPageClient() {
   }
 
   return (
-    <div className='p-[20px] pt-[30px] mt-[50px]'>
+    <div className='p-[20px]'>
       <h1 className='text-[25px] text-2xl font-bold text-gray-900 mb-[20px]'> {job.titulo} </h1>
 
       <div className='flex gap-[9px] grid grid-cols-1'>
