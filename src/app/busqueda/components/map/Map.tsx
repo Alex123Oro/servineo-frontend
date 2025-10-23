@@ -20,7 +20,6 @@ export default function Map() {
   const [position, setPosition] = useState<[number, number]>(defaultPosition);
   const [zoom, setZoom] = useState(14);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // 🔹 Cargar fixers desde JSON local
   useEffect(() => {
@@ -28,24 +27,17 @@ export default function Map() {
       .then((module) => setFixers(module.default))
       .catch((err) => {
         console.error("Error cargando fixers:", err);
-        setError("No se pudieron cargar los fixers locales");
+        alert("No se pudieron cargar los fixers locales 😢");
       })
       .finally(() => setLoading(false));
   }, []);
 
-  // 🔹 Posición inicial y geolocalización
+  // 🔹 Posición inicial desde localStorage
   useEffect(() => {
     const savedPos = localStorage.getItem("mapPosition");
     const savedZoom = localStorage.getItem("mapZoom");
     if (savedPos) setPosition(JSON.parse(savedPos));
     if (savedZoom) setZoom(Number(savedZoom));
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
-        () => setError("No se pudo obtener tu ubicación")
-      );
-    } else setError("No se pudo obtener tu ubicación");
   }, []);
 
   // 🔹 Guardar posición y zoom en localStorage
@@ -98,17 +90,10 @@ export default function Map() {
       </MapContainer>
 
       <LocationButton
-        onClick={() => {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
-              () => setError("No se pudo obtener tu ubicación")
-            );
-          }
+        onLocationFound={(lat, lng) => {
+          setPosition([lat, lng]);
         }}
       />
-
-      {error && <div className="mt-2 text-red-500">{error}</div>}
     </div>
   );
 }
