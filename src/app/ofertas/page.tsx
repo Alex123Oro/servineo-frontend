@@ -1,13 +1,29 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { FaWhatsapp } from 'react-icons/fa';
 
 const OfertasPage = () => {
+  const [selectedCategoria, setSelectedCategoria] = useState('');
   const jobs = [
     {
       id: 1,
+      destacado: false,
+      imagen: '/images/imagenNoDisponible.jpg',
+      titulo: 'Pintura de paredes',
+      descripcion: 'Pintado y mantenimiento de paredes en interiores y exteriores.',
+      categoria: 'pintura',
+      nombreFixer: 'Mario',
+      apellidoFixer: 'Perez',
+      ubicacion: 'cochabamba',
+      tiempoPublicado: '4 dias',
+      telefono: 75986518,
+      activo: true,
+      precio: { min: 210, max: 260 },
+    },
+    {
+      id: 2,
       destacado: false,
       imagen: '/images/pintura.jpg',
       titulo: 'Pintura de techos',
@@ -23,7 +39,7 @@ const OfertasPage = () => {
       precio: { min: 210, max: 260 },
     },
     {
-      id: 2,
+      id: 3,
       destacado: true,
       imagen: '/images/limpieza.jpg',
       titulo: 'Limpieza de alfombras',
@@ -39,7 +55,7 @@ const OfertasPage = () => {
       precio: { min: 130, max: 210 },
     },
     {
-      id: 3,
+      id: 4,
       destacado: false,
       imagen: '/images/carpintero.jpg',
       titulo: 'Reparación de sillas',
@@ -55,7 +71,7 @@ const OfertasPage = () => {
       precio: { min: 180, max: 250 },
     },
     {
-      id: 4,
+      id: 5,
       destacado: true,
       imagen: '/images/electricista.jpg',
       titulo: 'Instalación de lámparas',
@@ -71,7 +87,7 @@ const OfertasPage = () => {
       precio: { min: 100, max: 160 },
     },
     {
-      id: 5,
+      id: 6,
       destacado: false,
       imagen: '/images/tuberias.jpg',
       titulo: 'Instalación de grifos',
@@ -87,7 +103,7 @@ const OfertasPage = () => {
       precio: { min: 60, max: 90 },
     },
     {
-      id: 6,
+      id: 7,
       destacado: true,
       imagen: '/images/pintura.jpg',
       titulo: 'Pintura decorativa',
@@ -103,7 +119,7 @@ const OfertasPage = () => {
       precio: { min: 220, max: 270 },
     },
     {
-      id: 7,
+      id: 8,
       destacado: false,
       imagen: '/images/limpieza.jpg',
       titulo: 'Limpieza profunda',
@@ -119,7 +135,7 @@ const OfertasPage = () => {
       precio: { min: 120, max: 200 },
     },
     {
-      id: 8,
+      id: 9,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Puertas personalizadas',
@@ -135,7 +151,7 @@ const OfertasPage = () => {
       precio: { min: 250, max: 350 },
     },
     {
-      id: 9,
+      id: 10,
       destacado: false,
       imagen: '/images/electricista.jpg',
       titulo: 'Reparación de enchufes',
@@ -151,7 +167,7 @@ const OfertasPage = () => {
       precio: { min: 80, max: 120 },
     },
     {
-      id: 10,
+      id: 11,
       destacado: true,
       imagen: '/images/tuberias.jpg',
       titulo: 'Reparacion de tuberias',
@@ -167,7 +183,7 @@ const OfertasPage = () => {
       precio: { min: 50, max: 80 },
     },
     {
-      id: 11,
+      id: 12,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
@@ -183,7 +199,7 @@ const OfertasPage = () => {
       precio: { min: 200, max: 300 },
     },
     {
-      id: 12,
+      id: 13,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
@@ -199,7 +215,7 @@ const OfertasPage = () => {
       precio: { min: 200, max: 300 },
     },
     {
-      id: 13,
+      id: 14,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
@@ -215,7 +231,7 @@ const OfertasPage = () => {
       precio: { min: 200, max: 300 },
     },
     {
-      id: 14,
+      id: 15,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
@@ -231,7 +247,7 @@ const OfertasPage = () => {
       precio: { min: 200, max: 300 },
     },
     {
-      id: 15,
+      id: 16,
       destacado: true,
       imagen: '/images/carpinteria2.jpg',
       titulo: 'Muebles a medida',
@@ -247,7 +263,7 @@ const OfertasPage = () => {
       precio: { min: 200, max: 300 },
     },
     {
-      id: 16,
+      id: 17,
       destacado: false,
       imagen: '/images/pintura.jpg',
       titulo: 'Pintura para casas',
@@ -263,7 +279,7 @@ const OfertasPage = () => {
       precio: { min: 200, max: 250 },
     },
     {
-      id: 17,
+      id: 18,
       destacado: true,
       imagen: '/images/limpieza.jpg',
       titulo: 'Limpieza y aseo',
@@ -279,7 +295,7 @@ const OfertasPage = () => {
       precio: { min: 100, max: 180 },
     },
     {
-      id: 18,
+      id: 19,
       destacado: true,
       imagen: '/images/carpintero.jpg',
       titulo: 'Muebles a medida',
@@ -295,7 +311,7 @@ const OfertasPage = () => {
       precio: { min: 200, max: 300 },
     },
     {
-      id: 19,
+      id: 20,
       destacado: false,
       imagen: '/images/electricista.jpg',
       titulo: 'Instalacion electrica',
@@ -312,12 +328,17 @@ const OfertasPage = () => {
     },
   ];
 
+  const filteredJobs = jobs.filter((job) => {
+    if (!selectedCategoria) return true; // mostrar todos si no hay filtro
+    return job.categoria === selectedCategoria;
+  });
   const categoriaColors: { [key: string]: string } = {
     plomeria: 'text-[#1AA7ED] bg-[#E6F7FB]',
     electricidad: 'text-[#2B31E0] bg-[#E6E7FB]',
     carpinteria: 'text-[#2B6AE0] bg-[#E6F0FB]',
     limpieza: 'text-[#2BDDE0] bg-[#E6FBFA]',
     pintura: 'text-[#5E2BE0] bg-[#ECE6FB]',
+    jardinería: 'text-[#759AE0] bg-[#EEF3FB]',
     default: 'text-[#2B31E0] bg-[#E6E7FB]',
   };
 
@@ -329,8 +350,8 @@ const OfertasPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] pt-24 py-8">
-      <section className="w-full py-16 bg-gradient-to-b from-blue-600 to-blue-800 text-white">
+    <div className="min-h-screen bg-[#F9FAFB] pt-16 py-8">
+      <section className="w-full pt-16 py-16 bg-gradient-to-b from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto text-center px-4">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">Ofertas de Trabajo</h1>
           <p className="text-lg md:text-xl mb-12 max-w-3xl mx-auto opacity-90">
@@ -343,101 +364,106 @@ const OfertasPage = () => {
         <div className="flex justify-center mb-6">
           <input
             type="text"
-            placeholder="Buscar servicios..."
+            placeholder="Buscar ofertas de trabajo..."
             className="w-full sm:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
         {/* FILTRO DE CATEGORIAS ALINEADO CON EL GRID */}
         <div className="max-w-7xl mx-auto px-4 mb-8">
-          <select className="w-40 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+          <select
+            value={selectedCategoria}
+            onChange={(e) => setSelectedCategoria(e.target.value)}
+            className="w-40 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
             <option value="">Todo</option>
             <option value="plomeria">Plomería</option>
             <option value="electricidad">Electricidad</option>
             <option value="carpinteria">Carpintería</option>
-            <option value="limpieza">Limpieza</option>
             <option value="pintura">Pintura</option>
             <option value="aseo">Aseo</option>
           </select>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 justify-items-center">
-          {jobs.map((job) => {
-            const categoriaClass =
-              categoriaColors[job.categoria.toLowerCase()] || categoriaColors['default'];
-            return (
-              <div
-                key={job.id}
-                className="flex flex-col rounded-[10px] justify-around border border-solid border-black/15 shadow-md transition-shadow duration-300 hover:shadow-lg hover:shadow-black/30 bg-white p-3 min-h-[370px] max-w-[260px] min-w-[260px]"
-              >
-                <div className="flex flex-row justify-between mb-[5px]">
-                  {job.destacado ? (
-                    <span className="border border-solid pr-[5px] pl-[5px] text-[#5E2BE0] rounded-[8px] text-[12px] font-semibold">
-                      Destacado
-                    </span>
-                  ) : (
-                    <span className="opacity-0">-</span>
-                  )}
-                  <span
-                    className={`border border-solid border-white/0 rounded-[10px] p-[1px] pr-[5px] pl-[5px] text-[13px] font-semibold ${categoriaClass}`}
-                  >
-                    {job.categoria}
-                  </span>
-                </div>
-
-                <Image
-                  className="object-cover rounded-lg cursor-pointer"
-                  src={job.imagen}
-                  alt={job.titulo}
-                  width={300}
-                  height={200}
-                />
-
-                <div className="flex flex-row justify-between items-center mt-2">
-                  <strong className="text-[95%]">{job.titulo}</strong>
-                  <span className="text-[11px] opacity-70">hace {job.tiempoPublicado}</span>
-                </div>
-
-                <hr className="opacity-20 my-1" />
-
-                <strong
-                  className="opacity-80 text-sm truncate whitespace-nowrap overflow-hidden"
-                  title={job.descripcion}
+          {jobs
+            .filter((job) => !selectedCategoria || job.categoria === selectedCategoria) // <-- FILTRADO
+            .map((job) => {
+              const categoriaClass =
+                categoriaColors[job.categoria.toLowerCase()] || categoriaColors['default'];
+              return (
+                <div
+                  key={job.id}
+                  className="flex flex-col rounded-[10px] justify-around border border-solid border-black/15 shadow-md transition-shadow duration-300 hover:shadow-lg hover:shadow-black/30 bg-white p-3 min-h-[370px] max-w-[260px] min-w-[260px]"
                 >
-                  {job.descripcion}
-                </strong>
-
-                <div className="flex flex-row gap-[5px] mt-1 text-sm">
-                  <strong className="opacity-70">Fixer:</strong>
-                  <span className="opacity-70">
-                    {job.nombreFixer} {job.apellidoFixer}
-                  </span>
-                </div>
-
-                <div className="flex flex-row justify-between items-center gap-[5px] opacity-70 text-sm mt-1">
-                  <div className="flex flex-row items-center">
-                    <span>📞 +591 {job.telefono}</span>
-                  </div>
-                  <div>
-                    <span>
-                      Bs. {job.precio.min}-{job.precio.max}
+                  <div className="flex flex-row justify-between mb-[5px]">
+                    {job.destacado ? (
+                      <span className="border border-solid pr-[5px] pl-[5px] text-[#5E2BE0] rounded-[8px] text-[12px] font-semibold">
+                        Destacado
+                      </span>
+                    ) : (
+                      <span className="opacity-0">-</span>
+                    )}
+                    <span
+                      className={`border border-solid border-white/0 rounded-[10px] p-[1px] pr-[5px] pl-[5px] text-[13px] font-semibold ${categoriaClass}`}
+                    >
+                      {job.categoria}
                     </span>
                   </div>
-                </div>
 
-                <div className="flex flex-row justify-between items-center mt-2">
-                  <button
-                    onClick={() => handleWhatsApp(job.telefono)}
-                    className="flex flex-row items-center justify-center cursor-pointer gap-[3px] bg-[#28DDE0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px] text-sm font-semibold"
+                  <Image
+                    className="object-cover rounded-lg cursor-pointer"
+                    src={job.imagen}
+                    alt={job.titulo}
+                    width={300}
+                    height={200}
+                  />
+
+                  <div className="flex flex-row justify-between items-center mt-2">
+                    <strong className="text-[95%]">{job.titulo}</strong>
+                    <span className="text-[11px] opacity-70">hace {job.tiempoPublicado}</span>
+                  </div>
+
+                  <hr className="opacity-20 my-1" />
+
+                  <strong
+                    className="opacity-80 text-sm truncate whitespace-nowrap overflow-hidden"
+                    title={job.descripcion}
                   >
-                    <FaWhatsapp />
-                    WhatsApp
-                  </button>
-                  <span>⭐{job.calificacion}</span>
+                    {job.descripcion}
+                  </strong>
+
+                  <div className="flex flex-row gap-[5px] mt-1 text-sm">
+                    <strong className="opacity-70">Fixer:</strong>
+                    <span className="opacity-70">
+                      {job.nombreFixer} {job.apellidoFixer}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-row justify-between items-center gap-[5px] opacity-70 text-sm mt-1">
+                    <div className="flex flex-row items-center">
+                      <span>📞 +591 {job.telefono}</span>
+                    </div>
+                    <div>
+                      <span>
+                        Bs. {job.precio.min}-{job.precio.max}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-row justify-between items-center mt-2">
+                    <button
+                      onClick={() => handleWhatsApp(job.telefono)}
+                      className="flex flex-row items-center justify-center cursor-pointer gap-[3px] bg-[#759AE0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px]"
+                    >
+                      <FaWhatsapp />
+                      WhatsApp
+                    </button>
+                    <span>⭐{job.calificacion}</span>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     </div>

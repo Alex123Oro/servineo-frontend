@@ -377,7 +377,7 @@ const Header = () => {
   return (
     <>
       <header
-        className="fixed top-0 left-0 right-0 z-50 bg-white bg-opacity-95 shadow-lg backdrop-blur-md transition-all duration-300 border-b border-gray-100"
+        className="fixed top-0 left-0 right-0 z-50 h-20 bg-white bg-opacity-95 shadow-lg backdrop-blur-md transition-all duration-300 border-b border-gray-100"
         role="banner"
       >
         {/* Header Desktop */}
