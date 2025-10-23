@@ -1,13 +1,48 @@
+
+
+
+
 "use client";
 
 interface LocationButtonProps {
-  onClick: () => void;
+  onLocationFound: (lat: number, lng: number) => void;
 }
 
-export default function LocationButton({ onClick }: LocationButtonProps) {
+export default function LocationButton({ onLocationFound }: LocationButtonProps) {
+  const handleClick = () => {
+    if (!navigator.geolocation) {
+      alert("La geolocalización no está soportada por este navegador 😢");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        console.log("📍 Tu ubicación:", latitude, longitude);
+        onLocationFound(latitude, longitude);
+      },
+      (error) => {
+        console.error(" Error al obtener ubicación:", error);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert("Has denegado el permiso de ubicación ");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            alert("La información de ubicación no está disponible ");
+            break;
+          case error.TIMEOUT:
+            alert("Tiempo de espera agotado al obtener tu ubicación ");
+            break;
+          default:
+            alert("Error desconocido al obtener ubicación ");
+        }
+      }
+    );
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className="
         flex items-center gap-2
         px-4 py-2
@@ -27,7 +62,6 @@ export default function LocationButton({ onClick }: LocationButtonProps) {
       "
       title="Centrar en mi ubicación"
     >
-      {/* Icono */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-5 w-5"
@@ -47,9 +81,8 @@ export default function LocationButton({ onClick }: LocationButtonProps) {
           d="M12 2C8.134 2 5 5.134 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.866-3.134-7-7-7z"
         />
       </svg>
-
-      {/* Texto */}
       Tu ubicación
     </button>
   );
 }
+  
