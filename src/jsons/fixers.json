@@ -1,9 +1,9 @@
 [
   { "id": 1, "nombre": "Juan Perez", "servicio": "Plomería", "lat": -17.393, "lng": -66.156, "zona": "Plaza 14", "available": true},
-  { "id": 2, "nombre": "Maria Lopez", "servicio": "Electricidad", "lat": -17.392, "lng": -66.158, "zona": "Plaza 14", "available": false },
-  { "id": 3, "nombre": "Carlos Sanchez", "servicio": "Carpintería", "lat": -17.394, "lng": -66.157, "zona": "Plaza 14", "available": false },
-  { "id": 4, "nombre": "Ana Torres", "servicio": "Pintura", "lat": -17.395, "lng": -66.159, "zona": "Plaza 14", "available": false },
-  { "id": 5, "nombre": "Luis Fernandez", "servicio": "Jardinería", "lat": -17.391, "lng": -66.154, "zona": "Plaza 14", "available": false },
+  { "id": 2, "nombre": "Maria Lopez", "servicio": "Electricidad", "lat": -17.392, "lng": -66.158, "zona": "Plaza 14", "available": true },
+  { "id": 3, "nombre": "Carlos Sanchez", "servicio": "Carpintería", "lat": -17.394, "lng": -66.157, "zona": "Plaza 14", "available": true },
+  { "id": 4, "nombre": "Ana Torres", "servicio": "Pintura", "lat": -17.395, "lng": -66.159, "zona": "Plaza 14", "available": true },
+  { "id": 5, "nombre": "Luis Fernandez", "servicio": "Jardinería", "lat": -17.391, "lng": -66.154, "zona": "Plaza 14", "available": true },
   { "id": 6, "nombre": "Sofia Ramirez", "servicio": "Cerrajería", "lat": -17.390, "lng": -66.155, "zona": "Plaza 14", "available": false },
 
   { "id": 7, "nombre": "Diego Morales", "servicio": "Albañilería", "lat": -17.402, "lng": -66.155, "zona": "Laguna Alalay", "available": false },
@@ -18,10 +18,10 @@
   { "id": 15, "nombre": "Martin Herrera", "servicio": "Albañilería", "lat": -17.413, "lng": -66.173, "zona": "Villa Pagador", "available": false },
   { "id": 16, "nombre": "Patricia Vargas", "servicio": "Plomería", "lat": -17.414, "lng": -66.174, "zona": "Villa Pagador", "available": false },
 
-  { "id": 17, "nombre": "Jorge Medina", "servicio": "Pintura", "lat": -17.370, "lng": -66.180, "zona": "Colcapirhua", "available": false },
-  { "id": 18, "nombre": "Daniela Rivas", "servicio": "Electricidad", "lat": -17.371, "lng": -66.181, "zona": "Colcapirhua", "available": false },
-  { "id": 19, "nombre": "Hector Paredes", "servicio": "Jardinería", "lat": -17.372, "lng": -66.182, "zona": "Colcapirhua", "available": false },
-  { "id": 20, "nombre": "Monica Cabrera", "servicio": "Carpintería", "lat": -17.373, "lng": -66.183, "zona": "Colcapirhua", "available": false },
+  { "id": 17, "nombre": "Jorge Medina", "servicio": "Pintura", "lat": -17.370, "lng": -66.180, "zona": "Quillacollo", "available": true },
+  { "id": 18, "nombre": "Daniela Rivas", "servicio": "Electricidad", "lat": -17.371, "lng": -66.181, "zona": "Quillacollo", "available": true },
+  { "id": 19, "nombre": "Hector Paredes", "servicio": "Jardinería", "lat": -17.372, "lng": -66.182, "zona": "Quillacollo", "available": true },
+  { "id": 20, "nombre": "Monica Cabrera", "servicio": "Carpintería", "lat": -17.373, "lng": -66.183, "zona": "Quillacollo", "available": false },
 
   { "id": 21, "nombre": "Alfredo Jimenez", "servicio": "Cerrajería", "lat": -17.430, "lng": -66.145, "zona": "Cota Cota", "available": false },
   { "id": 22, "nombre": "Gabriela Solis", "servicio": "Plomería", "lat": -17.431, "lng": -66.146, "zona": "Cota Cota", "available": false },
