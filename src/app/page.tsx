@@ -129,7 +129,7 @@ export default function Home() {
       
       {/* Footer Component */}
       <Footer />
-      <UserProfile />
+     
     </div>
   );
 }
