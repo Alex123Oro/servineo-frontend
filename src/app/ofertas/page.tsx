@@ -384,7 +384,9 @@ const OfertasPage = () => {
             <option value="aseo">Aseo</option>
           </select>
         </div>
-
+        <div className="mb-4 text-sm opacity-80 px-4">
+          {filteredJobs.length} resultados encontrados
+        </div>
         <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 justify-items-center">
           {jobs
             .filter((job) => !selectedCategoria || job.categoria === selectedCategoria) // <-- FILTRADO
