@@ -1,3 +1,7 @@
+
+
+
+
 "use client";
 
 interface LocationButtonProps {
@@ -81,3 +85,4 @@ export default function LocationButton({ onLocationFound }: LocationButtonProps)
     </button>
   );
 }
+  
