@@ -7,7 +7,7 @@ import { FiHome, FiBriefcase, FiHelpCircle, FiClipboard } from 'react-icons/fi';
 import Registro from './registro';
 import { initUserProfileLogic } from '@/app/Home/UserProfile/userProfileLogic';
 import '@/app/Home/UserProfile/userProfile.css';
-import { mockUser } from '@/app/Home/UserProfile/UI/mockUser';
+import { mockUser } from '@/app/UI/mockUser';
 
 declare global {
   interface Window {
@@ -32,8 +32,10 @@ declare global {
 const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const [user, setUser] = useState(() => {
     if (typeof window !== 'undefined') {
       const storedUser = localStorage.getItem('booka_user');
@@ -50,7 +52,6 @@ const Header = () => {
     return false;
   });
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const iconRef = useRef<HTMLImageElement | null>(null);
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -59,6 +60,7 @@ const Header = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
   //logica modal registro
   useEffect(() => {
     const checkAuth = () => {
@@ -73,6 +75,7 @@ const Header = () => {
 
     return () => window.removeEventListener('storage', checkAuth);
   }, []);
+
   // ========= LÓGICA DE PERFIL =========
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -151,6 +154,9 @@ const Header = () => {
 
       const savedSession = usersStore.sessions?.[deviceId] || mockUser;
       setUser(savedSession);
+      
+      // Redirigir a la página de inicio
+      router.push('/');
     };
     win.closeMenu = () => setIsMenuOpen(false);
 
@@ -256,6 +262,7 @@ const Header = () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -324,6 +331,10 @@ const Header = () => {
     }
   };
 
+  const handleLogin = () => {
+    window.login?.();
+  };
+
   //  Reforzar sincronización de sesión al cambiar de página
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -371,7 +382,6 @@ const Header = () => {
   }, []);
 
   if (!isClient) return null;
-  //logica modal registro
 
   // ========= Render =========
   return (
@@ -482,21 +492,86 @@ const Header = () => {
             {!isAuthenticated ? (
               <>
                 <button
-                  onClick={() => window.login?.()}
+                  onClick={handleLogin}
+                  className="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-300 hover:shadow-sm font-medium"
+                  aria-label="Iniciar sesión"
+                >
+                  Iniciar sesión
+                </button>
+                <button
+                  onClick={() => setIsModalOpen(true)}
                   className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
                   aria-label="Registrarse"
                 >
-                  Acceder
+                  Registrarse
                 </button>
               </>
             ) : (
-              <img
-                ref={iconRef}
-                src={user.photo}
-                alt="Foto de perfil"
-                className="profile-icon cursor-pointer"
-                onClick={(e) => window.toggleMenu?.(e)}
-              />
+              <div className="relative">
+                <button
+                  onClick={() => setIsMenuOpen((v) => !v)}
+                  className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition"
+                  aria-label="Abrir menú de perfil"
+                >
+                  <Image
+                    src={user.photo}
+                    alt="Avatar"
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
+                  <span className="font-medium text-gray-800">{user.name.split(' ')[0]}</span>
+                </button>
+
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-80 rounded-xl shadow-2xl bg-white border border-gray-100 overflow-hidden">
+                    <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                      <Image
+                        src={user.photo}
+                        alt="Avatar"
+                        width={40}
+                        height={40}
+                        className="rounded-full border-2 border-white"
+                      />
+                      <div>
+                        <div className="font-semibold">{user.name}</div>
+                        <div className="text-sm opacity-90">{user.email}</div>
+                      </div>
+                    </div>
+
+                    <div className="p-2">
+                      <button
+                        onClick={() => router.push('/Home/UserProfile')}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
+                      >
+                        Ver perfil completo
+                      </button>
+                      <button
+                        onClick={() => router.push('/Home/UserProfile')}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
+                      >
+                        Configuración de Perfil
+                      </button>
+                      <button
+                        onClick={() => router.push('/info/join')}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
+                      >
+                        Convertirse en Fixer
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsLoggedIn(false);
+                          setIsMenuOpen(false);
+                          router.push('/');
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -527,22 +602,63 @@ const Header = () => {
               {!isAuthenticated ? (
                 <>
                   <button
-                    onClick={() => window.login?.()}
-                    className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2
-             transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
+                    onClick={handleLogin}
+                    className="px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-100 font-medium"
+                    aria-label="Iniciar sesión"
+                  >
+                    Iniciar
+                  </button>
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm font-medium"
                     aria-label="Registrarse"
                   >
-                    Acceder
+                    Registrarse
                   </button>
                 </>
               ) : (
-                <img
-                  ref={iconRef}
-                  src={user.photo}
-                  alt="Foto de perfil"
-                  className="profile-icon cursor-pointer"
-                  onClick={(e) => window.toggleMenu?.(e)}
-                />
+                <div className="relative">
+                  <button
+                    onClick={() => setIsMenuOpen((v) => !v)}
+                    className="flex items-center gap-1 px-2 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm font-medium"
+                    aria-label="Abrir menú de perfil"
+                  >
+                    <Image
+                      src={user.photo}
+                      alt="Avatar"
+                      width={24}
+                      height={24}
+                      className="rounded-full"
+                    />
+                    <span>{user.name.split(' ')[0]}</span>
+                  </button>
+                  {isMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-72 rounded-xl shadow-2xl bg-white border border-gray-100 overflow-hidden">
+                      <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                        <Image src={user.photo} alt="Avatar" width={36} height={36} className="rounded-full border-2 border-white" />
+                        <div>
+                          <div className="font-semibold">{user.name}</div>
+                          <div className="text-xs opacity-90">{user.email}</div>
+                        </div>
+                      </div>
+                      <div className="p-2">
+                        <button onClick={() => router.push('/Home/UserProfile')} className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100">Ver perfil completo</button>
+                        <button onClick={() => router.push('/Home/UserProfile')} className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100">Configuración de Perfil</button>
+                        <button onClick={() => router.push('/info/join')} className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100">Convertirse en Fixer</button>
+                        <button
+                          onClick={() => { 
+                            setIsLoggedIn(false); 
+                            setIsMenuOpen(false); 
+                            router.push('/'); 
+                          }}
+                          className="w-full text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
+                        >
+                          Cerrar sesión
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -576,7 +692,7 @@ const Header = () => {
           className="flex flex-col items-center text-gray-700 hover:text-blue-600"
           aria-label="Ir a ofertas"
         >
-          <FiClipboard className="text-2xl" />
+          <FiClipboard className="text-xs mt-1" />
           <span className="text-xs mt-1">Ofertas</span>
         </button>
         <button

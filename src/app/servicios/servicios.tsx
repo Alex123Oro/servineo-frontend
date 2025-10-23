@@ -1,4 +1,8 @@
-export const metadata = { title: 'Servicios | Servineo' };
+"use client";
+import { services } from './data';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import Link from 'next/link';
 
 export default function ServiciosPage({
   showHero = true,
@@ -13,64 +17,45 @@ export default function ServiciosPage({
   title?: string;
   subtitle?: string;
 }) {
-  const services = [
-    {
-      name: 'Plomería',
-      icon: '🔧',
-      description: 'Instalaciones, reparaciones y mantenimiento',
-      demand: 95,
-    },
-    {
-      name: 'Electricidad',
-      icon: '⚡',
-      description: 'Instalaciones eléctricas y reparaciones',
-      demand: 90,
-    },
-    {
-      name: 'Carpintería',
-      icon: '🔨',
-      description: 'Muebles, puertas y trabajos en madera',
-      demand: 85,
-    },
-    {
-      name: 'Pintura',
-      icon: '🎨',
-      description: 'Pintura interior y exterior',
-      demand: 80,
-    },
-    {
-      name: 'Limpieza',
-      icon: '🧽',
-      description: 'Limpieza residencial y comercial',
-      demand: 88,
-    },
-    {
-      name: 'Jardinería',
-      icon: '🌱',
-      description: 'Mantenimiento y diseño de jardines',
-      demand: 75,
-    },
-    {
-      name: 'Albañilería',
-      icon: '🧱',
-      description: 'Construcción y reparaciones de albañilería',
-      demand: 82,
-    },
-    {
-      name: 'Cerrajería',
-      icon: '🔑',
-      description: 'Apertura de puertas y cambio de cerraduras',
-      demand: 78,
-    },
-    {
-      name: 'Gasfitería',
-      icon: '💧',
-      description: 'Instalación y reparación de tuberías de gas',
-      demand: 70,
-    },
-  ];
-
+  // Dataset de servicios importado arriba
   const servicesToShow = showAllServices ? services : services.slice(0, 6);
+  const router = useRouter();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Navegación por teclado entre tarjetas: flechas y Home/End + Enter/Espacio para abrir
+  const handleCardKey = (e: React.KeyboardEvent<HTMLDivElement>, idx: number, slug: string) => {
+    const cards = document.querySelectorAll('[data-service-card="true"]');
+    const last = cards.length - 1;
+    let target = idx;
+
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        target = Math.min(idx + 1, last);
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        target = Math.max(idx - 1, 0);
+        break;
+      case 'Home':
+        target = 0;
+        break;
+      case 'End':
+        target = last;
+        break;
+      case 'Enter':
+      case ' ': // Space
+        router.push(`/servicios/${slug}`);
+        e.preventDefault();
+        return;
+      default:
+        return; // no interceptar otras teclas
+    }
+
+    setActiveIndex(target);
+    (cards[target] as HTMLElement)?.focus();
+    e.preventDefault();
+  };
 
   return (
     <div className="min-h-screen bg-white pt-16">
@@ -97,15 +82,21 @@ export default function ServiciosPage({
               {subtitle && <p className="text-lg text-gray-600 max-w-2xl mx-auto">{subtitle}</p>}
             </div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" role="grid">
             {servicesToShow.map((service, index) => (
               <div
                 key={index}
-                className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100"
+                tabIndex={activeIndex === index ? 0 : -1}
+                role="button"
+                aria-label={`Abrir detalles del servicio ${service.name}`}
+                data-service-card="true"
+                onKeyDown={(e) => handleCardKey(e, index, service.slug)}
+                onClick={() => router.push(`/servicios/${service.slug}`)}
+                onFocus={() => setActiveIndex(index)}
+                className="select-none bg-white p-8 rounded-xl shadow-lg border border-gray-200 transition-all duration-200 hover:bg-blue-50 hover:border-blue-300 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
               >
                 <div className="flex items-start justify-between mb-6">
                   <div className="text-5xl">{service.icon}</div>
-                  <div className="text-gray-400 text-xl">→</div>
                 </div>
 
                 <h3 className="text-2xl font-bold text-gray-800 mb-3">{service.name}</h3>
@@ -125,11 +116,7 @@ export default function ServiciosPage({
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <button className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
-                    Ver más →
-                  </button>
-                </div>
+                {/* Acciones dentro de la tarjeta removidas para diseño más limpio */}
               </div>
             ))}
           </div>
@@ -137,12 +124,12 @@ export default function ServiciosPage({
           {/* Botón Ver más servicios */}
           {!showAllServices && (
             <div className="flex justify-center mt-12">
-              <a
+              <Link
                 href="/servicios"
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300"
               >
                 Ver más
-              </a>
+              </Link>
             </div>
           )}
         </div>
