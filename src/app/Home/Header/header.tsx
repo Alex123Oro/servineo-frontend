@@ -11,21 +11,13 @@ import { mockUser } from '@/app/Home/UserProfile/UI/mockUser';
 
 declare global {
   interface Window {
+    isAuthenticated?: boolean;
     login?: () => void;
     logout?: () => void;
-    toggleMenu?: (e?: any) => void;
-    closeMenu?: () => void;
-    goToProfile?: () => void;
     openEdit?: () => void;
     convertFixer?: () => void;
-    closeProfileModal?: () => void;
-    saveProfile?: () => void;
-    savePasswordChange?: () => void;
-    togglePasswordVisibility?: (inputId: string, btn?: any) => void;
-    cancelPasswordChange?: () => void;
-    togglePasswordChange?: () => void;
-    isAuthenticated?: boolean;
-    userProfile?: any;
+    toggleMenu?: (e?: any) => void;
+    closeMenu?: () => void;
   }
 }
 
@@ -35,21 +27,9 @@ const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const [user, setUser] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const storedUser = localStorage.getItem('booka_user');
-      return storedUser ? JSON.parse(storedUser) : mockUser;
-    }
-    return mockUser;
-  });
+  const [user, setUser] = useState(mockUser);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const storedUser = localStorage.getItem('booka_user');
-      return !!storedUser;
-    }
-    return false;
-  });
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -78,190 +58,39 @@ const Header = () => {
 
   // ========= LÓGICA DE PERFIL =========
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
+  if (typeof window === 'undefined') return;
+  const win = window as any;
+  if (!win.__booka_userProfileInitialized) {
     if (typeof initUserProfileLogic === 'function') {
       initUserProfileLogic();
     }
+    win.__booka_userProfileInitialized = true;
+  }
 
-    try {
-      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-      const deviceId = localStorage.getItem('booka_device_id');
+  // Carga estado inicial desde userProfileLogic
+  const currentUser = (window as any).userProfile || mockUser;
+  const loggedIn = !!(window as any).isAuthenticated;
+  setUser(currentUser);
+  setIsAuthenticated(loggedIn);
 
-      const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
-
-      if (userSession && userSession.loggedIn) {
-        setUser(userSession);
-        setIsAuthenticated(true);
-        window.userProfile = userSession;
-        window.isAuthenticated = true;
-      }
-    } catch (err) {
-      console.warn('No se pudo restaurar sesión:', err);
+  const handleProfileUpdated = (e: Event) => {
+    const detail = (e as CustomEvent).detail;
+    if (detail) {
+      setUser(detail);
+      setIsAuthenticated(!!detail.loggedIn);
     }
+  };
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
 
-    const win = window as any;
-
-    win.login = () => {
-      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-      const deviceId = localStorage.getItem('booka_device_id');
-
-      if (!deviceId) {
-        console.warn('No se encontró deviceId en localStorage.');
-        return;
-      }
-      if (!usersStore.sessions) usersStore.sessions = {};
-      const existingSession = usersStore.sessions[deviceId] || {};
-
-      const updatedSession = {
-        ...existingSession,
-        loggedIn: true,
-      };
-      if (Object.keys(existingSession).length === 0) {
-        Object.assign(updatedSession, mockUser);
-      }
-
-      usersStore.sessions[deviceId] = updatedSession;
-      usersStore.lastUpdated = Date.now();
-      localStorage.setItem('booka_users', JSON.stringify(usersStore));
-
-      win.userProfile = updatedSession;
-      win.isAuthenticated = true;
-      setUser(updatedSession);
-      setIsAuthenticated(true);
-
-      window.dispatchEvent(new CustomEvent('booka-auth-updated', { detail: updatedSession }));
-    };
-
-    win.logout = () => {
-      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-      const deviceId = localStorage.getItem('booka_device_id');
-
-      if (!deviceId) {
-        console.warn('No se encontró deviceId en localStorage.');
-        return;
-      }
-
-      if (usersStore.sessions && usersStore.sessions[deviceId]) {
-        usersStore.sessions[deviceId].loggedIn = false;
-        usersStore.lastUpdated = Date.now();
-        localStorage.setItem('booka_users', JSON.stringify(usersStore));
-      }
-
-      win.userProfile = null;
-      win.isAuthenticated = false;
-      setIsAuthenticated(false);
-
-      const savedSession = usersStore.sessions?.[deviceId] || mockUser;
-      setUser(savedSession);
-
-      // Redirigir a la página de inicio
-      router.push('/');
-    };
-    win.closeMenu = () => setIsMenuOpen(false);
-
-    // Sincronización global entre rutas y pestañas
-    let broadcast: BroadcastChannel;
-    if (!(window as any)._bookaBroadcast) {
-      (window as any)._bookaBroadcast = new BroadcastChannel('booka_auth_channel');
-    }
-    broadcast = (window as any)._bookaBroadcast;
-
-    const syncAuthState = (data: any) => {
-      if (data?.type === 'LOGIN') {
-        setIsAuthenticated(true);
-        setUser(data.user || mockUser);
-        window.userProfile = data.user;
-        window.isAuthenticated = true;
-      } else if (data?.type === 'LOGOUT') {
-        setIsAuthenticated(false);
-        setUser(mockUser);
-        window.userProfile = null;
-        window.isAuthenticated = false;
-      }
-    };
-
-    broadcast.onmessage = (event) => syncAuthState(event.data);
-
-    const originalLogin = win.login;
-    win.login = () => {
-      originalLogin?.();
-      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-      const deviceId = localStorage.getItem('booka_device_id');
-
-      const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
-      broadcast.postMessage({ type: 'LOGIN', user: userSession });
-    };
-
-    const originalLogout = win.logout;
-    win.logout = () => {
-      originalLogout?.();
-      broadcast.postMessage({ type: 'LOGOUT' });
-    };
-
-    //  Escucha cambios locales de login sin refrescar
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'booka_users') {
-        try {
-          const usersStore = JSON.parse(event.newValue || '{}');
-          const deviceId = localStorage.getItem('booka_device_id');
-
-          const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
-
-          if (userSession && userSession.loggedIn) {
-            setIsAuthenticated(true);
-            setUser(userSession);
-            window.userProfile = userSession;
-            window.isAuthenticated = true;
-          } else {
-            setIsAuthenticated(false);
-            setUser(mockUser);
-            window.userProfile = null;
-            window.isAuthenticated = false;
-          }
-        } catch (err) {
-          console.warn('Error al procesar cambio de sesión:', err);
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    // ========= EVENTOS INTERNOS =========
-    const handleLogoutEvent = () => {
-      setIsAuthenticated(false);
-      setUser(mockUser);
-      setIsMenuOpen(false);
-    };
-
-    const handleProfileUpdated = (e: Event) => {
-      try {
-        const updated = (e as CustomEvent).detail;
-        if (updated) {
-          setUser(updated);
-          setIsAuthenticated(!!updated.loggedIn);
-          setIsMenuOpen(false);
-          setTimeout(() => setIsMenuOpen(true), 50);
-        } else {
-          const globalUser = (window as any).userProfile || mockUser;
-          setUser(globalUser);
-          setIsAuthenticated(!!globalUser?.loggedIn);
-        }
-      } catch (err) {
-        console.warn('Error procesando booka-profile-updated', err);
-      }
-    };
-
-    window.addEventListener('booka-logout', handleLogoutEvent);
-    window.addEventListener('booka-profile-updated', handleProfileUpdated);
-
-    // ========= LIMPIEZA =========
-    return () => {
-      window.removeEventListener('booka-logout', handleLogoutEvent);
-      window.removeEventListener('booka-profile-updated', handleProfileUpdated);
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+  window.addEventListener('booka-profile-updated', handleProfileUpdated);
+  window.addEventListener('booka-logout', handleLogout);
+  return () => {
+    window.removeEventListener('booka-profile-updated', handleProfileUpdated);
+    window.removeEventListener('booka-logout', handleLogout);
+  };
+}, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -293,18 +122,30 @@ const Header = () => {
     return () => document.removeEventListener('click', handleClick);
   }, [isMenuOpen]);
 
+  useEffect(() => {
+  const handleScroll = () => {
+    const icon = iconRef.current;
+    const menu = menuRef.current;
+    if (icon && menu && isMenuOpen) {
+      const rect = icon.getBoundingClientRect();
+      menu.style.top = rect.bottom + 10 + "px";
+      menu.style.right = window.innerWidth - rect.right + "px";
+    }
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [isMenuOpen]);
+
+
   // ========= Funciones de perfil =========
   const onLogout = () => {
-    console.log('👋 Clic en cerrar sesión');
-    window.closeMenu?.();
-    setIsAuthenticated(false);
-    setTimeout(() => window.logout?.(), 150);
-  };
-
-  const onGoToProfile = () => {
-    window.closeMenu?.();
-    setTimeout(() => window.goToProfile?.(), 150);
-  };
+  console.log('👋 Clic en cerrar sesión');
+  window.closeMenu?.();
+  setTimeout(() => {
+    window.logout?.(); // ya actualizará localStorage + emitirá eventos
+    router.push('/');
+  }, 150);
+};
 
   const onOpenEdit = () => {
     window.closeMenu?.();
@@ -324,56 +165,30 @@ const Header = () => {
       router.push('/ayuda');
     }
   };
-
-  const handleLogin = () => {
-    window.login?.();
-  };
-
-  //  Reforzar sincronización de sesión al cambiar de página
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
-      const deviceId = localStorage.getItem('booka_device_id');
-
-      const userSession = deviceId ? usersStore?.sessions?.[deviceId] : null;
-
-      if (userSession && userSession.loggedIn) {
-        setIsAuthenticated(true);
-        setUser(userSession);
-        window.userProfile = userSession;
-        window.isAuthenticated = true;
-      } else {
-        setIsAuthenticated(false);
-        setUser(mockUser);
-        window.userProfile = null;
-        window.isAuthenticated = false;
-      }
-    } catch (err) {
-      console.warn('Error sincronizando sesión al cambiar de ruta:', err);
-    }
-  }, [pathname]);
-
   // Escucha actualizaciones de login/logout globales
   useEffect(() => {
-    const handleAuthUpdate = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail && detail.loggedIn) {
-        setUser(detail);
-        setIsAuthenticated(true);
-        window.userProfile = detail;
-        window.isAuthenticated = true;
-      } else {
-        setUser(mockUser);
-        setIsAuthenticated(false);
-        window.userProfile = null;
-        window.isAuthenticated = false;
-      }
-    };
+  const handleAuthUpdate = (e: Event) => {
+    const detail = (e as CustomEvent).detail;
+    if (detail) {
+      setUser(detail);
+      setIsAuthenticated(!!detail.loggedIn);
+      window.userProfile = detail;
+      window.isAuthenticated = !!detail.loggedIn;
+    } else {
+      const stored = JSON.parse(localStorage.getItem('booka_users') || '{}');
+      const deviceId = (window as any).deviceId || localStorage.getItem('booka_device_id');
+      const session = stored.sessions?.[deviceId || ''] || null;
+      setUser(session || mockUser);
+      setIsAuthenticated(!!session?.loggedIn);
+      window.userProfile = session;
+      window.isAuthenticated = !!session?.loggedIn;
+    }
+  }
 
-    window.addEventListener('booka-auth-updated', handleAuthUpdate);
-    return () => window.removeEventListener('booka-auth-updated', handleAuthUpdate);
-  }, []);
+  window.addEventListener('booka-auth-updated', handleAuthUpdate);
+  return () => window.removeEventListener('booka-auth-updated', handleAuthUpdate);
+}, []);
+
 
   if (!isClient) return null;
   //logica modal registro
@@ -519,16 +334,14 @@ const Header = () => {
                   className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition"
                   aria-label="Abrir menú de perfil"
                 >
-                  <Image
-                    src={user.photo}
-                    alt="Avatar"
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
+                 {user.photo?.startsWith('data:') ? (
+  <img src={user.photo} alt="Avatar" width={32} height={32} className="rounded-full" />
+) : (
+  <Image src={user.photo || "/avatar.png"} alt="Avatar" width={32} height={32} className="rounded-full" />
+)}
+
                   <span className="font-medium text-gray-800">{user.name.split(' ')[0]}</span>
                 </button>
-                {/* Eliminado menú desplegable pequeño duplicado */}
               </div>
             )}
           </div>

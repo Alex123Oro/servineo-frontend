@@ -1,0 +1,642 @@
+// /app/Home/UserProfile/userProfileLogic.ts
+import { mockUser } from "@/app/Home/UserProfile/UI/mockUser";
+
+type User = {
+  loggedIn?: boolean;
+  name?: string;
+  email?: string;
+  phone?: string;
+  photo?: string;
+  notif?: boolean;
+  password?: string;
+  [k: string]: any;
+};
+
+type UsersStore = {
+  sessions: Record<string, User>;
+  lastUpdated?: number;
+  [k: string]: any;
+};
+
+declare global {
+  interface Window {
+    deviceId?: string;
+    userProfile?: User | null;
+    isAuthenticated?: boolean;
+    login?: () => void;
+    logout?: () => void;
+    openEdit?: () => void;
+    convertFixer?: () => void;
+    saveProfile?: () => void;
+    savePasswordChange?: () => void;
+    cancelPasswordChange?: () => void;
+    togglePasswordChange?: () => void;
+    togglePasswordVisibility?: (id: string, target?: any) => void;
+    closeEdit?: () => void;
+    closeProfileModal?: () => void;
+  }
+}
+
+function injectUserProfileHTMLIfNeeded(): void {
+  if (typeof document === "undefined") return;
+  if (document.getElementById("userProfileRoot")) return; // ya inyectado
+
+  const container = document.createElement("div");
+  container.id = "userProfileRoot";
+  container.innerHTML = `
+  <main aria-hidden="true">
+      <div id="editModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="editTitle" aria-hidden="true" style="display:none">
+        <h2 id="editTitle">Editar perfil</h2>
+        <label for="nameInput">Nombre completo</label>
+        <input id="nameInput" type="text" placeholder="Nombre y apellidos" aria-required="true" />
+        <small id="nameErr" class="error" style="display:none"></small>
+
+        <label for="emailInput">Correo electrónico</label>
+        <input id="emailInput" type="email" placeholder="correo@ejemplo.com" aria-required="true" />
+        <small id="emailErr" class="error" style="display:none"></small>
+
+        <label for="phoneInput">Teléfono</label>
+        <input id="phoneInput" type="tel" placeholder="71234567" aria-required="false" />
+        <small id="phoneErr" class="error" style="display:none"></small>
+
+        <label for="photoInput">Cambiar foto de perfil</label>
+        <input id="photoInput" type="file" accept="image/*" aria-label="Cambiar foto de perfil" />
+
+        <div id="passwordSection">
+          <label>Contraseña</label>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span id="maskedPassword">••••••••</span>
+            <button type="button" class="btn" id="changePasswordBtn" style="padding:6px 10px;font-size:13px">Cambiar contraseña</button>
+          </div>
+        </div>
+
+        <label class="toggle" style="margin-top:8px">
+          <input type="checkbox" id="notifToggle" /> Notificaciones activadas
+        </label>
+
+        <div id="passwordChangeFields" style="display:none;flex-direction:column;gap:12px;margin-top:10px">
+          <label for="currentPassword">Contraseña actual</label>
+          <div style="position:relative">
+            <input type="password" id="currentPassword" style="width:100%;padding-right:35px" />
+            <button type="button" class="togglePw" id="toggleCurrentPwd" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">👁</button>
+          </div>
+
+          <label for="newPassword">Nueva contraseña</label>
+          <div style="position:relative">
+            <input type="password" id="newPassword" style="width:100%;padding-right:35px" />
+            <button type="button" class="togglePw" id="toggleNewPwd" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">👁</button>
+          </div>
+
+          <div id="pwBar" class="password-strength"><i></i></div>
+          <small id="pwErr" class="error" style="display:none"></small>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button type="button" class="btn" id="saveNewPwBtn">Guardar nueva contraseña</button>
+            <button type="button" class="btn" id="cancelNewPwBtn" style="background:#ccc;color:#000">Cancelar</button>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:15px">
+          <button type="button" class="btn" id="saveProfileBtn">Guardar</button>
+          <button type="button" class="btn" id="cancelEditBtn" style="background:#ccc;color:#000">Cancelar</button>
+        </div>
+      </div>
+
+      <div id="profileModal" class="modal" aria-hidden="true" style="display:none">
+        <h2>Mi perfil</h2>
+        <img id="profileViewPhoto" src="https://i.pravatar.cc/100?u=default" alt="Foto de perfil" style="width:120px;height:120px;border-radius:50%;margin:auto;object-fit:cover;border:3px solid #2B6AF0" />
+        <p><strong>Nombre:</strong> <span id="profileViewName"></span></p>
+        <p><strong>Correo:</strong> <span id="profileViewEmail"></span></p>
+        <p><strong>Teléfono:</strong> <span id="profileViewPhone"></span></p>
+        <button class="btn" id="closeProfileViewBtn">Cerrar</button>
+      </div>
+    </main>
+  `;
+  document.body.appendChild(container);
+}
+
+export function initUserProfileLogic(): void {
+  if (typeof window === "undefined") return;
+  injectUserProfileHTMLIfNeeded();
+
+ // ================== IDENTIFICADOR DE DISPOSITIVO ==================
+  const deviceIdKey = "booka_device_id";
+  let deviceId = localStorage.getItem(deviceIdKey);
+  if (!deviceId) {
+    deviceId = "dev-" + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem(deviceIdKey, deviceId);
+  }
+  window.deviceId = deviceId;
+
+  // ================== ALMACENAMIENTO LOCAL ==================
+  let usersStore: UsersStore =
+  JSON.parse(localStorage.getItem("booka_users") || "{}") || { sessions: {}, lastUpdated: Date.now() };
+if (!usersStore.sessions) {
+  usersStore.sessions = {};
+}
+const existingSession = usersStore.sessions[deviceId];
+
+// Solo crear sesión si NO existe (no si está vacía)
+if (existingSession === undefined || existingSession === null) {
+  const savedUser = JSON.parse(localStorage.getItem("booka_user") || "null");
+  usersStore.sessions[deviceId] =
+    (savedUser && Object.keys(savedUser).length > 0)
+      ? savedUser
+      : { ...mockUser, loggedIn: false };
+}
+
+  function saveUsersStore() {
+  try {
+    localStorage.setItem("booka_users", JSON.stringify(usersStore));
+    const sessionForDevice = usersStore.sessions[deviceId!] || {};
+    localStorage.setItem("booka_user", JSON.stringify(sessionForDevice));
+    localStorage.setItem(
+      "booka_broadcast",
+      JSON.stringify({ ts: Date.now(), sender: deviceId })
+    );
+    setTimeout(() => localStorage.removeItem("booka_broadcast"), 50);
+  } catch (err) {
+    console.warn("[userProfileLogic] Error guardando en localStorage:", err);
+  }
+}
+
+  function getUser(): User {
+    usersStore = (JSON.parse(localStorage.getItem("booka_users") || "{}") as UsersStore) || {
+      sessions: {},
+      lastUpdated: Date.now(),
+    };
+    return usersStore.sessions[deviceId!] || { loggedIn: false };
+  }
+  function setUserForDevice(u: User) {
+  const current = (JSON.parse(localStorage.getItem("booka_users") || "{}") as UsersStore) || {
+    sessions: {},
+    lastUpdated: Date.now(),
+  };
+  current.sessions = current.sessions || {};
+  const previous = current.sessions[deviceId!] || {};
+  const merged = { ...previous, ...u };
+
+  current.sessions[deviceId!] = merged;
+  current.lastUpdated = Date.now();
+  usersStore = current;
+  saveUsersStore();
+
+  try {
+    (window as any).userProfile = merged;
+  } catch (err) {
+    console.warn("[userProfileLogic] No se pudo asignar a window.userProfile:", err);
+  }
+
+  console.debug("[userProfileLogic] setUserForDevice -> merged and saved", {
+    deviceId,
+    previous,
+    incoming: u,
+    merged,
+  });
+}
+
+  // ================== ELEMENTOS DEL DOM (seguro) ==================
+  const editModal = document.getElementById("editModal") as HTMLElement | null;
+  const profileModal = document.getElementById("profileModal") as HTMLElement | null;
+
+  const nameInput = document.getElementById("nameInput") as HTMLInputElement | null;
+  const emailInput = document.getElementById("emailInput") as HTMLInputElement | null;
+  const phoneInput = document.getElementById("phoneInput") as HTMLInputElement | null;
+  const photoInput = document.getElementById("photoInput") as HTMLInputElement | null;
+  const menuPhoto = document.getElementById("menuPhoto") as HTMLImageElement | null;
+  const menuName = document.getElementById("menuName") as HTMLElement | null;
+  const menuEmail = document.getElementById("menuEmail") as HTMLElement | null;
+
+  const nameErr = document.getElementById("nameErr") as HTMLElement | null;
+  const emailErr = document.getElementById("emailErr") as HTMLElement | null;
+  const phoneErr = document.getElementById("phoneErr") as HTMLElement | null;
+  const pwErr = document.getElementById("pwErr") as HTMLElement | null;
+  const currentPassword = document.getElementById("currentPassword") as HTMLInputElement | null;
+  const newPassword = document.getElementById("newPassword") as HTMLInputElement | null;
+  const pwBar = document.getElementById("pwBar") as HTMLElement | null;
+  const notifToggle = document.getElementById("notifToggle") as HTMLInputElement | null;
+
+  const saveProfileBtn = document.getElementById("saveProfileBtn") as HTMLButtonElement | null;
+  const cancelEditBtn = document.getElementById("cancelEditBtn") as HTMLButtonElement | null;
+  const saveNewPwBtn = document.getElementById("saveNewPwBtn") as HTMLButtonElement | null;
+  const cancelNewPwBtn = document.getElementById("cancelNewPwBtn") as HTMLButtonElement | null;
+  const changePasswordBtn = document.getElementById("changePasswordBtn") as HTMLButtonElement | null;
+  const toggleCurrentPwd = document.getElementById("toggleCurrentPwd") as HTMLButtonElement | null;
+  const toggleNewPwd = document.getElementById("toggleNewPwd") as HTMLButtonElement | null;
+  const profileViewPhoto = document.getElementById("profileViewPhoto") as HTMLImageElement | null;
+  const profileViewName = document.getElementById("profileViewName") as HTMLElement | null;
+  const profileViewEmail = document.getElementById("profileViewEmail") as HTMLElement | null;
+  const profileViewPhone = document.getElementById("profileViewPhone") as HTMLElement | null;
+  const closeProfileViewBtn = document.getElementById("closeProfileViewBtn") as HTMLButtonElement | null;
+
+  // ================== TEMPORIZADOR DE INACTIVIDAD ==================
+  let inactivityTimer: number | undefined = undefined;
+  function resetInactivityTimer() {
+    if (inactivityTimer) window.clearTimeout(inactivityTimer);
+    inactivityTimer = window.setTimeout(() => {
+      const u = getUser();
+      if (u && u.loggedIn) {
+        alert("Tu sesión ha expirado por inactividad.");
+        logout();
+      }
+    }, 10 * 60 * 1000);
+  }
+  ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach((evt) => {
+    document.addEventListener(evt, resetInactivityTimer, { passive: true });
+  });
+  resetInactivityTimer();
+
+  // ================== RENDER UI  ==================
+  function renderUI() {
+    const user = getUser();
+    const profileIcon = document.getElementById("profileIcon") as HTMLImageElement | null;
+    const menuPhotoEl = document.getElementById("menuPhoto") as HTMLImageElement | null;
+    const menuNameEl = document.getElementById("menuName") as HTMLElement | null;
+    const menuEmailEl = document.getElementById("menuEmail") as HTMLElement | null;
+
+    if (user && user.loggedIn) {
+      if (profileIcon) profileIcon.src = user.photo || "/avatar.png";
+      if (menuPhotoEl) menuPhotoEl.src = user.photo || "/avatar.png";
+      if (menuNameEl) menuNameEl.textContent = user.name || "Sin nombre";
+      if (menuEmailEl) menuEmailEl.textContent = user.email || "";
+    } else {
+      if (profileIcon) profileIcon.src = "/avatar.png";
+      if (menuPhotoEl) menuPhotoEl.src = "/avatar.png";
+      if (menuNameEl) menuNameEl.textContent = "Invitado";
+      if (menuEmailEl) menuEmailEl.textContent = "";
+    }
+    if (profileViewPhoto) profileViewPhoto.src = (user && user.photo) ? user.photo : "https://i.pravatar.cc/100?u=default";
+    if (profileViewName) profileViewName.textContent = user?.name || "";
+    if (profileViewEmail) profileViewEmail.textContent = user?.email || "";
+    if (profileViewPhone) profileViewPhone.textContent = user?.phone || "";
+  }
+
+  // ================== LOGIN DEMO ==================
+  function login() {
+  const existing = getUser();
+  let user: User;
+  if (existing && Object.keys(existing).length > 0) {
+    user = { ...existing, loggedIn: true };
+  } else {
+    user = { ...mockUser, loggedIn: true };
+  }
+  setUserForDevice(user);
+  window.userProfile = user;
+  window.isAuthenticated = true;
+  renderUI();
+  window.dispatchEvent(new CustomEvent("booka-auth-updated", { detail: user }));
+  console.info("[userProfileLogic] Login completado con usuario:", user);
+}
+
+  // ================== LOGOUT ==================
+  function logout() {
+  const u = getUser();
+  if (u) {
+    const updated = { ...u, loggedIn: false };
+    setUserForDevice(updated); 
+    window.userProfile = updated;
+    window.isAuthenticated = false;
+    renderUI();
+    window.dispatchEvent(new CustomEvent("booka-auth-updated", { detail: updated }));
+    window.dispatchEvent(new Event("booka-logout"));
+  }
+}
+  // ================== UTILIDADES ==================
+  function passwordStrength(pw: string | undefined): number {
+    let score = 0;
+    if (!pw) return 0;
+    if (pw.length >= 8) score++;
+    if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+    if (/\d/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    return score;
+  }
+  function processImageFile(file: File, maxSize = 400): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.onload = () => {
+          let w = img.width,
+            h = img.height;
+          const ratio = w / h;
+          if (w > maxSize || h > maxSize) {
+            if (ratio > 1) {
+              w = maxSize;
+              h = Math.round(maxSize / ratio);
+            } else {
+              h = maxSize;
+              w = Math.round(maxSize * ratio);
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            reject(new Error("No se pudo obtener el contexto del canvas"));
+            return;
+          }
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", 0.9));
+        };
+        img.onerror = (err) => reject(err);
+        // @ts-ignore
+        img.src = (e.target as FileReader).result as string;
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
+  // ================== GUARDAR / ACTUALIZAR PERFIL ==================
+  async function saveProfile(): Promise<void> {
+    const u = getUser();
+    if (!nameInput || !emailInput || !phoneInput) {
+      console.warn("Campos de edición no encontrados");
+      return;
+    }
+    if (nameErr) nameErr.style.display = "none";
+    if (emailErr) emailErr.style.display = "none";
+    if (phoneErr) phoneErr.style.display = "none";
+
+    let valid = true;
+    if (!nameInput.value.trim()) {
+      if (nameErr) {
+        nameErr.textContent = "El nombre es obligatorio.";
+        nameErr.style.display = "block";
+      }
+      valid = false;
+    }
+    if (!/\S+@\S+\.\S+/.test(emailInput.value)) {
+      if (emailErr) {
+        emailErr.textContent = "Correo inválido.";
+        emailErr.style.display = "block";
+      }
+      valid = false;
+    }
+    if (
+      phoneInput &&
+      !/^[0-9+\s()-]{6,20}$/.test(phoneInput.value) &&
+      phoneInput.value.trim() !== ""
+    ) {
+      if (phoneErr) {
+        phoneErr.textContent = "Teléfono inválido.";
+        phoneErr.style.display = "block";
+      }
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    const updated: User = Object.assign({}, u);
+    updated.name = nameInput.value.trim();
+    updated.email = emailInput.value.trim();
+    updated.phone = phoneInput.value.trim();
+    updated.notif = !!(notifToggle && notifToggle.checked);
+
+    const file = photoInput && photoInput.files && photoInput.files[0];
+    if (file) {
+      try {
+        const dataUrl = await processImageFile(file, 400);
+        updated.photo = dataUrl;
+      } catch (err) {
+        console.error(err);
+        alert("No se pudo procesar la imagen.");
+        return;
+      }
+    } else if (!file && u.photo && !updated.photo) {
+      updated.photo = u.photo;
+    }
+
+    updated.loggedIn = true;
+
+        setUserForDevice(updated);
+    window.userProfile = updated;
+    window.dispatchEvent(new CustomEvent("booka-profile-updated", { detail: updated }));
+    window.dispatchEvent(new CustomEvent("booka-auth-updated", { detail: updated }));
+    renderUI();
+
+
+    if (editModal) {
+      editModal.classList.remove("show");
+      editModal.removeAttribute("aria-hidden");
+      editModal.style.display = "none";
+    }
+    alert("Perfil guardado correctamente.");
+  }
+
+  // ================== CAMBIO DE CONTRASEÑA ==================
+  function savePasswordChange(): void {
+    if (!currentPassword || !newPassword) return;
+    const u = getUser();
+    const current = currentPassword.value.trim();
+    const newPw = newPassword.value.trim();
+    if (!current || current !== u.password) {
+      if (pwErr) {
+        pwErr.textContent = "Contraseña actual incorrecta.";
+        pwErr.style.display = "block";
+      }
+      return;
+    }
+    const s = passwordStrength(newPw);
+    if (s < 2) {
+      if (pwErr) {
+        pwErr.textContent = "Contraseña demasiado débil.";
+        pwErr.style.display = "block";
+      }
+      return;
+    }
+    u.password = newPw;
+    setUserForDevice(u);
+    alert("Contraseña cambiada correctamente.");
+    if (editModal) {
+      editModal.classList.remove("show");
+      editModal.removeAttribute("aria-hidden");
+      editModal.style.display = "none";
+    }
+  }
+   // ================== EDITAR Y CONVERTIR ==================
+  function openEdit(): void {
+  
+  const u = (() => {
+    try {
+      const usersStore = JSON.parse(localStorage.getItem("booka_users") || "{}");
+      const deviceId = localStorage.getItem("booka_device_id");
+      if (usersStore?.sessions && deviceId && usersStore.sessions[deviceId]) {
+        return usersStore.sessions[deviceId];
+      }
+    } catch (err) {
+      console.warn("[openEdit] Error leyendo usuarios del almacenamiento:", err);
+    }
+    return (window.userProfile as User) || mockUser;
+  })();
+
+  if (nameInput) nameInput.value = u.name || "";
+  if (emailInput) emailInput.value = u.email || "";
+  if (phoneInput) phoneInput.value = u.phone || "";
+  if (notifToggle) notifToggle.checked = !!u.notif;
+
+  if (pwBar) {
+    const barInner = pwBar.querySelector("i") as HTMLElement | null;
+    if (barInner) {
+      barInner.style.width = "0%";
+      barInner.className = "";
+    }
+  }
+  const editModal = document.getElementById("editModal") as HTMLElement | null;
+  if (editModal) {
+    const mainContainer = editModal.closest("main") as HTMLElement | null;
+    if (mainContainer) mainContainer.style.display = "flex";
+
+    editModal.classList.add("show");
+    editModal.setAttribute("aria-hidden", "false");
+    editModal.style.display = "flex";
+    editModal.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    console.error("[userProfileLogic] No se encontró el #editModal en el DOM.");
+  }
+
+  if (nameErr) nameErr.style.display = "none";
+  if (emailErr) emailErr.style.display = "none";
+  if (phoneErr) phoneErr.style.display = "none";
+  if (pwErr) pwErr.style.display = "none";
+}
+
+
+  function closeEdit(): void {
+    const root = document.getElementById("userProfileRoot") as HTMLElement | null;
+    const mainContainer = root?.querySelector("main") as HTMLElement | null;
+    const editModal = document.getElementById("editModal") as HTMLElement | null;
+
+    if (mainContainer) mainContainer.style.display = "none";
+    if (editModal) {
+      editModal.classList.remove("show");
+      editModal.removeAttribute("aria-hidden");
+      editModal.style.display = "none";
+    }
+  }
+
+  function convertFixer(): void {
+    const u = (window.userProfile as User) || getUser() || mockUser;
+    if (confirm(`¿Deseas convertirte en Fixer, ${u.name || "usuario"}?`)) {
+      window.location.href = "registroFixer.html";
+    }
+  }
+  // ================== OTROS CONTROLES ==================
+  function togglePasswordChange(): void {
+    const pwSection = document.getElementById("passwordSection");
+    const pwFields = document.getElementById("passwordChangeFields");
+    if (pwSection) (pwSection as HTMLElement).style.display = "none";
+    if (pwFields) (pwFields as HTMLElement).style.display = "flex";
+  }
+  function cancelPasswordChange(): void {
+    const pwSection = document.getElementById("passwordSection");
+    const pwFields = document.getElementById("passwordChangeFields");
+    if (pwSection) (pwSection as HTMLElement).style.display = "block";
+    if (pwFields) (pwFields as HTMLElement).style.display = "none";
+    if (currentPassword) currentPassword.value = "";
+    if (newPassword) newPassword.value = "";
+    if (pwBar) {
+      const barInner = pwBar.querySelector("i") as HTMLElement | null;
+      if (barInner) {
+        barInner.style.width = "0%";
+        barInner.className = "";
+      }
+    }
+    if (pwErr) pwErr.style.display = "none";
+  }
+  function togglePasswordVisibility(inputId: string, btn?: any): void {
+    const input = document.getElementById(inputId) as HTMLInputElement | null;
+    if (!input) return;
+    if (input.type === "password") {
+      input.type = "text";
+      if (btn) btn.textContent = "🙈";
+    } else {
+      input.type = "password";
+      if (btn) btn.textContent = "👁";
+    }
+  }
+  // ================== EVENTOS ==================
+  if (newPassword && pwBar) {
+    newPassword.addEventListener("input", () => {
+      const s = passwordStrength(newPassword.value);
+      const percent = (s / 4) * 100;
+      const barInner = pwBar.querySelector("i") as HTMLElement | null;
+      if (barInner) {
+        barInner.style.width = percent + "%";
+        barInner.className =
+          s <= 1 ? "strength-weak" : s <= 2 ? "strength-medium" : "strength-strong";
+      }
+    });
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeEdit();
+  });
+
+    window.addEventListener("storage", (e: StorageEvent) => {
+    if (e.key === "booka_users" || e.key === "booka_broadcast" || e.key === "booka_user") {
+      renderUI();
+    }
+  });
+  // ================== INICIALIZAR ==================
+  const session = usersStore.sessions[deviceId!] || null;
+  window.userProfile = session; 
+  window.isAuthenticated = !!(session && session.loggedIn);
+  renderUI();
+
+
+  // ================== LISTENERS DE BOTONES ==================
+  if (saveProfileBtn) saveProfileBtn.addEventListener("click", saveProfile);
+  if (cancelEditBtn) cancelEditBtn.addEventListener("click", closeEdit);
+  if (saveNewPwBtn) saveNewPwBtn.addEventListener("click", savePasswordChange);
+  if (cancelNewPwBtn) cancelNewPwBtn.addEventListener("click", cancelPasswordChange);
+  if (changePasswordBtn) changePasswordBtn.addEventListener("click", togglePasswordChange);
+  if (toggleCurrentPwd)
+    toggleCurrentPwd.addEventListener("click", (e) =>
+      togglePasswordVisibility("currentPassword", e.currentTarget)
+    );
+  if (toggleNewPwd)
+    toggleNewPwd.addEventListener("click", (e) =>
+      togglePasswordVisibility("newPassword", e.currentTarget)
+    );
+  if (closeProfileViewBtn)
+    closeProfileViewBtn.addEventListener("click", () => {
+      if (profileModal) {
+        profileModal.style.display = "none";
+        profileModal.setAttribute("aria-hidden", "true");
+      }
+    });
+  // ================== EVENTO DE PERFIL ACTUALIZADO ==================
+  const handleProfileUpdated = (e: Event) => {
+    try {
+      const updated = (e as CustomEvent).detail;
+      if (updated) {
+        setUserForDevice(updated);
+        window.userProfile = updated;
+        renderUI();
+      } else {
+        renderUI();
+      }
+    } catch (err) {
+      console.warn("Error procesando booka-profile-updated", err);
+    }
+  };
+
+  window.addEventListener("booka-profile-updated", handleProfileUpdated);
+
+  // ================== EXPONER FUNCIONES A WINDOW ==================
+  window.closeEdit = closeEdit;
+  window.login = login;
+  window.logout = logout;
+  window.openEdit = openEdit;
+  window.convertFixer = convertFixer;
+  window.saveProfile = saveProfile;
+  window.savePasswordChange = savePasswordChange;
+  window.togglePasswordVisibility = togglePasswordVisibility;
+  window.cancelPasswordChange = cancelPasswordChange;
+  window.togglePasswordChange = togglePasswordChange;
+  window.closeProfileModal = closeEdit;
+}
+

@@ -52,7 +52,7 @@ header h1 {
 }
 
 .profile-menu {
-  position: absolute;
+  position: fixed; 
   top: 70px;
   right: 20px;
   background: #fff;
@@ -65,6 +65,7 @@ header h1 {
   flex-direction: column;
   gap: 8px;
   z-index: 99;
+  transition: top 0.1s ease;
 }
 
 .profile-menu.show {
@@ -258,6 +259,11 @@ header h1 {
   width: 0%;
   transition: width .2s;
 }
+
+.profile-menu {
+  transition: top 0.1s ease;
+}
+
 
 .strength-weak { background: #5E2BE0; }
 .strength-medium { background: #2B6AF0; }

@@ -9,8 +9,6 @@ import dynamic from "next/dynamic";
 import axios from "axios";
 import { Fixer } from "@/app/busqueda/interface/Fixer_Interface";
 
-import UserProfile from "./Home/UserProfile/userProfile";
-
 import Carrusel from "./Home/Carrusel/Carrusel";
 import { TrabajosRecientes } from '../components/TrabajosRecientes';
 import Footer from './Home/Footer/Footer';
