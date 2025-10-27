@@ -1,0 +1,290 @@
+
+/* ===================== ESTILOS: GENERALES ===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  background: #fff;
+  color: #000;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ===================== SECCIÓN: HEADER / LOGO / NAV ===================== */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #1AA7ED, #2B31E0);
+  color: #fff;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+header h1 {
+  font-size: 22px;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  background: #2B6AF0;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .2s;
+  font-weight: 600;
+}
+
+.btn:hover {
+  background: #2BDDE0;
+  color: #000;
+}
+
+/* ===================== SECCIÓN: ICONO / MENÚ DE PERFIL ===================== */
+.profile-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  object-fit: cover;
+  transition: transform .15s;
+}
+
+.profile-icon:hover {
+  transform: scale(1.03);
+}
+
+.profile-menu {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  background: #fff;
+  color: #000;
+  border-radius: 12px;
+  box-shadow: 0 2px 18px rgba(0, 0, 0, .15);
+  width: 280px;
+  padding: 12px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 99;
+}
+
+.profile-menu.show {
+  display: flex;
+  animation: fadeIn .18s ease;
+}
+
+.menu-item {
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: .15s;
+  font-weight: 600;
+}
+
+.menu-item:hover {
+  background: #759AE0;
+  color: #fff;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-header .close-btn {
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#logoutBtn.menu-item:hover {
+  background: #E85D5D;
+  color: #fff;
+}
+
+#convertFixer.menu-item:hover {
+  background: #4BBF9A;
+  color: #fff;
+}
+
+.profile-preview {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: auto;
+  border: 3px solid #fff;
+  background: #f0f0f0;
+}
+
+/* ===================== SECCIÓN: MODALES ===================== */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, .2);
+  z-index: 200;
+  width: 420px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal.show {
+  display: flex;
+  animation: fadeIn .2s ease;
+}
+
+.modal input,
+.modal select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.modal label {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.modal small.error {
+  color: #E23D3D;
+  font-size: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.row .col {
+  flex: 1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===================== SECCIÓN: RESPONSIVE & ACCESIBILIDAD ===================== */
+@media (max-width: 480px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  nav {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .profile-menu {
+    width: 94%;
+    right: 3%;
+    top: 88px;
+  }
+
+  .modal {
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal input {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-contrast: more) {
+  body,
+  header,
+  .modal,
+  .profile-menu {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .btn {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #000 !important;
+  }
+
+  .menu-item:hover {
+    background: #000 !important;
+    color: #fff !important;
+  }
+}
+
+/* ===================== ACCESIBILIDAD Y UTILIDADES ===================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.password-strength {
+  height: 8px;
+  border-radius: 6px;
+  background: #eee;
+  overflow: hidden;
+}
+
+.password-strength > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  transition: width .2s;
+}
+
+.strength-weak { background: #E85D5D; }
+.strength-medium { background: #F2C94C; }
+.strength-strong { background: #4BBF9A; }
+
+/* Espacio para contenido bajo el header */
+main {
+  padding-top: 92px;
+}
