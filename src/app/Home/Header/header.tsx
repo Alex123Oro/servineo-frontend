@@ -1,80 +1,66 @@
 'use client';
-import React, { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiMenu, FiX } from 'react-icons/fi';
 
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
-
-  const navLinks = [
-    { href: '/servicios', label: 'Servicios' },
-    { href: '/ofertas', label: 'Ofertas de trabajo' },
-    { href: '/ayuda', label: 'Ayuda' },
-  ];
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
 
   return (
-    <header className="sticky top-0 z-50 bg-primary text-white">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white bg-opacity-95 shadow-lg backdrop-blur-md transition-all duration-300 border-b border-gray-100">
+      {/* Desktop Header (solo desde lg en adelante) */}
+      <div className="hidden lg:flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
         <div className="flex items-center">
-          <Link href="/">
-            <Image src="/vercel.svg" alt="Servineo Logo" width={100} height={24} />
-          </Link>
+          <button onClick={scrollToTop} className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105">
+            <div className="relative overflow-hidden rounded-full shadow-md">
+              <Image src="/icon.png" alt="Servineo Logo" width={45} height={45} className="transition-transform duration-300 group-hover:scale-110" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Servineo</span>
+          </button>
         </div>
-
-        <nav className="hidden md:flex flex-grow justify-center">
-          <ul className="flex items-center space-x-6">
-            {navLinks.map(({ href, label }) => (
-              <li key={href}>
-                <Link href={href} className={`text-white hover:text-secondary transition-colors ${pathname === href ? 'text-secondary' : ''}`}>
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <nav className="hidden lg:flex gap-6">
+          <Link href="/servicios" className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full">
+            Servicios
+          </Link>
+          <Link href="/ofertas" className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full">
+            Ofertas de trabajo
+          </Link>
+          <Link href="/ayuda" className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full">
+            Ayuda
+          </Link>
         </nav>
-
-        <div className="hidden md:flex items-center space-x-4">
-          <Link href="/login" className="text-white hover:text-secondary transition-colors">
+        <div className="flex items-center gap-4">
+          <button className="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-300 hover:shadow-sm font-medium">
             Iniciar sesión
-          </Link>
-          <Link href="/register" className="px-6 py-2 rounded-md bg-secondary text-white hover:bg-opacity-90 transition-colors">
+          </button>
+          <button className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5">
             Registrarse
-          </Link>
-        </div>
-
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
-            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
         </div>
       </div>
 
-      {isOpen && (
-        <div className="md:hidden bg-primary px-4 pb-4 shadow-lg">
-          <nav>
-            <ul className="space-y-4">
-              {navLinks.map(({ href, label }) => (
-                <li key={href}>
-                  <Link href={href} className={`block py-2 text-center ${pathname === href ? 'text-secondary font-bold' : ''}`} onClick={() => setIsOpen(false)}>
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div className="mt-6 flex flex-col space-y-4">
-            <Link href="/login" className="px-4 py-2 text-center rounded-md border border-secondary text-secondary hover:bg-secondary hover:text-white transition-colors" onClick={() => setIsOpen(false)}>
-              Iniciar sesión
-            </Link>
-            <Link href="/register" className="px-4 py-2 text-center rounded-md bg-secondary text-white hover:bg-opacity-90 transition-colors" onClick={() => setIsOpen(false)}>
-              Registrarse
-            </Link>
+      {/* Mobile/Tablet Header (hasta lg) */}
+      <div className="lg:hidden flex items-center justify-between p-4">
+        <button onClick={scrollToTop} className="flex items-center gap-2 group">
+          <div className="relative overflow-hidden rounded-full shadow-md">
+            <Image src="/icon.png" alt="Servineo Logo" width={36} height={36} className="transition-transform duration-300 group-hover:scale-110" />
           </div>
+          <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Servineo</span>
+        </button>
+        <div className="flex items-center gap-2">
+          <button className="px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-100 transition-all duration-300 font-medium">
+            Iniciar
+          </button>
+          <button className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-sm hover:shadow-md font-medium whitespace-nowrap">
+            Registrarse
+          </button>
         </div>
-      )}
+      </div>
     </header>
   );
 };

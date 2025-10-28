@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import type { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './Mapa.module.css';
+import FIXERS_DATA from './fixers-mock';
 
 // Importación dinámica para evitar errores de SSR
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { 
@@ -21,6 +22,7 @@ const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapCo
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
 const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
+const Circle = dynamic(() => import('react-leaflet').then(mod => mod.Circle), { ssr: false });
 
 // Coordenadas de Plaza 14 de Septiembre, Cochabamba
 const PLAZA_14_SEPTIEMBRE: LatLngExpression = [-17.3926, -66.1568];
@@ -61,6 +63,31 @@ const createCustomIcon = (L: typeof import('leaflet'), color: string = '#3388ff'
     iconSize: [30, 30],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30],
+  });
+};
+
+// Configurar icono para fixers (puntos verdes)
+const createFixerIcon = (L: typeof import('leaflet')) => {
+  return L.divIcon({
+    className: styles.fixerMarker,
+    html: `
+      <div style="
+        background-color: #4CAF50;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        cursor: pointer;
+      ">
+      </div>
+    `,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -12],
   });
 };
 
@@ -234,39 +261,57 @@ const Mapa = memo(function Mapa() {
               </div>
             </Popup>
           </Marker>
+          
+          {/* Radio de 5km alrededor de la ubicación central */}
+          <Circle 
+            center={PLAZA_14_SEPTIEMBRE} 
+            radius={5000} 
+            pathOptions={{ fillColor: 'rgba(76, 175, 80, 0.1)', fillOpacity: 0.1, color: '#4CAF50', weight: 1 }} 
+          />
+          
+          {/* Marcadores de fixers disponibles */}
+          {FIXERS_DATA.map(fixer => (
+            <Marker 
+              key={fixer.id} 
+              position={fixer.location} 
+              icon={createFixerIcon(L)}
+            >
+              <Popup>
+                <div className="p-2 text-center">
+                  <h3 className="font-bold text-lg">{fixer.name}</h3>
+                  <p className="text-gray-700 mb-2">{fixer.profession}</p>
+                  <div className="flex items-center justify-center mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-500">
+                        {i < Math.floor(fixer.rating) ? "★" : (i < fixer.rating ? "⯨" : "☆")}
+                      </span>
+                    ))}
+                    <span className="ml-1 text-sm text-gray-600">({fixer.rating})</span>
+                  </div>
+                  <div className="flex justify-center space-x-2 mt-3">
+                    <a 
+                      href={`https://wa.me/${fixer.phone.replace(/[^0-9]/g, '')}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm flex items-center"
+                    >
+                      <span className="mr-1">WhatsApp</span>
+                    </a>
+                    <a 
+                      href={fixer.profileUrl} 
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm flex items-center"
+                    >
+                      <span className="mr-1">Ver Perfil</span>
+                    </a>
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
         </MapContainer>
       </div>
       
-      {/* Información adicional */}
-      <div className={styles.infoSection}>
-        <h3 className={styles.infoTitle}>Funcionalidades del Mapa:</h3>
-        <div className={styles.infoGrid}>
-          <div>
-            <h4 className={styles.infoSubtitle}>Controles:</h4>
-            <ul className={styles.infoList}>
-              <li className={styles.infoItem}>• Zoom in/out con la rueda del mouse</li>
-              <li className={styles.infoItem}>• Arrastra para mover el mapa</li>
-              <li className={styles.infoItem}>• Doble clic para hacer zoom</li>
-              <li className={styles.infoItem}>• Toque y arrastra en dispositivos móviles</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className={styles.infoSubtitle}>Marcadores:</h4>
-            <ul className={styles.infoList}>
-              <li className={styles.infoItem}>• 🔵 Punto azul: Tu ubicación actual</li>
-              <li className={styles.infoItem}>• 🔴 Punto rojo: Plaza 14 de Septiembre</li>
-              <li className={styles.infoItem}>• Haz clic en los marcadores para más información</li>
-            </ul>
-          </div>
-        </div>
-        {!userPosition && (
-          <div className={styles.tipBox}>
-            <p className={styles.tipText}>
-              💡 <strong>Tip:</strong> Permite el acceso a tu ubicación para una mejor experiencia
-            </p>
-          </div>
-        )}
-      </div>
+      {/* Se eliminó el recuadro de funcionalidades del mapa */}
     </div>
   );
 });

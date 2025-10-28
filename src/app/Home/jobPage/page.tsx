@@ -5,13 +5,11 @@ import jobs from '@/jsons/jobs.json'
 import React from 'react'
 import Image from 'next/image'
 
-
-export default function jobPage() {
-
+export default function JobPage() {
   const params = useSearchParams()
-  const idJob:any = params.get("idJob")
+  const idJob:string | null = params.get("idJob")
 
-  const job = jobs[idJob]
+  const job = jobs[idJob as keyof typeof jobs]
 
   return (
     <div className='p-[10px]'>

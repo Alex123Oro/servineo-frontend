@@ -1,7 +1,11 @@
-import ServicesGrid from "../components/hu5/ServicesGrid";
+import ServiciosPage from './servicios';
 
-export const metadata = { title: "Servicios | Servineo" };
-
-export default function ServiciosPage() {
-  return <ServicesGrid pageSize={12} />;
+export default function Page() {
+  return <ServiciosPage 
+    showHero={true} 
+    showAllServices={true} 
+    showCTA={false} 
+    title="Todos Nuestros Servicios"
+    subtitle="Explora la gama completa de soluciones que ofrecemos para tu hogar"
+  />;
 }

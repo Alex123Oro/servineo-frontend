@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../../styles/hu5/ServicesGrid.module.css";
-
+import Image from 'next/image';
 type Service = {
   id: string;
   name: string;
@@ -92,13 +92,15 @@ export default function ServicesGrid({ pageSize = 12 }: { pageSize?: number }) {
   );
 
   // Mantener scroll al volver
-  useEffect(() => {
+ useEffect(() => {
     const key = "hu5-services-scroll";
     const saved = sessionStorage.getItem(key);
-    if (saved && listRef.current) listRef.current.scrollTo({ top: parseInt(saved, 10) });
-    return () => { if (listRef.current) sessionStorage.setItem(key, String(listRef.current.scrollTop)); };
+    const currentRef = listRef.current; // Guardar referencia
+    if (saved && currentRef) currentRef.scrollTo({ top: parseInt(saved, 10) });
+    return () => { 
+      if (currentRef) sessionStorage.setItem(key, String(currentRef.scrollTop)); 
+    };
   }, []);
-
   const slice = filtered.slice(0, visible);
   const canLoadMore = filtered.length > visible;
 
@@ -157,10 +159,16 @@ export default function ServicesGrid({ pageSize = 12 }: { pageSize?: number }) {
           >
             <div className={styles.imgbox}>
               {s.imageUrl ? (
-                <img
+                <Image
                   src={s.imageUrl}
                   alt={`Imagen de ${s.name}`}
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                  width={300}
+                  height={200}
+                  className={styles.img}
+                  onError={(e) => { 
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = "none";
+                  }}
                 />
               ) : (
                 <div className={styles.placeholderIcon} aria-hidden="true">🔧</div>
