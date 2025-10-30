@@ -37,9 +37,7 @@ const Header = () => {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  useEffect(() => setIsClient(true), []);
 
   //logica modal registro
   useEffect(() => {
@@ -67,9 +65,22 @@ const Header = () => {
     win.__booka_userProfileInitialized = true;
   }
 
-  // Carga estado inicial desde userProfileLogic
-  const currentUser = (window as any).userProfile || mockUser;
-  const loggedIn = !!(window as any).isAuthenticated;
+    // Carga estado inicial: primero intentar leer desde localStorage usando el deviceId
+  const deviceId = localStorage.getItem('booka_device_id') || (window as any)?.deviceId || 'dev-default';
+  let currentUser: any = mockUser;
+  try {
+    const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}') || {};
+    if (usersStore.sessions && usersStore.sessions[deviceId]) {
+      currentUser = usersStore.sessions[deviceId];
+    } else if ((window as any).userProfile) {
+      currentUser = (window as any).userProfile;
+    } else {
+      currentUser = mockUser;
+    }
+  } catch (e) {
+    currentUser = (window as any).userProfile || mockUser;
+  }
+  const loggedIn = !!currentUser?.loggedIn;
   setUser(currentUser);
   setIsAuthenticated(loggedIn);
 
@@ -337,7 +348,7 @@ const Header = () => {
                  {user.photo?.startsWith('data:') ? (
   <img src={user.photo} alt="Avatar" width={32} height={32} className="rounded-full" />
 ) : (
-  <Image src={user.photo || "/avatar.png"} alt="Avatar" width={32} height={32} className="rounded-full" />
+  <Image src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"} alt="Avatar" width={32} height={32} className="rounded-full" />
 )}
 
                   <span className="font-medium text-gray-800">{user.name.split(' ')[0]}</span>
@@ -388,7 +399,7 @@ const Header = () => {
                     aria-label="Abrir menú de perfil"
                   >
                     <Image
-                      src={user.photo}
+                      src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"}
                       alt="Avatar"
                       width={24}
                       height={24}
@@ -472,7 +483,11 @@ const Header = () => {
             ×
           </span>
         </div>
-        <img className="profile-preview" src={user.photo} alt="Foto" />
+        <img
+  className="profile-preview"
+  src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"}
+  alt="Foto"
+/>
         <p className="font-medium">{user.name}</p>
         <p className="text-gray-500 text-sm mb-2">{user.email}</p>
         <p className="text-gray-500 text-sm mb-2">{user.phone || 'Sin número registrado'}</p>
@@ -494,3 +509,4 @@ const Header = () => {
 };
 
 export default Header;
+

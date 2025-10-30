@@ -13,7 +13,7 @@ body {
   min-height: 100vh;
 }
 
-/* ===================== HEADER / LOGO / NAV ===================== */
+/* ===================== NAV ===================== */
 
 header h1 {
   font-size: 22px;
@@ -272,3 +272,84 @@ header h1 {
 main {
   padding-top: 92px;
 }
+
+/* ===================== MEJORA DE ACCESIBILIDAD EN MODO ALTO CONTRASTE ===================== */
+
+@media (forced-colors: active), (prefers-contrast: more) {
+  body,
+  header,
+  .modal,
+  .profile-menu {
+    background: Canvas !important;
+    color: CanvasText !important;
+    forced-color-adjust: none;
+  }
+
+  /* Botones visibles */
+  .btn {
+    background: ButtonFace !important;
+    color: ButtonText !important;
+    border: 2px solid ButtonText !important;
+    forced-color-adjust: none;
+  }
+
+  .btn:hover {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
+  /* Íconos y menú de perfil */
+  .profile-icon {
+    border: 2px solid ButtonText !important;
+    forced-color-adjust: none;
+  }
+
+  .profile-menu {
+    border: 2px solid ButtonText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    forced-color-adjust: none;
+  }
+
+  .menu-item {
+    background: transparent !important;
+    color: ButtonText !important;
+    border: 1px solid ButtonText !important;
+    forced-color-adjust: none;
+  }
+
+  .menu-item:hover {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
+  /* Cerrar (X) siempre visible */
+  .menu-header .close-btn {
+    color: ButtonText !important;
+    font-weight: bold;
+  }
+
+  /* Texto en inputs y labels */
+  .modal label,
+  .modal input,
+  .modal small,
+  .modal select {
+    color: CanvasText !important;
+    background: Canvas !important;
+    border: 1px solid ButtonText !important;
+    forced-color-adjust: none;
+  }
+
+  /* Contraste de la barra de fortaleza de contraseña */
+  .password-strength {
+    background: GrayText !important;
+  }
+  .password-strength > i {
+    background: Highlight !important;
+  }
+}
+
+.strength-weak i { background-color: #f44336; }
+.strength-medium i { background-color: #ff9800; }
+.strength-strong i { background-color: #4caf50; }
+

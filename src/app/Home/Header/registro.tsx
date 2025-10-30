@@ -11,34 +11,51 @@ const Registro: React.FC<RegistroProps> = ({ isOpen, onClose }) => {
   const [user, setUser] = React.useState(mockUser);
 
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (isOpen && typeof window !== 'undefined') {
       try {
-        const profile = (window as any)?.userProfile || mockUser;
-        setUser(profile);
+        const saved =
+          JSON.parse(localStorage.getItem('booka_user') || 'null') ||
+          (window as any)?.userProfile ||
+          mockUser;
+        setUser(saved);
       } catch (e) {
-        console.error('Error al obtener userProfile:', e);
+        console.error('Error al cargar userProfile:', e);
         setUser(mockUser);
       }
     }
-  }, []);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleContinuar = () => {
+ const handleContinuar = () => {
     try {
       const u = { ...user, loggedIn: true };
 
-      const deviceId = (window as any)?.deviceId || 'dev-default';
-      const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{"sessions":{}}');
+      // Device ID (de userProfileLogic)
+      const deviceId =
+        localStorage.getItem('booka_device_id') ||
+        (window as any)?.deviceId ||
+        'dev-default';
 
+      // Guardar en almacenamiento local
+      const usersStoreRaw = localStorage.getItem('booka_users') || null;
+      const usersStore = usersStoreRaw ? JSON.parse(usersStoreRaw) : { sessions: {} };
+
+      usersStore.sessions = usersStore.sessions || {};
       usersStore.sessions[deviceId] = u;
       usersStore.lastUpdated = Date.now();
-      localStorage.setItem('booka_users', JSON.stringify(usersStore));
 
+      localStorage.setItem('booka_users', JSON.stringify(usersStore));
+      localStorage.setItem('booka_user', JSON.stringify(u));
+
+      // Actualizar estado global
       (window as any).userProfile = u;
       (window as any).isAuthenticated = true;
 
-      window.dispatchEvent(new Event('storage'));
+      // Emitir eventos globales
+      window.dispatchEvent(new CustomEvent('booka-auth-updated', { detail: u }));
+      window.dispatchEvent(new CustomEvent('booka-profile-updated', { detail: u }));
+
       onClose();
     } catch (err) {
       console.error('Error al continuar sesión:', err);
