@@ -1,7 +1,6 @@
-
 'use client';
 import React from 'react';
-import { mockUser } from '@/app/Home/UserProfile/UI/mockUser'; // asegúrate de tener este archivo
+import { mockUser } from '@/app/Home/UserProfile/UI/mockUser'; 
 
 interface RegistroProps {
   isOpen: boolean;

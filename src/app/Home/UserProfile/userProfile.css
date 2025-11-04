@@ -1,3 +1,5 @@
+#userProfileRoot main { display: none; }
+
 /* ===================== ESTILOS: GENERALES ===================== */
 * {
   margin: 0;
@@ -352,3 +354,97 @@ main {
 .strength-weak i { background-color: #f44336; }
 .strength-medium i { background-color: #ff9800; }
 .strength-strong i { background-color: #4caf50; }
+
+
+.photo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.photo-container input[type="file"] {
+  display: none;
+}
+
+.photo-preview {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 3px solid #2B6AF0;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: #fff;
+  font-size: 13px;
+}
+
+.photo-overlay .camera-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.photo-preview:hover .photo-overlay {
+  opacity: 1;
+}
+
+/* ===================== MEJOR ESTILO PARA NOTIFICACIONES ===================== */
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: #f8f8f8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  transition: 0.2s;
+}
+
+.toggle:hover {
+  background: #eef3ff;
+  border-color: #2B6AF0;
+}
+
+.toggle input[type="checkbox"] {
+  accent-color: #2B6AF0;
+  width: 18px;
+  height: 18px;
+}
+
+.profile-menu {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;            
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;   
+  touch-action: pan-y;           
+}
+
+@media (max-width: 480px) {
+  .profile-menu {
+    max-height: calc(100vh - 90px);
+    right: 3%;
+    width: 94%;
+  }
+}

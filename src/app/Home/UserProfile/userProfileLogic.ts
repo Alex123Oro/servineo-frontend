@@ -44,9 +44,21 @@ function injectUserProfileHTMLIfNeeded(): void {
   const container = document.createElement("div");
   container.id = "userProfileRoot";
   container.innerHTML = `
-  <main aria-hidden="true">
+  <main aria-hidden="true" style="display:none">
       <div id="editModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="editTitle" aria-hidden="true" style="display:none">
         <h2 id="editTitle">Editar perfil</h2>
+
+      <div class="photo-container">
+        <input id="photoInput" type="file" accept="image/*" aria-label="Cambiar foto de perfil" />
+        <div class="photo-preview" id="photoPreviewContainer">
+          <img id="photoPreviewImg" src="/avatar.png" alt="Foto de perfil" />
+          <div class="photo-overlay">
+            <span class="camera-icon">📷</span>
+            <p>Cambiar foto</p>
+          </div>
+        </div>
+      </div>
+
         <label for="nameInput">Nombre completo</label>
         <input id="nameInput" type="text" placeholder="Nombre y apellidos" aria-required="true" />
         <small id="nameErr" class="error" style="display:none"></small>
@@ -59,8 +71,9 @@ function injectUserProfileHTMLIfNeeded(): void {
         <input id="phoneInput" type="tel" placeholder="71234567" aria-required="false" />
         <small id="phoneErr" class="error" style="display:none"></small>
 
-        <label for="photoInput">Cambiar foto de perfil</label>
-        <input id="photoInput" type="file" accept="image/*" aria-label="Cambiar foto de perfil" />
+        <label class="toggle" style="margin-top:8px">
+          <input type="checkbox" id="notifToggle" /> Notificaciones
+        </label>
 
         <div id="passwordSection">
           <label>Contraseña</label>
@@ -69,10 +82,6 @@ function injectUserProfileHTMLIfNeeded(): void {
             <button type="button" class="btn" id="changePasswordBtn" style="padding:6px 10px;font-size:13px">Cambiar contraseña</button>
           </div>
         </div>
-
-        <label class="toggle" style="margin-top:8px">
-          <input type="checkbox" id="notifToggle" /> Notificaciones
-        </label>
 
         <div id="passwordChangeFields" style="display:none;flex-direction:column;gap:12px;margin-top:10px">
           <label for="currentPassword">Contraseña actual</label>
@@ -103,14 +112,14 @@ function injectUserProfileHTMLIfNeeded(): void {
       </div>
 
       <div id="profileModal" class="modal" aria-hidden="true" style="display:none">
-        <h2>Mi perfil</h2>
-        <img id="profileViewPhoto" src="https://i.pravatar.cc/100?u=default" alt="Foto de perfil" style="width:120px;height:120px;border-radius:50%;margin:auto;object-fit:cover;border:3px solid #2B6AF0" />
-        <p><strong>Nombre:</strong> <span id="profileViewName"></span></p>
-        <p><strong>Correo:</strong> <span id="profileViewEmail"></span></p>
-        <p><strong>Teléfono:</strong> <span id="profileViewPhone"></span></p>
-        <button class="btn" id="closeProfileViewBtn">Cerrar</button>
-      </div>
-    </main>
+      <h2>Mi perfil</h2>
+      <img id="profileViewPhoto" src="https://i.pravatar.cc/100?u=default" alt="Foto de perfil" style="width:120px;height:120px;border-radius:50%;margin:auto;object-fit:cover;border:3px solid #2B6AF0" />
+      <p><strong>Nombre:</strong> <span id="profileViewName"></span></p>
+      <p><strong>Correo:</strong> <span id="profileViewEmail"></span></p>
+      <p><strong>Teléfono:</strong> <span id="profileViewPhone"></span></p>
+      <button class="btn" id="closeProfileViewBtn">Cerrar</button>
+    </div>
+  </main>
   `;
   document.body.appendChild(container);
 }
@@ -219,6 +228,36 @@ if (!existingSession || isEmptySession) {
   const emailInput = document.getElementById("emailInput") as HTMLInputElement | null;
   const phoneInput = document.getElementById("phoneInput") as HTMLInputElement | null;
   const photoInput = document.getElementById("photoInput") as HTMLInputElement | null;
+  
+  const photoPreviewImg = document.getElementById("photoPreviewImg") as HTMLImageElement | null;
+const photoPreviewContainer = document.getElementById("photoPreviewContainer") as HTMLElement | null;
+
+if (photoInput && photoPreviewImg && photoPreviewContainer) {
+  const openFilePicker = () => photoInput.click();
+  photoPreviewImg.addEventListener("click", openFilePicker);
+  photoPreviewContainer.addEventListener("click", openFilePicker);
+
+  // Mostrar la foto actual guardada del usuario
+  const u = JSON.parse(localStorage.getItem("booka_user") || "null");
+  if (u && u.photo) {
+    photoPreviewImg.src = u.photo;
+  } else {
+    photoPreviewImg.src = "/avatar.png"; // avatar por defecto
+  }
+
+  // Actualizar vista previa al seleccionar nueva imagen
+  photoInput.addEventListener("change", (e: any) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (photoPreviewImg) photoPreviewImg.src = ev.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
 
   const nameErr = document.getElementById("nameErr") as HTMLElement | null;
   const emailErr = document.getElementById("emailErr") as HTMLElement | null;
@@ -305,6 +344,7 @@ if (!existingSession || isEmptySession) {
   window.userProfile = user;
   window.isAuthenticated = true;
   renderUI();
+  updateMaskedPassword();
 
   alert(
     "Bienvenido a Servineo\n\nPara acceder a la opción \"Ayuda\", inicia sesión o crea una cuenta."
@@ -524,6 +564,13 @@ if (!existingSession || isEmptySession) {
     pwErr.style.display = "block";
     return;
   }
+  
+  // 🚫 No permitir reutilizar la misma contraseña actual
+  if (u.password && newPw === u.password) {
+    pwErr.textContent = "La nueva contraseña no puede ser igual a la actual.";
+    pwErr.style.display = "block";
+    return;
+  }
 
   const s = passwordStrength(newPw);
   if (s < 4) {
@@ -536,10 +583,9 @@ if (!existingSession || isEmptySession) {
   u.password = newPw;
   setUserForDevice(u);
   localStorage.setItem("booka_user", JSON.stringify(u));
-const masked = document.getElementById("maskedPassword") as HTMLElement | null;
-if (masked) {
-  masked.textContent = "•".repeat(newPw.length);
-}
+  const masked = document.getElementById("maskedPassword") as HTMLElement | null;
+  updateMaskedPassword();
+
 
   const storeRaw = localStorage.getItem("booka_users");
   const store = storeRaw ? JSON.parse(storeRaw) : { sessions: {} };
@@ -566,6 +612,24 @@ if (masked) {
   }
   pwErr.style.display = "none";
 }
+
+// --- Inserta esta función cerca de renderUI ---
+function updateMaskedPassword(): void {
+  try {
+    const masked = document.getElementById("maskedPassword") as HTMLElement | null;
+    const u = getUser(); 
+    if (!masked) return;
+
+    if (u && u.password && typeof u.password === "string" && u.password.length > 0) {
+      masked.textContent = "•".repeat(u.password.length);
+    } else {
+      masked.textContent = "•".repeat(6);
+    }
+  } catch (err) {
+    console.warn("[userProfileLogic] updateMaskedPassword error:", err);
+  }
+}
+
    // ================== EDITAR Y CONVERTIR ==================
   function openEdit(): void {
   
@@ -594,38 +658,72 @@ if (masked) {
       barInner.className = "";
     }
   }
+  updateMaskedPassword();
   const editModal = document.getElementById("editModal") as HTMLElement | null;
   if (editModal) {
     const mainContainer = editModal.closest("main") as HTMLElement | null;
-    if (mainContainer) mainContainer.style.display = "flex";
+    if (mainContainer) {
+      // Mostrar como overlay fijo para no alterar el flujo del documento
+      mainContainer.style.display = "flex";
+      mainContainer.style.position = "fixed";
+      mainContainer.style.inset = "0";             // top:0; right:0; bottom:0; left:0
+      mainContainer.style.width = "100%";
+      mainContainer.style.height = "100vh";
+      mainContainer.style.justifyContent = "center";
+      mainContainer.style.alignItems = "center";
+      mainContainer.style.background = "rgba(0,0,0,0.35)"; // overlay suave
+      mainContainer.style.zIndex = "300";         // por encima del footer
+      mainContainer.style.overflow = "auto";
 
+      // Si tu CSS global aplica padding-top:92px a main, anularlo cuando modal abierto:
+      mainContainer.style.paddingTop = "0";
+    }
+
+    // Mostrar el modal (el modal ya es position: fixed en CSS)
     editModal.classList.add("show");
     editModal.setAttribute("aria-hidden", "false");
     editModal.style.display = "flex";
-    editModal.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Centrar en viewport
+    try { editModal.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
   } else {
     console.error("[userProfileLogic] No se encontró el #editModal en el DOM.");
   }
 
+  // esconder mensajes de error previos
   if (nameErr) nameErr.style.display = "none";
   if (emailErr) emailErr.style.display = "none";
   if (phoneErr) phoneErr.style.display = "none";
   if (pwErr) pwErr.style.display = "none";
+
 }
 
-  function closeEdit(): void {
-    const root = document.getElementById("userProfileRoot") as HTMLElement | null;
-    const mainContainer = root?.querySelector("main") as HTMLElement | null;
-    const editModal = document.getElementById("editModal") as HTMLElement | null;
+function closeEdit(): void {
+  const root = document.getElementById("userProfileRoot") as HTMLElement | null;
+  const mainContainer = root?.querySelector("main") as HTMLElement | null;
+  const editModal = document.getElementById("editModal") as HTMLElement | null;
 
-    if (mainContainer) mainContainer.style.display = "none";
-    if (editModal) {
-      editModal.classList.remove("show");
-      editModal.removeAttribute("aria-hidden");
-      editModal.style.display = "none";
-    }
+  if (mainContainer) {
+    // Revertir los cambios hechos al main
+    mainContainer.style.display = "none";
+    mainContainer.style.position = "";
+    mainContainer.style.inset = "";
+    mainContainer.style.width = "";
+    mainContainer.style.height = "";
+    mainContainer.style.justifyContent = "";
+    mainContainer.style.alignItems = "";
+    mainContainer.style.background = "";
+    mainContainer.style.zIndex = "";
+    mainContainer.style.overflow = "";
+    mainContainer.style.paddingTop = ""; // vuelve al estilo del sitio
   }
 
+  if (editModal) {
+    editModal.classList.remove("show");
+    editModal.removeAttribute("aria-hidden");
+    editModal.style.display = "none";
+  }
+
+}
   function convertFixer(): void {
     const u = (window.userProfile as User) || getUser() || mockUser;
     if (confirm(`¿Deseas convertirte en Fixer, ${u.name || "usuario"}?`)) {
@@ -707,7 +805,7 @@ if (masked) {
   window.userProfile = session; 
   window.isAuthenticated = !!(session && session.loggedIn);
   renderUI();
-
+  updateMaskedPassword();
   // ================== LISTENERS DE BOTONES ==================
   if (saveProfileBtn) saveProfileBtn.addEventListener("click", saveProfile);
   if (cancelEditBtn) cancelEditBtn.addEventListener("click", closeEdit);

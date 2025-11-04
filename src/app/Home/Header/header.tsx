@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -138,22 +137,7 @@ const Header = () => {
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, [isMenuOpen]);
-
-  // Ajustar posición del menú al hacer scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const icon = iconRef.current;
-      const menu = menuRef.current;
-      if (icon && menu && isMenuOpen) {
-        const rect = icon.getBoundingClientRect();
-        menu.style.top = rect.bottom + 10 + "px";
-        menu.style.right = window.innerWidth - rect.right + "px";
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMenuOpen]);
-
+  
   // ========= Funciones de perfil =========
   const onLogout = () => {
     console.log('👋 Clic en cerrar sesión');
