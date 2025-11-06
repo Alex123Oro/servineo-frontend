@@ -1,6 +1,6 @@
 #userProfileRoot main { display: none; }
 
-/* ===================== ESTILOS: GENERALES ===================== */
+/* ===================== ESTILOS GENERALES ===================== */
 * {
   margin: 0;
   padding: 0;
@@ -15,13 +15,7 @@ body {
   min-height: 100vh;
 }
 
-/* ===================== NAV ===================== */
-
-header h1 {
-  font-size: 22px;
-}
-
-
+/* ===================== BOTONES GENERALES ===================== */
 .btn {
   background: #2B6AF0;
   color: #fff;
@@ -29,7 +23,7 @@ header h1 {
   padding: 8px 14px;
   border-radius: 8px;
   cursor: pointer;
-  transition: .2s;
+  transition: all 0.2s ease;
   font-weight: 600;
 }
 
@@ -38,7 +32,7 @@ header h1 {
   color: #000;
 }
 
-/* ===================== ICONO / MENÚ DE PERFIL ===================== */
+/* ===================== ICONO Y MENÚ DE PERFIL ===================== */
 .profile-icon {
   width: 45px;
   height: 45px;
@@ -54,7 +48,7 @@ header h1 {
 }
 
 .profile-menu {
-  position: fixed; 
+  position: fixed;
   top: 70px;
   right: 20px;
   background: #fff;
@@ -68,6 +62,11 @@ header h1 {
   gap: 8px;
   z-index: 99;
   transition: top 0.1s ease;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .profile-menu.show {
@@ -75,18 +74,33 @@ header h1 {
   animation: fadeIn .18s ease;
 }
 
+/* === ITEMS DEL MENÚ PERFIL === */
 .menu-item {
   padding: 10px;
   border-radius: 8px;
   cursor: pointer;
   text-align: left;
-  transition: .15s;
   font-weight: 600;
+  transition: all 0.15s ease;
+  border: 1px solid #d0d4e6;
+  background: #f8f9ff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
 .menu-item:hover {
-  background: #759AE0;
+  background: #2B6AF0;
   color: #fff;
+  border-color: #2B6AF0;
+  box-shadow: 0 2px 6px rgba(43,106,240,0.25);
+}
+
+/* === Botones especiales del menú === */
+#logoutBtn.menu-item:hover {
+  background: #2B31E0;
+}
+
+#convertFixer.menu-item:hover {
+  background: #1AA7ED;
 }
 
 .menu-header {
@@ -101,16 +115,6 @@ header h1 {
   font-weight: bold;
 }
 
-#logoutBtn.menu-item:hover {
-  background: #5E2BE0;
-  color: #fff;
-}
-
-#convertFixer.menu-item:hover {
-  background: #1AA7ED;
-  color: #fff;
-}
-
 .profile-preview {
   width: 82px;
   height: 82px;
@@ -120,6 +124,7 @@ header h1 {
   border: 3px solid #fff;
   background: #f0f0f0;
 }
+
 /* ===================== MODALES ===================== */
 .modal {
   position: fixed;
@@ -131,7 +136,7 @@ header h1 {
   padding: 18px;
   box-shadow: 0 6px 30px rgba(0, 0, 0, .2);
   z-index: 200;
-  width: 420px;
+  width: 360px;
   display: none;
   flex-direction: column;
   gap: 10px;
@@ -172,190 +177,38 @@ header h1 {
   flex: 1;
 }
 
+/* ===================== ANIMACIONES ===================== */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-/* ===================== SECCIÓN: RESPONSIVE & ACCESIBILIDAD ===================== */
-@media (max-width: 480px) {
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px;
-  }
 
-  nav {
-    width: 100%;
-    justify-content: center;
-    margin-top: 8px;
-    flex-wrap: wrap;
-  }
-
-  .profile-menu {
-    width: 94%;
-    right: 3%;
-    top: 88px;
-  }
-
-  .modal {
-    width: 95%;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  .modal input {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-contrast: more) {
-  body,
-  header,
-  .modal,
-  .profile-menu {
-    background: #fff !important;
-    color: #000 !important;
-  }
-
-  .btn {
-    background: #2B31E0 !important;
-    color: #fff !important;
-    border: 2px solid #2B31E0 !important;
-  }
-
-  .menu-item:hover {
-    background: #000 !important;
-    color: #fff !important;
-  }
-}
-/* ===================== ACCESIBILIDAD Y UTILIDADES ===================== */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  white-space: nowrap;
-  border: 0;
-}
-
+/* ===================== TOGGLE (notificaciones) ===================== */
 .toggle {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  background: #f8f8f8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
 }
 
-.password-strength {
-  height: 8px;
-  border-radius: 6px;
-  background: #eee;
-  overflow: hidden;
+.toggle:hover {
+  background: #eef3ff;
+  border-color: #2B6AF0;
 }
 
-.password-strength > i {
-  display: block;
-  height: 100%;
-  width: 0%;
-  transition: width .2s;
+.toggle input[type="checkbox"] {
+  accent-color: #2B6AF0;
+  width: 18px;
+  height: 18px;
 }
 
-.profile-menu {
-  transition: top 0.1s ease;
-}
-
-
-.strength-weak { background: #5E2BE0; }
-.strength-medium { background: #2B6AF0; }
-.strength-strong { background: #1AA7ED; }
-
-main {
-  padding-top: 92px;
-}
-
-/* ===================== MEJORA DE ACCESIBILIDAD EN MODO ALTO CONTRASTE ===================== */
-
-@media (forced-colors: active), (prefers-contrast: more) {
-  body,
-  header,
-  .modal,
-  .profile-menu {
-    background: Canvas !important;
-    color: CanvasText !important;
-    forced-color-adjust: none;
-  }
-
-  /* Botones visibles */
-  .btn {
-    background: ButtonFace !important;
-    color: ButtonText !important;
-    border: 2px solid ButtonText !important;
-    forced-color-adjust: none;
-  }
-
-  .btn:hover {
-    background: Highlight !important;
-    color: HighlightText !important;
-  }
-
-  /* Íconos y menú de perfil */
-  .profile-icon {
-    border: 2px solid ButtonText !important;
-    forced-color-adjust: none;
-  }
-
-  .profile-menu {
-    border: 2px solid ButtonText !important;
-    background: Canvas !important;
-    color: CanvasText !important;
-    forced-color-adjust: none;
-  }
-
-  .menu-item {
-    background: transparent !important;
-    color: ButtonText !important;
-    border: 1px solid ButtonText !important;
-    forced-color-adjust: none;
-  }
-
-  .menu-item:hover {
-    background: Highlight !important;
-    color: HighlightText !important;
-  }
-
-  /* Cerrar (X) siempre visible */
-  .menu-header .close-btn {
-    color: ButtonText !important;
-    font-weight: bold;
-  }
-
-  /* Texto en inputs y labels */
-  .modal label,
-  .modal input,
-  .modal small,
-  .modal select {
-    color: CanvasText !important;
-    background: Canvas !important;
-    border: 1px solid ButtonText !important;
-    forced-color-adjust: none;
-  }
-
-  /* Contraste de la barra de fortaleza de contraseña */
-  .password-strength {
-    background: GrayText !important;
-  }
-  .password-strength > i {
-    background: Highlight !important;
-  }
-}
-
-.strength-weak i { background-color: #f44336; }
-.strength-medium i { background-color: #ff9800; }
-.strength-strong i { background-color: #4caf50; }
-
-
+/* ===================== PHOTO PREVIEW ===================== */
 .photo-container {
   display: flex;
   flex-direction: column;
@@ -408,43 +261,137 @@ main {
   opacity: 1;
 }
 
-/* ===================== MEJOR ESTILO PARA NOTIFICACIONES ===================== */
-.toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  background: #f8f8f8;
-  padding: 8px 12px;
-  border-radius: 8px;
-  margin-top: 10px;
-  border: 1px solid #ccc;
-  transition: 0.2s;
+/* ===================== CONTRASEÑA Y FORTALEZA ===================== */
+.password-strength {
+  height: 8px;
+  border-radius: 6px;
+  background: #eee;
+  overflow: hidden;
 }
 
-.toggle:hover {
-  background: #eef3ff;
-  border-color: #2B6AF0;
+.password-strength > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  transition: width .2s;
 }
 
-.toggle input[type="checkbox"] {
-  accent-color: #2B6AF0;
-  width: 18px;
-  height: 18px;
-}
+.strength-weak { background: #5E2BE0; }
+.strength-medium { background: #2B6AF0; }
+.strength-strong { background: #1AA7ED; }
 
-.profile-menu {
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;            
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;   
-  touch-action: pan-y;           
-}
-
-@media (max-width: 480px) {
-  .profile-menu {
-    max-height: calc(100vh - 90px);
-    right: 3%;
-    width: 94%;
+/* ===================== ACCESIBILIDAD Y CONTRASTE ALTO ===================== */
+@media (forced-colors: active), (prefers-contrast: more) {
+  body, header, .modal, .profile-menu {
+    background: Canvas !important;
+    color: CanvasText !important;
   }
+
+  .btn, .menu-item {
+    background: ButtonFace !important;
+    color: ButtonText !important;
+    border: 2px solid ButtonText !important;
+  }
+
+  .btn:hover, .menu-item:hover {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
+  .profile-icon {
+    border: 2px solid ButtonText !important;
+  }
+
+  .modal input,
+  .modal select,
+  .modal label {
+    border: 1px solid ButtonText !important;
+    color: CanvasText !important;
+    background: Canvas !important;
+  }
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 480px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  nav {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .profile-menu {
+    width: 94%;
+    right: 3%;
+    top: 88px;
+    max-height: calc(100vh - 90px);
+  }
+
+  .modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .modal input {
+    font-size: 16px;
+  }
+}
+
+/* ===================== MODAL RECORTE DE IMAGEN ===================== */
+#cropModal {
+  z-index: 9999 !important;
+  width: min(520px, 92%) !important;
+  max-width: 520px;
+  padding: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+  border-radius: 12px;
+  background: #fff;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+#cropModal .btn { 
+  padding: 8px 12px; 
+  border-radius: 8px; 
+}
+
+#cropModal h3 { 
+  margin-bottom: 8px; 
+  font-size: 16px; 
+}
+
+#cropArea { 
+  width: 420px; 
+  height: 420px; 
+  max-width: 90vw; 
+  max-height: 90vw; 
+  touch-action: none; 
+  -webkit-user-drag: none; 
+  -webkit-tap-highlight-color: transparent; 
+}
+
+#cropOverlay svg circle { 
+  vector-effect: non-scaling-stroke; 
+}
+/* En escritorio, alinear modal con el menú */
+#editModal.modal {
+  top: 70px;
+  right: 20px;
+  left: auto;
+  transform: none;
+  width: 360px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  position: fixed;
+}
+#editModal.modal {
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 12px;
 }
