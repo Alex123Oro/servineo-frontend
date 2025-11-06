@@ -85,17 +85,31 @@ function injectUserProfileHTMLIfNeeded(): void {
 
       <div id="passwordChangeFields" style="display:none;flex-direction:column;gap:12px;margin-top:10px">
         <label for="currentPassword">Contraseña actual</label>
-        <div style="position:relative">
-          <input type="password" id="currentPassword" style="width:100%;padding-right:35px" />
-          <button type="button" class="togglePw" id="toggleCurrentPwd" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">👁</button>
-        </div>
+          <div style="position:relative">
+    <input type="password" id="currentPassword" style="width:100%;padding-right:35px" />
+    <button type="button" class="togglePw" id="toggleCurrentPwd"
+      style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">
+      <!-- ICONO OJO NORMAL -->
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
+        <circle cx="12" cy="12" r="3" fill="black"/>
+      </svg>
+    </button>
+  </div>
 
-        <label for="newPassword">Nueva contraseña</label>
-        <div style="position:relative">
-          <input type="password" id="newPassword" style="width:100%;padding-right:35px" />
-          <button type="button" class="togglePw" id="toggleNewPwd" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">👁</button>
-        </div>
+  <label for="newPassword">Nueva contraseña</label>
 
+  <div style="position:relative">
+    <input type="password" id="newPassword" style="width:100%;padding-right:35px" />
+    <button type="button" class="togglePw" id="toggleNewPwd"
+      style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">
+      <!-- ICONO OJO NORMAL -->
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
+        <circle cx="12" cy="12" r="3" fill="black"/>
+      </svg>
+    </button>
+  </div>
         <div id="pwBar" class="password-strength"><i></i></div>
         <small id="pwErr" class="error" style="display:none"></small>
 
@@ -449,7 +463,7 @@ let _cropScale = 1;
 let _cropOffset = { x: 0, y: 0 };
 let _isDragging = false;
 let _lastPointer = { x: 0, y: 0 };
-let _naturalSize = { w: 0, h: 0 };
+const _naturalSize = { w: 0, h: 0 };
 
 // --- abrir crop modal con file ---
 function openCropModal(file: File) {
@@ -921,27 +935,72 @@ function togglePasswordChange(): void {
 function cancelPasswordChange(): void {
   const pwSection = document.getElementById("passwordSection");
   const pwFields = document.getElementById("passwordChangeFields");
-  if (pwSection) (pwSection as HTMLElement).style.display = "block";
-  if (pwFields) (pwFields as HTMLElement).style.display = "none";
+
+  if (pwSection) pwSection.style.display = "block";
+  if (pwFields) pwFields.style.display = "none";
+
+  // limpiar valores
   if (currentPassword) currentPassword.value = "";
   if (newPassword) newPassword.value = "";
+
+  // reiniciar tipo y icono (seguridad)
+  const inputs = [
+    { id: "currentPassword", btnId: "toggleCurrentPwd" },
+    { id: "newPassword", btnId: "toggleNewPwd" },
+  ];
+
+  const eyeOpen = `
+    <svg width="20" height="20" viewBox="0 0 24 24">
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
+      <circle cx="12" cy="12" r="3" fill="black"/>
+    </svg>
+  `;
+
+  inputs.forEach(({ id, btnId }) => {
+    const input = document.getElementById(id) as HTMLInputElement | null;
+    const btn = document.getElementById(btnId) as HTMLElement | null;
+
+    if (input) input.type = "password";
+    if (btn) btn.innerHTML = eyeOpen;
+  });
+
+  // reset barra de fuerza
   if (pwBar) {
     const barInner = pwBar.querySelector("i") as HTMLElement | null;
     if (barInner) { barInner.style.width = "0%"; barInner.className = ""; }
   }
+
   if (pwErr) pwErr.style.display = "none";
 }
-function togglePasswordVisibility(inputId: string, btn?: any): void {
+
+function togglePasswordVisibility(inputId: string, btn?: HTMLElement): void {
   const input = document.getElementById(inputId) as HTMLInputElement | null;
-  if (!input) return;
+  if (!input || !btn) return;
+
+  const eyeOpen = `
+    <svg width="20" height="20" viewBox="0 0 24 24">
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
+      <circle cx="12" cy="12" r="3" fill="black"/>
+    </svg>
+  `;
+
+  const eyeClosed = `
+    <svg width="20" height="20" viewBox="0 0 24 24">
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
+      <circle cx="12" cy="12" r="3" fill="black"/>
+      <line x1="3" y1="3" x2="21" y2="21" stroke="black" stroke-width="2"/>
+    </svg>
+  `;
+
   if (input.type === "password") {
     input.type = "text";
-    if (btn) btn.textContent = "🙈";
+    btn.innerHTML = eyeClosed;
   } else {
     input.type = "password";
-    if (btn) btn.textContent = "👁";
+    btn.innerHTML = eyeOpen;
   }
 }
+
 
 // --- eventos y bindings finales (listeners) ---
 if (photoInput && photoPreviewImg && photoPreviewContainer) {
@@ -1013,13 +1072,14 @@ if (saveNewPwBtn) saveNewPwBtn.addEventListener("click", savePasswordChange);
 if (cancelNewPwBtn) cancelNewPwBtn.addEventListener("click", cancelPasswordChange);
 if (changePasswordBtn) changePasswordBtn.addEventListener("click", togglePasswordChange);
 if (toggleCurrentPwd)
-  toggleCurrentPwd.addEventListener("click", (e) =>
-    togglePasswordVisibility("currentPassword", e.currentTarget)
-  );
-if (toggleNewPwd)
-  toggleNewPwd.addEventListener("click", (e) =>
-    togglePasswordVisibility("newPassword", e.currentTarget)
-  );
+toggleCurrentPwd.addEventListener("click", (e) =>
+  togglePasswordVisibility("currentPassword", e.currentTarget as HTMLElement)
+);
+
+toggleNewPwd.addEventListener("click", (e) =>
+  togglePasswordVisibility("newPassword", e.currentTarget as HTMLElement)
+);
+
 if (closeProfileViewBtn)
   closeProfileViewBtn.addEventListener("click", () => {
     if (profileModal) {
