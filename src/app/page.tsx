@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import axios from "axios";
 import { Fixer } from "@/app/busqueda/interface/Fixer_Interface";
+import { api } from "@/app/api/client";
 
 import Carrusel from "./Home/Carrusel/Carrusel";
 import { TrabajosRecientes } from '../components/TrabajosRecientes';
@@ -22,13 +23,20 @@ export default function Home() {
   const [fixers, setFixers] = useState<Fixer[]>([]);
   // Nuevo: estado controlado para el buscador
   const [searchText, setSearchText] = useState("");
+  const [backendHealthy, setBackendHealthy] = useState<null | boolean>(null);
 
-  
-
+  useEffect(() => {
+    let cancelled = false;
+    api.get<{ healt: string; status: number }>("/healthy")
+      .then(() => { if (!cancelled) setBackendHealthy(true); })
+      .catch(() => { if (!cancelled) setBackendHealthy(false); });
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      
+      {/* Indicador de backend removido por UX */}
+
       {/* Hero Section */}
       <section className="w-full pt-28 pb-16 px-4 md:px-12 text-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
