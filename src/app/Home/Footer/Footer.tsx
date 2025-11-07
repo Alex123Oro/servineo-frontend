@@ -14,59 +14,74 @@ export default function Footer() {
     { name: 'Trabaja con nosotros', path: '/info/join' },
     { name: 'Testimonios', path: '/info/testimonials' },
     { name: 'Apoyo', path: '/info/support' },
+    { name: '¿Por qué Servineo?', path: '/whyServineo' },
   ];
 
   const legalLinks = [
     { name: 'Política de privacidad', path: '/info/privacy' },
-    { name: 'Acuerdos de usuario', path: '/info/terms' }, /* fue Terminos y condiciones */
+    { name: 'Acuerdos de usuario', path: '/info/terms' } /* fue Terminos y condiciones */,
     { name: 'Política de cookies', path: '/info/cookies' },
   ];
 
   return (
-    <footer className="bg-[#0D1B3E] text-white font-['Roboto']"role="contentinfo"aria-label="Pie de página de Servineo">
+    <footer
+      className="bg-[#0D1B3E] text-white font-['Roboto']"
+      role="contentinfo"
+      aria-label="Pie de página de Servineo"
+    >
       <div className="max-w-7xl mx-auto px-6 py-16 space-y-12">
-
         <a href="#main-content" className="sr-only focus:not-sr-only">
           Saltar al contenido principal
         </a>
-        
+
         {/* Servineo logo + descripción */}
         <div className="text-center" aria-labelledby="footer-servineo-heading">
-          <h2 id="footer-servineo-heading" className="text-4xl font-bold mb-4 text-[var(--secondary)]">Servineo</h2>
+          <h2
+            id="footer-servineo-heading"
+            className="text-4xl font-bold mb-4 text-[var(--secondary)]"
+          >
+            Servineo
+          </h2>
           <p className="text-white max-w-3xl mx-auto leading-relaxed text-lg">
-            La plataforma líder para conectar hogares con profesionales calificados en Cochabamba. 
+            La plataforma líder para conectar hogares con profesionales calificados en Cochabamba.
             Calidad garantizada y servicio confiable.
           </p>
         </div>
 
         <div className="h-4"></div>
-        
+
         {/* Contenido principal */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-base"role="navigation"aria-label="Enlaces del pie de página">
-            
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-base"
+          role="navigation"
+          aria-label="Enlaces del pie de página"
+        >
           {/* Empresa */}
           <div aria-labelledby="empresa-heading">
-            <h3 id="empresa-heading" className="text-xl font-semibold text-[var(--secondary)] mb-2">Empresa</h3>
-            <ul className="space-y-3 mt-2"role="list">
-            {empresaLinks.map((link, i) => (
-              <li key={i}>
-                <Link href={link.path} className={styles.footerLink}>
-                   {link.name}
-                </Link>
-              </li>
-            ))}
-
+            <h3 id="empresa-heading" className="text-xl font-semibold text-[var(--secondary)] mb-2">
+              Empresa
+            </h3>
+            <ul className="space-y-3 mt-2" role="list">
+              {empresaLinks.map((link, i) => (
+                <li key={i}>
+                  <Link href={link.path} className={styles.footerLink}>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Legal */}
           <div aria-labelledby="legal-heading">
-            <h3 id="legal-heading" className="text-xl font-semibold text-[var(--secondary)] mb-2">Legal</h3>
-            <ul className="space-y-3 mt-2"role="list">
+            <h3 id="legal-heading" className="text-xl font-semibold text-[var(--secondary)] mb-2">
+              Legal
+            </h3>
+            <ul className="space-y-3 mt-2" role="list">
               {legalLinks.map((link, i) => (
-                <li key={i}role="listitem">
+                <li key={i} role="listitem">
                   <Link href={link.path} className={styles.footerLink}>
-                      {link.name}
+                    {link.name}
                   </Link>
                 </li>
               ))}
@@ -75,9 +90,13 @@ export default function Footer() {
 
           {/* Contacto */}
           <div aria-labelledby="contacto-heading">
-            <h3 id="contacto-heading" className="text-xl font-semibold text-[var(--secondary)] mb-2">Contáctanos</h3>
+            <h3
+              id="contacto-heading"
+              className="text-xl font-semibold text-[var(--secondary)] mb-2"
+            >
+              Contáctanos
+            </h3>
             <div className="space-y-4 mt-2 text-white">
-             
               <div className="flex items-center" aria-label="Ubicación: Cochabamba, Bolivia">
                 <MapPin
                   className="h-5 w-5 text-blue-400 mr-4 transition-all duration-300 group-hover:text-[var(--secondary)] group-hover:drop-shadow-[0_0_8px_var(--secondary)]"
@@ -96,20 +115,19 @@ export default function Footer() {
 
               {/* WhatsApp (reemplaza el teléfono) */}
               <div className="flex items-center" aria-label="Número de WhatsApp">
-                <Phone className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true"/>
+                <Phone className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true" />
                 <a
                   href="https://wa.me/59163765632"
                   target="_blank"
                   rel="noopener noreferrer"
-                   className="hover:text-[var(--secondary)] transition-colors"
+                  className="hover:text-[var(--secondary)] transition-colors"
                   aria-label="Enviar mensaje por WhatsApp al +591 63765632"
                 >
                   +591 637-65632
                 </a>
               </div>
 
-
-               {/* 
+              {/* 
               {/* Teléfono con enlace 
              <div className="flex items-center">
                 <Phone className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true"/>
@@ -123,7 +141,7 @@ export default function Footer() {
                 <Mail className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true" />
                 <a
                   href="mailto:espinozapacaflora@gmail.com?subject=Consulta de servicios&body=Hola, me gustaría saber más sobre sus servicios."
-                   className="hover:text-[var(--secondary)] transition-colors"
+                  className="hover:text-[var(--secondary)] transition-colors"
                   aria-label="Enviar correo electrónico a espinozapacaflora@gmail.com"
                 >
                   contacto@servineo.bo
@@ -131,11 +149,17 @@ export default function Footer() {
               </div>
             </div>
           </div>
-         
+
           {/* Redes sociales */}
           <div aria-labelledby="social-heading">
-            <h3 id="social-heading" className="text-xl font-semibold text-[var(--secondary)] mb-2">Síguenos</h3>
-            <div className="flex flex-row md:flex-col mt-3 md:space-y-3 space-x-4 md:space-x-0"role="list"aria-label="Redes sociales de Servineo">
+            <h3 id="social-heading" className="text-xl font-semibold text-[var(--secondary)] mb-2">
+              Síguenos
+            </h3>
+            <div
+              className="flex flex-row md:flex-col mt-3 md:space-y-3 space-x-4 md:space-x-0"
+              role="list"
+              aria-label="Redes sociales de Servineo"
+            >
               {/* Facebook */}
               <a
                 href="https://facebook.com/DptoInformaticaSistemas/"
@@ -144,7 +168,7 @@ export default function Footer() {
                 className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
                 aria-label="Visitar Facebook de Servineo"
               >
-                <Facebook className="h-6 w-6" aria-hidden="true"/>
+                <Facebook className="h-6 w-6" aria-hidden="true" />
               </a>
 
               {/* Instagram */}
@@ -195,7 +219,10 @@ export default function Footer() {
         <div className="border-t border-gray-700" role="separator" aria-hidden="true" />
 
         {/* Bottom Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-sm pt-8"aria-label="Créditos y derechos de autor">
+        <div
+          className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-sm pt-8"
+          aria-label="Créditos y derechos de autor"
+        >
           <div>© 2024 Servineo. Todos los derechos reservados.</div>
           <div className="flex items-center space-x-4">
             <span>Hecho con ❤️ en Cochabamba</span>
