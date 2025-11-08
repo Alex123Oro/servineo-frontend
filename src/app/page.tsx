@@ -16,6 +16,7 @@ import { TrabajosRecientes } from '../components/TrabajosRecientes';
 import Footer from './Home/Footer/Footer';
 import Buscador from './Home/Buscador/Buscador';
 import ServiciosPage from "./servicios/servicios";
+import { serviceStyles } from "./busqueda/components/map/serviceStyles";
 // Importa otros componentes según sea necesario
 // Dynamic import para Leaflet Map (evita errores SSR)
 const Map = dynamic(() => import("@/app/busqueda/components/map/Map"), { ssr: false });
@@ -103,12 +104,83 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Mapa Section */}
-      <section className="w-full py-16 px-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center">
-            Encuentra Servicios Cerca de Ti
-          </h2>
+     {/* Mapa Section */}
+<section className="w-full py-16 px-4 bg-gray-50">
+  <div className="max-w-7xl mx-auto">
+    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4 text-center">
+      Encuentra Servicios Cerca de Ti
+    </h2>
+
+    {/* Barra de servicios */}
+ {/* Barra de servicios */}
+<div className="relative mb-8">
+  {/* Flecha izquierda - solo PC */}
+  <button
+    onClick={() => {
+      const container = document.getElementById("services-container");
+      if (container) container.scrollBy({ left: -150, behavior: "smooth" });
+    }}
+    className="hidden md:flex absolute left-1 top-1/2 -translate-y-1/2 bg-white shadow-lg hover:bg-gray-100 text-gray-700 rounded-full w-10 h-10 items-center justify-center z-10"
+    aria-label="Desplazar izquierda"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  {/* Contenedor deslizante */}
+  <div
+    id="services-container"
+    className="overflow-x-auto scrollbar-hide"
+  >
+    <div className="flex gap-3 min-w-max px-12">
+      {Object.entries(serviceStyles).map(([servicioKey, style]) => (
+        <div
+          key={servicioKey}
+          className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
+        >
+          {/* Círculo de color */}
+          <span
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: style.color }}
+          ></span>
+          {/* Nombre del servicio */}
+          <span className="text-sm font-semibold capitalize">{servicioKey}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  {/* Flecha derecha - solo PC */}
+  <button
+    onClick={() => {
+      const container = document.getElementById("services-container");
+      if (container) container.scrollBy({ left: 150, behavior: "smooth" });
+    }}
+    className="hidden md:flex absolute right-1 top-1/2 -translate-y-1/2 bg-white shadow-lg hover:bg-gray-100 text-gray-700 rounded-full w-10 h-10 items-center justify-center z-10"
+    aria-label="Desplazar derecha"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+</div>
+
+          
           {/* Pasamos fixers al mapa */}
         
           <Map  /> 

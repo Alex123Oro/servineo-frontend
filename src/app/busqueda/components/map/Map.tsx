@@ -92,7 +92,7 @@ export default function Map() {
   if (loading) return <div>Cargando mapa...</div>;
 
   return (
-    <div className="relative z-0" style={{ height: "60vh", width: "100%", marginTop: "80px" }}>
+    <div className="relative z-0" style={{ height: "60vh", width: "100%", marginTop: "10px" }}>
       {/* 🔘 Botón para vaciar localStorage */}
       <ResetMapButton
   onReset={handleReset}
