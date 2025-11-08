@@ -398,6 +398,14 @@ export function initUserProfileLogic(): void {
     localStorage.setItem("booka_user", JSON.stringify(updated));
     window.userProfile = updated;
     window.isAuthenticated = false;
+    
+     try { (window as any).closeMenu?.(); } catch {}
+     const profileMenu = document.getElementById("profileMenu");
+    if (profileMenu) {
+    profileMenu.classList.remove("show");
+    profileMenu.setAttribute("aria-hidden", "true");
+    profileMenu.style.display = "none";
+    } 
     renderUI();
 
     window.dispatchEvent(new CustomEvent("booka-auth-updated", { detail: updated }));
@@ -464,6 +472,10 @@ let _cropOffset = { x: 0, y: 0 };
 let _isDragging = false;
 let _lastPointer = { x: 0, y: 0 };
 const _naturalSize = { w: 0, h: 0 };
+// soporte multi-touch para pinch-to-zoom
+const _touches: Map<number, { x: number; y: number }> = new Map();
+let _initialPinchDist = 0;
+let _initialScale = 1;
 
 // --- abrir crop modal con file ---
 function openCropModal(file: File) {
@@ -520,34 +532,78 @@ function openCropModal(file: File) {
   reader.readAsDataURL(file);
 
   // pointer handlers
-  const onPointerDown = (ev: PointerEvent) => {
-    _isDragging = true;
-    _lastPointer = { x: ev.clientX, y: ev.clientY };
-    try { (ev.target as Element).setPointerCapture?.((ev as any).pointerId); } catch {}
-  };
+const onPointerDown = (ev: PointerEvent) => {
+  _isDragging = true;
+  _lastPointer = { x: ev.clientX, y: ev.clientY };
+
+  // registrar toque
+  _touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+
+  // si hay dos dedos, iniciar pinch
+  if (_touches.size === 2) {
+    const t = Array.from(_touches.values());
+    const dx = t[0].x - t[1].x;
+    const dy = t[0].y - t[1].y;
+    _initialPinchDist = Math.sqrt(dx * dx + dy * dy);
+    _initialScale = _cropScale;
+  }
+
+  try { (ev.target as Element).setPointerCapture?.((ev as any).pointerId); } catch {}
+};
+
   const onPointerMove = (ev: PointerEvent) => {
-    if (!_isDragging) return;
-    const dx = ev.clientX - _lastPointer.x;
-    const dy = ev.clientY - _lastPointer.y;
-    _cropOffset.x += dx / _cropScale;
-    _cropOffset.y += dy / _cropScale;
-    _lastPointer = { x: ev.clientX, y: ev.clientY };
+  if (!_isDragging) return;
 
-    const viewW = cropCanvas.width;
-    const viewH = cropCanvas.height;
-    const drawW = _naturalSize.w * _cropScale;
-    const drawH = _naturalSize.h * _cropScale;
-    const maxX = (drawW - viewW) / 2 / _cropScale;
-    const maxY = (drawH - viewH) / 2 / _cropScale;
-    _cropOffset.x = Math.max(-maxX, Math.min(maxX, _cropOffset.x));
-    _cropOffset.y = Math.max(-maxY, Math.min(maxY, _cropOffset.y));
+  // actualizar el toque actual
+  if (_touches.has(ev.pointerId)) {
+    _touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+  }
 
-    drawCropCanvas();
-  };
-  const onPointerUp = (ev: PointerEvent) => {
-    _isDragging = false;
-    try { (ev.target as Element).releasePointerCapture?.((ev as any).pointerId); } catch {}
-  };
+  if (_touches.size === 2) {
+    const t = Array.from(_touches.values());
+    const dx = t[0].x - t[1].x;
+    const dy = t[0].y - t[1].y;
+
+    const newDist = Math.sqrt(dx * dx + dy * dy);
+    if (_initialPinchDist > 0) {
+      const scaleFactor = newDist / _initialPinchDist;
+      _cropScale = Math.min(3, Math.max(0.5, _initialScale * scaleFactor));
+      drawCropCanvas();
+    }
+
+    return; // <- no mover si estamos haciendo pinch
+  }
+
+  // ✅ Si solo hay un dedo → mover imagen normal
+  const dx = ev.clientX - _lastPointer.x;
+  const dy = ev.clientY - _lastPointer.y;
+  _cropOffset.x += dx / _cropScale;
+  _cropOffset.y += dy / _cropScale;
+  _lastPointer = { x: ev.clientX, y: ev.clientY };
+
+  const viewW = cropCanvas.width;
+  const viewH = cropCanvas.height;
+  const drawW = _naturalSize.w * _cropScale;
+  const drawH = _naturalSize.h * _cropScale;
+  const maxX = (drawW - viewW) / 2 / _cropScale;
+  const maxY = (drawH - viewH) / 2 / _cropScale;
+  _cropOffset.x = Math.max(-maxX, Math.min(maxX, _cropOffset.x));
+  _cropOffset.y = Math.max(-maxY, Math.min(maxY, _cropOffset.y));
+
+  drawCropCanvas();
+};
+
+const onPointerUp = (ev: PointerEvent) => {
+  _isDragging = false;
+
+  _touches.delete(ev.pointerId);
+
+  if (_touches.size < 2) {
+    _initialPinchDist = 0;
+  }
+
+  try { (ev.target as Element).releasePointerCapture?.((ev as any).pointerId); } catch {}
+};
 
   cropCanvas.addEventListener("pointerdown", onPointerDown);
   window.addEventListener("pointermove", onPointerMove);
