@@ -473,7 +473,7 @@ let _isDragging = false;
 let _lastPointer = { x: 0, y: 0 };
 const _naturalSize = { w: 0, h: 0 };
 // soporte multi-touch para pinch-to-zoom
-let _touches: Map<number, { x: number; y: number }> = new Map();
+const _touches: Map<number, { x: number; y: number }> = new Map();
 let _initialPinchDist = 0;
 let _initialScale = 1;
 
