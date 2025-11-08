@@ -74,6 +74,8 @@ export const Title = () => {
                     </Popover.Content>
                 </Popover.Portal>
             </Popover.Root>
+            {/* */}
+            
             {/* contenedor del video */}
             <div className="relative w-full max-w-3xl aspect-video cursor-pointer rounded-2xl overflow-hidden shadow-lg mb-[30px]">
                 <ReactPlayer
@@ -94,7 +96,7 @@ export const Title = () => {
                     </div>
                 )}
             </div>
-                
+            {/* */}
             <div className='flex flex-col items-center mb-[30px] text-[25px] gap-[10px]'>
                 <span className='text-white'> Descubrelo </span>
                 <FaArrowDown className="animate__animated animate__shakeY animate__slower animate__infinite" color='white'/>
