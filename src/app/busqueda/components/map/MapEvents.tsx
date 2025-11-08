@@ -20,7 +20,7 @@ export default function MapEvents({ onClick, onMove, onZoom }: MapEventsProps) {
     setTimeout(() => setShowMessage(false), 3000);
   };
 
-  // Detectar cambios en la conexión
+  // 🔹 Detectar cambios en la conexión
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -34,7 +34,7 @@ export default function MapEvents({ onClick, onMove, onZoom }: MapEventsProps) {
     };
   }, []);
 
-  // Bloquear interacciones offline (drag y gestos)
+  // 🔹 Bloquear arrastre y gestos
   useEffect(() => {
     if (!map) return;
 
@@ -55,14 +55,14 @@ export default function MapEvents({ onClick, onMove, onZoom }: MapEventsProps) {
     }
   }, [isOnline, map]);
 
-  // Bloquear zoom manual desde botones + y -
+  // 🔹 Bloquear botones + y - del zoom
   useEffect(() => {
     if (!map) return;
 
     const handleZoomStart = () => {
       if (!isOnline) {
         showOfflineMessage();
-        map.setZoom(map.getZoom()); // mantener zoom actual
+        map.setZoom(map.getZoom()); // mantener zoom
       }
     };
 
@@ -73,7 +73,7 @@ export default function MapEvents({ onClick, onMove, onZoom }: MapEventsProps) {
     };
   }, [isOnline, map]);
 
-  // Manejar eventos del mapa
+  // 🔹 Manejar eventos del mapa
   useMapEvents({
     click: (e) => {
       if (!isOnline) {
@@ -85,7 +85,7 @@ export default function MapEvents({ onClick, onMove, onZoom }: MapEventsProps) {
     moveend: (e) => {
       if (!isOnline) {
         showOfflineMessage();
-        e.target.setView(e.target.getCenter());
+        e.target.setView(e.target.getCenter()); // mantener vista
         return;
       }
       onMove && onMove(e.target.getCenter());
@@ -93,7 +93,7 @@ export default function MapEvents({ onClick, onMove, onZoom }: MapEventsProps) {
     zoomend: (e) => {
       if (!isOnline) {
         showOfflineMessage();
-        e.target.setZoom(e.target.getZoom());
+        e.target.setZoom(e.target.getZoom()); // mantener zoom
         return;
       }
       onZoom && onZoom(e.target.getZoom());
@@ -112,7 +112,7 @@ export default function MapEvents({ onClick, onMove, onZoom }: MapEventsProps) {
             opacity: showMessage ? 1 : 0,
           }}
         >
-          ⚠️ Sin conexión a Internet
+          ⚠️ Sin conexión..
         </div>
       )}
     </>

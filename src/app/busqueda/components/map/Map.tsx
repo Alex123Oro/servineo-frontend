@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Popup } from "react-leaflet";
-import { Fixer } from "@/app/busqueda/interface/Fixer_Interface";
 import { LatLngExpression } from "leaflet";
+import { Fixer } from "@/app/busqueda/interface/Fixer_Interface";
 
 import RecenterMap from "./RecenterMap";
 import UserMarker from "./UserMaker";
@@ -19,15 +19,15 @@ const defaultPosition: [number, number] = [-17.39381, -66.15693];
 
 export default function Map() {
   const [fixers, setFixers] = useState<Fixer[]>([]);
-  const [pinPosition, setPinPosition] = useState<[number, number]>(defaultPosition); // posición del pin
-  const [mapCenter, setMapCenter] = useState<[number, number]>(defaultPosition);   // centro del mapa
+  const [pinPosition, setPinPosition] = useState<[number, number]>(defaultPosition);
+  const [mapCenter, setMapCenter] = useState<[number, number]>(defaultPosition);
   const [zoom, setZoom] = useState(14);
   const [loading, setLoading] = useState(true);
   const mapRef = useRef<any>(null);
 
   // 🔹 Cargar fixers desde JSON local
   useEffect(() => {
-    import('@/jsons/fixers.json')
+    import("@/jsons/fixers.json")
       .then((module) => setFixers(module.default))
       .catch(() => alert("No se pudieron cargar los fixers 😢"))
       .finally(() => setLoading(false));
@@ -94,7 +94,10 @@ export default function Map() {
   return (
     <div className="relative z-0" style={{ height: "60vh", width: "100%", marginTop: "80px" }}>
       {/* 🔘 Botón para vaciar localStorage */}
-      <ResetMapButton onReset={handleReset} />
+      <ResetMapButton
+  onReset={handleReset}
+  isOnline={navigator.onLine} // PASAR el estado de conexión
+/>
 
       <MapContainer
         center={mapCenter}
@@ -122,9 +125,9 @@ export default function Map() {
 
         {/* 🎯 Eventos del mapa */}
         <MapEvents
-          onClick={handleClick}   // click mueve el pin
-          onMove={handleMove}     // arrastre guarda centro
-          onZoom={handleZoom}     // zoom guarda nivel
+          onClick={handleClick} // click mueve el pin
+          onMove={handleMove}   // arrastre guarda centro
+          onZoom={handleZoom}   // zoom guarda nivel
         />
 
         {/* ⚠️ Sin resultados */}
