@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
-
+//acordeon
 const Accordion = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
