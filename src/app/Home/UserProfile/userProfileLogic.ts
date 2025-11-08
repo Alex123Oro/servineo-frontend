@@ -532,78 +532,83 @@ function openCropModal(file: File) {
   reader.readAsDataURL(file);
 
   // pointer handlers
-const onPointerDown = (ev: PointerEvent) => {
-  _isDragging = true;
-  _lastPointer = { x: ev.clientX, y: ev.clientY };
+  const onPointerDown = (ev: PointerEvent) => {
+    _isDragging = true;
+    _lastPointer = { x: ev.clientX, y: ev.clientY };
 
-  // registrar toque
-  _touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
-
-  // si hay dos dedos, iniciar pinch
-  if (_touches.size === 2) {
-    const t = Array.from(_touches.values());
-    const dx = t[0].x - t[1].x;
-    const dy = t[0].y - t[1].y;
-    _initialPinchDist = Math.sqrt(dx * dx + dy * dy);
-    _initialScale = _cropScale;
-  }
-
-  try { (ev.target as Element).setPointerCapture?.((ev as any).pointerId); } catch {}
-};
-
-  const onPointerMove = (ev: PointerEvent) => {
-  if (!_isDragging) return;
-
-  // actualizar el toque actual
-  if (_touches.has(ev.pointerId)) {
+    // registrar toque
     _touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
-  }
 
-  if (_touches.size === 2) {
-    const t = Array.from(_touches.values());
-    const dx = t[0].x - t[1].x;
-    const dy = t[0].y - t[1].y;
-
-    const newDist = Math.sqrt(dx * dx + dy * dy);
-    if (_initialPinchDist > 0) {
-      const scaleFactor = newDist / _initialPinchDist;
-      _cropScale = Math.min(3, Math.max(0.5, _initialScale * scaleFactor));
-      drawCropCanvas();
+    // si hay dos dedos, iniciar pinch
+    if (_touches.size === 2) {
+      const t = Array.from(_touches.values());
+      const dx = t[0].x - t[1].x;
+      const dy = t[0].y - t[1].y;
+      _initialPinchDist = Math.sqrt(dx * dx + dy * dy);
+      _initialScale = _cropScale;
     }
 
-    return; // <- no mover si estamos haciendo pinch
-  }
+    try { (ev.target as Element).setPointerCapture?.((ev as any).pointerId); } catch {}
+  };
 
-  // ✅ Si solo hay un dedo → mover imagen normal
-  const dx = ev.clientX - _lastPointer.x;
-  const dy = ev.clientY - _lastPointer.y;
-  _cropOffset.x += dx / _cropScale;
-  _cropOffset.y += dy / _cropScale;
-  _lastPointer = { x: ev.clientX, y: ev.clientY };
+  const onPointerMove = (ev: PointerEvent) => {
+    if (!_isDragging) return;
 
-  const viewW = cropCanvas.width;
-  const viewH = cropCanvas.height;
-  const drawW = _naturalSize.w * _cropScale;
-  const drawH = _naturalSize.h * _cropScale;
-  const maxX = (drawW - viewW) / 2 / _cropScale;
-  const maxY = (drawH - viewH) / 2 / _cropScale;
-  _cropOffset.x = Math.max(-maxX, Math.min(maxX, _cropOffset.x));
-  _cropOffset.y = Math.max(-maxY, Math.min(maxY, _cropOffset.y));
+    // actualizar el toque actual
+    if (_touches.has(ev.pointerId)) {
+      _touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    }
 
-  drawCropCanvas();
-};
+    if (_touches.size === 2) {
+      const t = Array.from(_touches.values());
+      const dx = t[0].x - t[1].x;
+      const dy = t[0].y - t[1].y;
 
-const onPointerUp = (ev: PointerEvent) => {
-  _isDragging = false;
+      const newDist = Math.sqrt(dx * dx + dy * dy);
+      if (_initialPinchDist > 0) {
+        const scaleFactor = newDist / _initialPinchDist;
+        _cropScale = Math.min(3, Math.max(0.5, _initialScale * scaleFactor));
+        drawCropCanvas();
 
-  _touches.delete(ev.pointerId);
+        // ✅ Mantiene sincronizado el slider con el zoom táctil
+        if (zoomRange) zoomRange.value = _cropScale.toFixed(2);
+      }
 
-  if (_touches.size < 2) {
-    _initialPinchDist = 0;
-  }
+      return; // <- no mover si estamos haciendo pinch
+    }
 
-  try { (ev.target as Element).releasePointerCapture?.((ev as any).pointerId); } catch {}
-};
+    // ✅ Si solo hay un dedo → mover imagen normal
+    const dx = ev.clientX - _lastPointer.x;
+    const dy = ev.clientY - _lastPointer.y;
+    _cropOffset.x += dx / _cropScale;
+    _cropOffset.y += dy / _cropScale;
+    _lastPointer = { x: ev.clientX, y: ev.clientY };
+
+    const viewW = cropCanvas.width;
+    const viewH = cropCanvas.height;
+    const drawW = _naturalSize.w * _cropScale;
+    const drawH = _naturalSize.h * _cropScale;
+    const maxX = (drawW - viewW) / 2 / _cropScale;
+    const maxY = (drawH - viewH) / 2 / _cropScale;
+    _cropOffset.x = Math.max(-maxX, Math.min(maxX, _cropOffset.x));
+    _cropOffset.y = Math.max(-maxY, Math.min(maxY, _cropOffset.y));
+
+    drawCropCanvas();
+  };
+
+  const onPointerUp = (ev: PointerEvent) => {
+    _isDragging = false;
+    _touches.delete(ev.pointerId);
+
+    // ✅ Reinicia la referencia de zoom cuando se suelta el pinch
+    if (_touches.size < 2) {
+      _initialPinchDist = 0;
+      _initialScale = _cropScale;
+      if (zoomRange) zoomRange.value = _cropScale.toFixed(2);
+    }
+
+    try { (ev.target as Element).releasePointerCapture?.((ev as any).pointerId); } catch {}
+  };
 
   cropCanvas.addEventListener("pointerdown", onPointerDown);
   window.addEventListener("pointermove", onPointerMove);
@@ -665,9 +670,7 @@ const onPointerUp = (ev: PointerEvent) => {
     tmp.height = size;
     const tctx = tmp.getContext("2d");
     if (!tctx) throw new Error("No canvas context");
-    // dibuja la vista actual en tmp
     tctx.drawImage(canvasEl, 0, 0, size, size);
-    // crea máscara circular en output
     const out = document.createElement("canvas");
     out.width = size;
     out.height = size;
@@ -699,6 +702,7 @@ const onPointerUp = (ev: PointerEvent) => {
     try { openEdit(); } catch (err) { console.warn("No se pudo reabrir el modal de editar:", err); }
   }
 }
+
 
 // --- saveProfile: validación y guardado ---
 async function saveProfile(): Promise<void> {
