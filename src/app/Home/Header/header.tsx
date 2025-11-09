@@ -13,7 +13,6 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white bg-opacity-95 shadow-lg backdrop-blur-md transition-all duration-300 border-b border-gray-100">
-      {/* Desktop Header (solo desde lg en adelante) */}
       <div className="hidden lg:flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
         <div className="flex items-center">
           <button onClick={scrollToTop} className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105">
@@ -34,7 +33,7 @@ const Header = () => {
             Ayuda
           </Link>
         </nav>
-        <div className="flex items-center gap-4">
+        <div id="header-auth" className="flex items-center gap-4">
           <button className="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-300 hover:shadow-sm font-medium">
             Iniciar sesión
           </button>
@@ -43,8 +42,6 @@ const Header = () => {
           </button>
         </div>
       </div>
-
-      {/* Mobile/Tablet Header (hasta lg) */}
       <div className="lg:hidden flex items-center justify-between p-4">
         <button onClick={scrollToTop} className="flex items-center gap-2 group">
           <div className="relative overflow-hidden rounded-full shadow-md">
@@ -52,7 +49,7 @@ const Header = () => {
           </div>
           <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Servineo</span>
         </button>
-        <div className="flex items-center gap-2">
+        <div id="header-auth-mobile" className="flex items-center gap-2">
           <button className="px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-100 transition-all duration-300 font-medium">
             Iniciar
           </button>
