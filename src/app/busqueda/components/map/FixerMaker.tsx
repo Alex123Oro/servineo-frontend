@@ -12,12 +12,13 @@ interface FixerMarkerProps {
 const palette = {
   popupBg: "#FFFFFF",
   popupShadow: "0 6px 18px rgba(0,0,0,0.2)",
-  whatsappBg: "#25D366",
-  whatsappHover: "#1EBE57",
-  profileBg: "#2BDDE0",
-  profileHover: "#26AEE0",
+  whatsappBg: "#2B6AE0",       // Azul cielo brillante
+  whatsappHover: "#3B7BDD",    // Azul medio
+  profileBg: "#4B3FE8",        // Azul violeta/índigo
+  profileHover: "#6B3FE8",     // Morado intenso
   buttonText: "#FFFFFF",
   iconBorderBusy: "#ff4444",
+  textColor: "#2B6AE0",        // Azul cielo brillante para textos
 };
 
 export default function FixerMarker({ fixer }: FixerMarkerProps) {
@@ -49,6 +50,7 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
 
   return (
     <Marker position={[fixer.lat, fixer.lng]} icon={icon}>
+      {/* Tooltip */}
       <Tooltip direction="top" offset={[0, -25]} opacity={1} permanent={false}>
         <div
           style={{
@@ -59,17 +61,19 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
             textAlign: "center",
             fontWeight: 600,
             minWidth: "140px",
+            fontFamily: "'Roboto', sans-serif",
           }}
         >
-          <div style={{ color: style.color, fontSize: "13px" }}>
-            {fixer.servicio}
+          <div style={{ color: palette.textColor, fontSize: "13px" }}>
+            {fixer.servicio}  {/* Electricidad */}
           </div>
-          <div style={{ fontSize: "12px", marginTop: "2px", color: style.color }}>
-            {fixer.nombre} - {fixer.available ? "Disponible" : "No disponible"}
+          <div style={{ fontSize: "12px", marginTop: "2px", color: palette.textColor }}>
+            {fixer.nombre} - {fixer.available ? "Disponible" : "No disponible"}  {/* Lorena Vargas - Disponible */}
           </div>
         </div>
       </Tooltip>
 
+      {/* Popup */}
       <Popup closeButton autoClose={false}>
         <div
           style={{
@@ -78,7 +82,7 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
             backgroundColor: palette.popupBg,
             boxShadow: palette.popupShadow,
             minWidth: "240px",
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Roboto', sans-serif",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
@@ -95,10 +99,10 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
               }}
             />
             <div style={{ flex: 1 }}>
-              <h3 style={{ margin: 0, color: style.color, fontSize: "15px", fontWeight: 700 }}>
+              <h3 style={{ margin: 0, color: palette.textColor, fontSize: "15px", fontWeight: 700 }}>
                 {fixer.servicio}
               </h3>
-              <span style={{ fontSize: "13px", color: style.color }}>
+              <span style={{ fontSize: "13px", color: palette.textColor }}>
                 {fixer.nombre} - {fixer.available ? "Disponible" : "No disponible"}
               </span>
             </div>
@@ -121,6 +125,7 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
                 textDecoration: "none",
                 pointerEvents: fixer.available ? "auto" : "none",
                 transition: "background 0.3s",
+                fontFamily: "'Roboto', sans-serif",
               }}
               onMouseOver={(e) => { if(fixer.available) e.currentTarget.style.background = palette.whatsappHover; }}
               onMouseOut={(e) => { if(fixer.available) e.currentTarget.style.background = palette.whatsappBg; }}
@@ -139,6 +144,7 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
                 fontSize: "13px",
                 cursor: "pointer",
                 transition: "background 0.3s",
+                fontFamily: "'Roboto', sans-serif",
               }}
               onMouseOver={(e) => (e.currentTarget.style.background = palette.profileHover)}
               onMouseOut={(e) => (e.currentTarget.style.background = palette.profileBg)}
