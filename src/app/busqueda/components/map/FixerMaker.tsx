@@ -36,11 +36,11 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
         align-items: center;
         box-shadow: 0 3px 10px rgba(0,0,0,0.15);
         overflow: hidden;
-        border: 2px solid ${fixer.available ? style.color : palette.iconBorderBusy};
+        border: 0px solid ${fixer.available ? style.color : palette.iconBorderBusy};
         ${fixer.available ? '' : 'opacity:0.7;'}
       ">
         <img src="${style.iconUrl}"
-             style="width:46px; height:46px; border-radius:50%; object-fit:cover;" />
+             style="width:46px; height:46px; border-radius:50%; object-fit:cover; border: 3.5px solid ${fixer.available ? style.color : palette.iconBorderBusy};" />
       </div>
     `,
     iconSize: [50, 50],
@@ -65,10 +65,10 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
           }}
         >
           <div style={{ color: palette.textColor, fontSize: "13px" }}>
-            {fixer.servicio}  {/* Electricidad */}
+            {fixer.servicio}
           </div>
           <div style={{ fontSize: "12px", marginTop: "2px", color: palette.textColor }}>
-            {fixer.nombre} - {fixer.available ? "Disponible" : "No disponible"}  {/* Lorena Vargas - Disponible */}
+            {fixer.nombre} - {fixer.available ? "Disponible" : "No disponible"}
           </div>
         </div>
       </Tooltip>
@@ -94,7 +94,7 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
                 height: "46px",
                 borderRadius: "50%",
                 objectFit: "cover",
-                border: `2px solid ${fixer.available ? style.color : palette.iconBorderBusy}`,
+                border: `4px solid ${fixer.available ? style.color : palette.iconBorderBusy}`,
                 opacity: fixer.available ? 1 : 0.7
               }}
             />
