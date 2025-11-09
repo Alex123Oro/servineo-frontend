@@ -21,9 +21,9 @@ const TOUR_STEPS: Step[] = [
     placement: 'bottom',
   },
   {
-    target: '#servicios-disponibles',
-    content: 'Explora todas las categorías de servicios que ofrecemos, desde plomería hasta carpintería.',
-    title: 'Nuestros Servicios',
+    target: '#carrusel-inspiracion',
+    content: 'Inspírate con ideas y proyectos reales realizados por nuestros profesionales expertos.',
+    title: 'Inspiración para tu Hogar',
     placement: 'top',
   },
   {
@@ -34,13 +34,31 @@ const TOUR_STEPS: Step[] = [
   },
   {
     target: '#trabajos-recientes',
-    content: 'Inspírate viendo los trabajos más recientes que han completado nuestros profesionales.',
+    content: 'Explora los trabajos más recientes que han completado nuestros profesionales.',
     title: 'Trabajos Recientes',
     placement: 'top',
   },
   {
+    target: '#servicios-disponibles',
+    content: 'Navega por todas las categorías de servicios que ofrecemos, desde plomería hasta carpintería.',
+    title: 'Nuestros Servicios',
+    placement: 'top',
+  },
+  {
+    target: '#cta-final',
+    content: 'Si no encuentras un servicio específico, puedes solicitar uno personalizado o hablar con un asesor.',
+    title: '¿No encuentras lo que buscas?',
+    placement: 'top',
+  },
+  {
+    target: '#footer-principal',
+    content: 'Aquí abajo encontrarás enlaces útiles, información de la empresa y nuestras políticas.',
+    title: 'Información Adicional',
+    placement: 'top',
+  },
+  {
     target: '#header-auth',
-    content: 'Finalmente, desde aquí puedes Iniciar Sesión o Registrarte para contratar servicios y gestionar tu perfil.',
+    content: '¡Listo! Ahora puedes Iniciar Sesión o Registrarte para contratar servicios y gestionar tu perfil.',
     title: '¡Únete a Servineo!',
     placement: 'bottom',
   },
@@ -54,7 +72,7 @@ export const Tour: React.FC<TourProps> = ({ run, onTourEnd }) => {
       const isMobile = window.innerWidth < 1024;
       const newSteps = [...TOUR_STEPS];
       
-      const authStep = newSteps.find(step => step.target === '#header-auth');
+      const authStep = newSteps.find(step => step.target === '#header-auth' || step.target === '#header-auth-mobile');
       if (authStep) {
         if (isMobile) {
           authStep.target = '#header-auth-mobile';
