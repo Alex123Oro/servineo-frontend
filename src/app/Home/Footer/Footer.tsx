@@ -175,58 +175,64 @@ export default function Footer() {
           </div>
 
           {/* Redes sociales + selector de idioma */}
-          <div className="flex items-center justify-between">
-            {/* Izquierda: Síguenos + íconos */}
-            <div className="flex items-center gap-4">
-              <h3 className="text-xl font-semibold text-[var(--secondary)]">
-                Síguenos
-              </h3>
+<div
+  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-t border-gray-700 pt-6"
+>
+  {/* Izquierda: Síguenos + íconos */}
+  <div className="flex items-center justify-center sm:justify-start gap-4">
+    <h3 className="text-xl font-semibold text-[var(--secondary)]">
+      Síguenos
+    </h3>
 
-              <div className="flex flex-row gap-6" role="list" aria-label="Redes sociales de Servineo">
-                <a
-                  href="https://facebook.com/DptoInformaticaSistemas/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
-                  aria-label="Visitar Facebook de Servineo"
-                >
-                  <Facebook className="h-6 w-6" aria-hidden="true" />
-                </a>
-                <a
-                  href="https://instagram.com/dpto_informatica.sistemas.umss/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
-                  aria-label="Visitar Instagram de Servineo"
-                >
-                  <Instagram className="h-6 w-6" aria-hidden="true" />
-                </a>
-                <a
-                  href="https://x.com/umssboloficial?lang=es"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
-                  aria-label="Visitar X (antes Twitter) de Servineo"
-                >
-                  <Twitter className="h-6 w-6" aria-hidden="true" />
-                </a>
-              </div>
-            </div>
+    <div
+      className="flex flex-row gap-6"
+      role="list"
+      aria-label="Redes sociales de Servineo"
+    >
+      <a
+        href="https://facebook.com/DptoInformaticaSistemas/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
+        aria-label="Visitar Facebook de Servineo"
+      >
+        <Facebook className="h-6 w-6" aria-hidden="true" />
+      </a>
+      <a
+        href="https://instagram.com/dpto_informatica.sistemas.umss/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
+        aria-label="Visitar Instagram de Servineo"
+      >
+        <Instagram className="h-6 w-6" aria-hidden="true" />
+      </a>
+      <a
+        href="https://x.com/umssboloficial?lang=es"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
+        aria-label="Visitar X (antes Twitter) de Servineo"
+      >
+        <Twitter className="h-6 w-6" aria-hidden="true" />
+      </a>
+    </div>
+  </div>
 
-            {/* Derecha: Selector de idioma */}
-            <div className="flex items-center gap-2">
-              <Globe className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              <span className="text-gray-200 font-medium">Idiomas</span>
-              <select
-                className="bg-[#0D1B3E] text-white border border-gray-600 rounded px-2 py-1 focus:outline-none focus:border-[var(--secondary)]"
-                aria-label="Seleccionar idioma"
-                defaultValue="es"
-              >
-                <option value="es">Español</option>
-                <option value="en">Inglés</option>
-              </select>
-            </div>
-          </div>
+  {/* Derecha: Selector de idioma */}
+  <div className="flex items-center justify-center sm:justify-end gap-2">
+    <Globe className="h-5 w-5 text-gray-400" aria-hidden="true" />
+    <span className="text-gray-200 font-medium">Idiomas</span>
+    <select
+      className="bg-[#0D1B3E] text-white border border-gray-600 rounded px-2 py-1 focus:outline-none focus:border-[var(--secondary)]"
+      aria-label="Seleccionar idioma"
+      defaultValue="es"
+    >
+      <option value="es">Español</option>
+      <option value="en">Inglés</option>
+    </select>
+  </div>
+</div>
 
   
 
