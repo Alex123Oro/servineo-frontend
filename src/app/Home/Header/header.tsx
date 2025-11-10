@@ -2,6 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import NotificationSystem from '../../components/notificationSystem';
 
 const Header = () => {
   const scrollToTop = () => {
@@ -35,6 +36,7 @@ const Header = () => {
           </Link>
         </nav>
         <div className="flex items-center gap-4">
+          <NotificationSystem/>
           <button className="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-300 hover:shadow-sm font-medium">
             Iniciar sesión
           </button>
