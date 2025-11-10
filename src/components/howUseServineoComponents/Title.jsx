@@ -14,7 +14,7 @@ export const Title = () => {
 
     const [playing, setPlaying] = useState(false);
     const [audioAllowed, setAudioAllowed] = useState(false)
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     const [showPauseScreen, setShowPauseScreen] = useState(true)
 
     const handleAllowAudio = () => { 
@@ -77,14 +77,15 @@ export const Title = () => {
             {/* */}
             
             {/* contenedor del video */}
-            <div className="relative w-full max-w-3xl aspect-video cursor-pointer rounded-2xl overflow-hidden shadow-lg mb-[30px]">
+            <div className="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden shadow-lg mb-[30px]">
                 <ReactPlayer
-                    src="/images/comoUsarSImages/videoComoUsar.mp4"
+                    src="/images/comoUsarSImages/video_Introductorio_a_Servineo.mp4"
                     playing={playing}
                     muted={audioAllowed ? false : true}
                     controls
-                    width="100%"
-                    height="100%"
+                    height='100%'
+                    width='100%'
+                    style={{ position: 'absolute', top: 0, left: 0, objectFit: "cover"}}
                 />
                 
                 { showPauseScreen === true && (
@@ -92,7 +93,9 @@ export const Title = () => {
                         onClick={handlePlayPause}
                         className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity duration-300"
                     >
-                        <Play size={64} color="white" />
+                        <button>
+                            <Play className='cursor-pointer text-white drop-shadow-lg transition-transform duration-300 hover:scale-130' size={64} color="white" />
+                        </button>
                     </div>
                 )}
             </div>
