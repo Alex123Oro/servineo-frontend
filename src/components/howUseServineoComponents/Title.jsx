@@ -79,7 +79,7 @@ export const Title = () => {
             {/* contenedor del video */}
             <div className="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden shadow-lg mb-[30px]">
                 <ReactPlayer
-                    src="/images/comoUsarSImages/video_Introductorio_a_Servineo.mp4"
+                    src="/videos/SERVINEO TUTORIAL.mp4"
                     playing={playing}
                     muted={audioAllowed ? false : true}
                     controls
