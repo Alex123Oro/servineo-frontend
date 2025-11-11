@@ -1,0 +1,41 @@
+.footerLink {
+    position: relative;
+    display: inline-block;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .footerLink::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 100%;
+    height: 2px;
+    background-color: #1AA7ED; /* celeste */
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+    border-radius: 2px;
+  }
+  
+  .footerLink:hover {
+    color: #a3d9ff;
+    transform: scale(1.06);
+  }
+  
+  .footerLink:hover::after {
+    transform: scaleX(1);
+  }
+  
+  .footerLink:focus-visible {
+    outline: 2px solid #1AA7ED;
+    outline-offset: 3px;
+  }
+  
+  /* FooterNeon.css */
+

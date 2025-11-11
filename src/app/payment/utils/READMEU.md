@@ -1,0 +1,1 @@
+Contiene los archivos de estilos globales o compartidos, como CSS, SCSS, o archivos de temas.
