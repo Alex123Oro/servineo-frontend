@@ -13,54 +13,63 @@ const TOUR_STEPS: Step[] = [
     content: '¡Bienvenido a Servineo! Te mostraremos rápidamente cómo funciona la plataforma.',
     placement: 'center',
     title: '¡Hola!',
+    disableBeacon: false, 
   },
   {
     target: '#buscador-principal',
     content: 'Aquí puedes encontrar el servicio que necesitas. Escribe lo que buscas y tu ubicación.',
     title: 'Encuentra un Profesional',
     placement: 'bottom',
+    disableBeacon: true,
   },
   {
     target: '#carrusel-inspiracion',
     content: 'Inspírate con ideas y proyectos reales realizados por nuestros profesionales expertos.',
     title: 'Inspiración para tu Hogar',
     placement: 'top',
+    disableBeacon: true,
   },
   {
     target: '#mapa-interactivo',
     content: 'Mira en tiempo real dónde se encuentran los Fixers (profesionales) disponibles cerca de ti.',
     title: 'Fixers Cerca de Ti',
     placement: 'top',
+    disableBeacon: true,
   },
   {
     target: '#trabajos-recientes',
     content: 'Explora los trabajos más recientes que han completado nuestros profesionales.',
     title: 'Trabajos Recientes',
     placement: 'top',
+    disableBeacon: true,
   },
   {
     target: '#servicios-disponibles',
     content: 'Navega por todas las categorías de servicios que ofrecemos, desde plomería hasta carpintería.',
     title: 'Nuestros Servicios',
     placement: 'top',
+    disableBeacon: true,
   },
   {
     target: '#cta-final',
     content: 'Si no encuentras un servicio específico, puedes solicitar uno personalizado o hablar con un asesor.',
     title: '¿No encuentras lo que buscas?',
     placement: 'top',
+    disableBeacon: true,
   },
   {
     target: '#footer-principal',
     content: 'Aquí abajo encontrarás enlaces útiles, información de la empresa y nuestras políticas.',
     title: 'Información Adicional',
     placement: 'top',
+    disableBeacon: true,
   },
   {
     target: '#header-auth',
     content: '¡Listo! Ahora puedes Iniciar Sesión o Registrarte para contratar servicios y gestionar tu perfil.',
     title: '¡Únete a Servineo!',
     placement: 'bottom',
+    disableBeacon: true,
   },
 ];
 
@@ -97,8 +106,12 @@ export const Tour: React.FC<TourProps> = ({ run, onTourEnd }) => {
       steps={steps}
       callback={onTourEnd}
       continuous
-      showProgress
-      showSkipButton
+      showProgress={false}
+      showSkipButton={false}
+      scrollOffset={100}
+      floaterProps={{
+        disableAnimation: false,
+      }}
       locale={{
         back: 'Anterior',
         close: 'Cerrar',
@@ -141,10 +154,13 @@ export const Tour: React.FC<TourProps> = ({ run, onTourEnd }) => {
           fontSize: '14px',
           color: '#555',
         },
-        buttonSkip: {
-          fontFamily: 'var(--font-roboto), sans-serif',
-          fontSize: '14px',
-          color: '#555',
+        beacon: {
+          outer: {
+            backgroundColor: 'rgba(43, 106, 224, 0.5)',
+          },
+          inner: {
+            backgroundColor: '#2B6AE0',
+          },
         },
       }}
     />
