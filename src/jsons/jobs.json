@@ -17,24 +17,7 @@
             "max":150
         }
     },
-    {
-        "destacado": true,
-        "imagen": "/images/carpintero.jpg",
-        "titulo": "Muebles a medida",
-        "descripcion": "Construccion de estanterias",
-        "categoria": "carpinteria",
-        "nombreFixer": "Miguel",
-        "apellidoFixer": "Condori",
-        "ubicacion": "cochabamba",
-        "fechaDePublicacion": "2025-10-02T10:00:00Z",
-        "calificacion": 4.2,
-        "telefono": 75986518,
-        "activo": true,
-        "precio": {
-            "min":200,
-            "max":300
-        }
-    },
+
     {
         "destacado": true,
         "imagen": "/images/limpieza.jpg",
@@ -73,13 +56,13 @@
     ,{
         "destacado": true,
         "imagen": "/images/carpinteria2.jpg",
-        "titulo": "Muebles a medida",
-        "descripcion": "Construccion de muebles variados",
+        "titulo": "Reparacion de muebles",
+        "descripcion": "Reparacion y restauracion de muebles variados",
         "categoria": "carpinteria",
-        "nombreFixer": "Miguel",
-        "apellidoFixer": "Condori",
+        "nombreFixer": "Daria",
+        "apellidoFixer": "Atahuichi",
         "ubicacion": "cochabamba",
-        "fechaDePublicacion": "2025-10-04T09:00:00Z",
+        "fechaDePublicacion": "2025-10-02T09:00:00Z",
         "calificacion": 4.5,
         "telefono": 75986518,
         "activo": true,
@@ -87,96 +70,8 @@
             "min":200,
             "max":300
         }
-    },{
-        "destacado": true,
-        "imagen": "/images/carpintero.jpg",
-        "titulo": "Muebles a medida",
-        "descripcion": "Construccion de estanterias",
-        "categoria": "carpinteria",
-        "nombreFixer": "Miguel",
-        "apellidoFixer": "Condori",
-        "ubicacion": "cochabamba",
-        "fechaDePublicacion": "2025-10-04T09:00:00Z",
-        "calificacion": 3.9,
-        "telefono": 75986518,
-        "activo": true,
-        "precio": {
-            "min":200,
-            "max":300
-        }
     },
-    {
-        "destacado": true,
-        "imagen": "/images/carpintero.jpg",
-        "titulo": "Muebles a medida",
-        "descripcion": "Construccion de estanterias",
-        "categoria": "carpinteria",
-        "nombreFixer": "Miguel",
-        "apellidoFixer": "Condori",
-        "ubicacion": "cochabamba",
-        "fechaDePublicacion": "2025-10-05T09:00:00Z",
-        "calificacion": 5.0,
-        "telefono":75986518,
-        "activo": true,
-        "precio": {
-            "min":200,
-            "max":300
-        }
-    },
-    {
-        "destacado": true,
-        "imagen": "/images/carpintero.jpg",
-        "titulo": "Muebles a medida",
-        "descripcion": "Construccion de estanterias",
-        "categoria": "carpinteria",
-        "nombreFixer": "Miguel",
-        "apellidoFixer": "Condori",
-        "ubicacion": "cochabamba",
-        "fechaDePublicacion": "2025-10-06T09:00:00Z",
-        "calificacion": 4.9,
-        "telefono": 75986518,
-        "activo": true,
-        "precio": {
-            "min":200,
-            "max":300
-        }
-    },
-    {
-        "destacado": true,
-        "imagen": "/images/carpintero.jpg",
-        "titulo": "Muebles a medida",
-        "descripcion": "Construccion de estanterias",
-        "categoria": "carpinteria",
-        "nombreFixer": "Miguel",
-        "apellidoFixer": "Condori",
-        "ubicacion": "cochabamba",
-        "fechaDePublicacion": "2025-10-06T09:00:00Z",
-        "calificacion": 4.1,
-        "telefono": 75986518,
-        "activo": true,
-        "precio": {
-            "min":200,
-            "max":300
-        }
-    },
-    {
-        "destacado": true,
-        "imagen": "/images/carpintero.jpg",
-        "titulo": "Muebles a medida",
-        "descripcion": "Construccion de estanterias",
-        "categoria": "carpinteria",
-        "nombreFixer": "Miguel",
-        "apellidoFixer": "Condori",
-        "ubicacion": "cochabamba",
-        "fechaDePublicacion": "2025-10-07T09:00:00Z",
-        "calificacion": 4.1,
-        "telefono": 75986518,
-        "activo": true,
-        "precio": {
-            "min":200,
-            "max":300
-        }
-    },
+    
         {
         "destacado": true,
         "imagen": "/images/tuberias.jpg",
@@ -344,5 +239,23 @@
         "telefono": 75986518,
         "activo": true,
         "precio": { "min": 210, "max": 260 }
+    },
+        {
+        "destacado": true,
+        "imagen": "/images/carpintero.jpg",
+        "titulo": "Muebles de melamina",
+        "descripcion": "Construccion de muebles",
+        "categoria": "carpinteria",
+        "nombreFixer": "José",
+        "apellidoFixer": "Perez",
+        "ubicacion": "cochabamba",
+        "fechaDePublicacion": "2025-11-10T10:00:00Z",
+        "calificacion": 4.2,
+        "telefono": 75986518,
+        "activo": true,
+        "precio": {
+            "min":200,
+            "max":300
+        }
     }
 ]

@@ -1,7 +1,7 @@
 'use client'
 
 import 'animate.css';
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import dynamic from "next/dynamic";
 import { FaArrowDown } from "react-icons/fa6"
 import { Play, Pause } from "lucide-react";
@@ -16,21 +16,35 @@ export const Title = () => {
     const [audioAllowed, setAudioAllowed] = useState(false)
     const [open, setOpen] = useState(false)
     const [showPauseScreen, setShowPauseScreen] = useState(true)
+    
+    const [checkPause, setCheckPause] = useState(false)
 
-    const handleAllowAudio = () => { 
+    const handleAllowAudio = async () => { 
         setAudioAllowed(true);
-        setOpen(false);
-        setPlaying(true);
-        setShowPauseScreen(false);
+        setOpen(false); 
     }
 
-    const handlePlayPause= () => {
+    const handleNoAudio = () => {
+        setOpen(false)
+        setAudioAllowed(false)
+        setCheckPause(true)
+    }
+    
+    const handlePlayPause = () => {
         if(audioAllowed === false){
-            setOpen(true);
-            return;
+            if (checkPause === true){
+                setPlaying(!playing);
+                setShowPauseScreen(!showPauseScreen);
+            }else{ 
+                setOpen(true);
+            }
+            //return;
+        } else {
+            //setAudioAllowed(!audioAllowed);
+            setPlaying(!playing);
+            setShowPauseScreen(!showPauseScreen);
         }
-        //setAudioAllowed(!audioAllowed);
-        setPlaying(!playing);
+        
     }
 
   return (
@@ -66,7 +80,7 @@ export const Title = () => {
                         </button>
                         <button 
                             className='cursor-pointer gap-[3px] bg-[#2B6EA0] hover:bg-[#2B31E0] duration-150 text-white h-9 w-40 rounded-[8px]' 
-                            onClick={() => setOpen(false)}
+                            onClick={handleNoAudio}
                         >
                             No
                         </button>
@@ -90,11 +104,10 @@ export const Title = () => {
                 
                 { showPauseScreen === true && (
                     <div
-                        onClick={handlePlayPause}
                         className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity duration-300"
                     >
                         <button>
-                            <Play className='cursor-pointer text-white drop-shadow-lg transition-transform duration-300 hover:scale-130' size={64} color="white" />
+                            <Play onClick={handlePlayPause} className='cursor-pointer text-white drop-shadow-lg transition-transform duration-300 hover:scale-130' size={64} color="white" />
                         </button>
                     </div>
                 )}
