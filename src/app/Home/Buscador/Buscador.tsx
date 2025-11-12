@@ -41,19 +41,19 @@ export default function Buscador({
         'w-full max-w-[680px] md:max-w-[720px] lg:max-w-[1000px]',
         'border-gray-200 bg-white shadow-xl',
         'px-4 py-3',
-        'flex-wrap md:flex-nowrap', // Allow wrapping on small screens
+        'flex-nowrap', // Cambiado: evitar wrap para que el icono no baje en móvil
         'focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200',
         'transition-shadow duration-300 hover:shadow-2xl',
         className,
       ].join(' ')}
     >
-      <span className="ml-2 mr-2 inline-flex shrink-0 items-center">
+      <span className="ml-2 mr-2 flex shrink-0 items-center">
         <svg
           viewBox="0 0 24 24"
           width="22"
           height="22"
           aria-hidden="true"
-          className="fill-blue-600"
+          className="fill-blue-600 flex-shrink-0"
         >
           <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z" />
         </svg>
@@ -71,7 +71,7 @@ export default function Buscador({
         disabled={disabled}
         aria-label={placeholder}
         className={[
-          'flex-1 bg-transparent outline-none',
+          'flex-1 min-w-0 bg-transparent outline-none', // Añadido min-w-0 para que el input pueda encogerse sin forzar salto de línea
           'h-12 sm:h-14 px-2 sm:px-4',
           'text-[16px] sm:text-lg text-gray-900 placeholder:text-gray-700 font-medium',
           'disabled:opacity-60',
@@ -97,7 +97,7 @@ export default function Buscador({
         placeholder="Ubicación"
         aria-label="Ubicación"
         className={[
-          'hidden lg:flex flex-1 bg-transparent outline-none',
+          'hidden lg:flex flex-1 min-w-0 bg-transparent outline-none', // Añadido min-w-0 para evitar que este input obligue al wrapping en pantallas pequeñas
           'h-12 sm:h-14 px-2 sm:px-4',
           'text-lg text-gray-900 placeholder:text-gray-500 font-medium',
           'disabled:opacity-60',
