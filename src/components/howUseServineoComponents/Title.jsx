@@ -114,7 +114,7 @@ export const Title = () => {
             </div>
             {/* */}
             <div className='flex flex-col items-center mb-[30px] text-[25px] gap-[10px]'>
-                <span className='text-white'> Descubrelo </span>
+                <span className='text-white'> Descúbrelo </span>
                 <FaArrowDown className="animate__animated animate__shakeY animate__slower animate__infinite" color='white'/>
             </div>
         </div>
