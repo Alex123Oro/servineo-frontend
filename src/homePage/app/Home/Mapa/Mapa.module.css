@@ -1,0 +1,148 @@
+/* Estilos personalizados para el componente Mapa */
+
+.mapContainer {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e5e7eb;
+}
+
+.loadingContainer {
+  width: 100%;
+  height: 400px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+}
+
+.loadingSpinner {
+  animation: spin 1s linear infinite;
+  border-radius: 50%;
+  height: 3rem;
+  width: 3rem;
+  border-bottom: 2px solid #3b82f6;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorMessage {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.errorText {
+  color: #92400e;
+  font-size: 0.875rem;
+}
+
+.infoSection {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #dbeafe;
+  border-radius: 0.5rem;
+}
+
+.infoTitle {
+  font-weight: 600;
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .infoGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.infoSubtitle {
+  font-weight: 500;
+  color: #1d4ed8;
+  margin-bottom: 0.5rem;
+}
+
+.infoList {
+  font-size: 0.875rem;
+  color: #1e3a8a;
+}
+
+.infoItem {
+  margin-bottom: 0.25rem;
+}
+
+.tipBox {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 0.375rem;
+}
+
+.tipText {
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+/* Estilos para marcadores personalizados */
+.customMarker {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.customMarker:hover {
+  transform: scale(1.1);
+}
+
+/* Estilos para popups */
+.leaflet-popup-content {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 0.5rem;
+}
+
+.popupButton {
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.popupButton:hover {
+  background-color: #2563eb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .loadingContainer {
+    height: 300px;
+  }
+  
+  .infoSection {
+    padding: 0.75rem;
+  }
+}
