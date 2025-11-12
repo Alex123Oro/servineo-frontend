@@ -58,6 +58,7 @@ export const availableServices = [
   "Reparación de electrodomésticos",
   "Instalación de pisos",
   "Techado",
+  
 ]
 
 // Mock de FIXER actual (simulando usuario logueado)
