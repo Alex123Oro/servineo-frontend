@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { enviarRegistroManual } from "../service/conecionbackend";
+import { persistSession } from "../../HU4/lib/session";
 import { generarContrasena } from "../decoder/generadorContrasena";
 
 export default function RegistroForm() {
@@ -82,6 +83,13 @@ export default function RegistroForm() {
         if (data.success) {
           setMensaje("Registro exitoso");
           if (data.token) localStorage.setItem("servineo_token", data.token);
+          // Persistir sesión mínima para que el Header muestre datos inmediatamente
+          persistSession({ name: nombreCompleto, email });
+          // Guardar credenciales para disparar el cuadro "Guardar contraseña" en la siguiente pantalla
+          sessionStorage.setItem(
+            "signup_credentials",
+            JSON.stringify({ email, password, name: nombreCompleto })
+          );
           sessionStorage.setItem(
             "toastMessage",
             `¡Cuenta Creada Exitosamente! ¡Bienvenido, ${nombreCompleto}!`

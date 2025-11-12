@@ -11,8 +11,9 @@ export default function GithubButton() {
   const handleGithub = () => {
     setLoading(true);
 
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
     const popup = window.open(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/github`,
+      `${API_BASE}/auth/github`,
       "GitHubLogin",
       "width=600,height=700"
     );
@@ -23,7 +24,8 @@ export default function GithubButton() {
     }
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== process.env.NEXT_PUBLIC_API_URL) return;
+      const API_ORIGIN = API_BASE;
+      if (event.origin !== API_ORIGIN) return;
 
       const data = event.data;
 
@@ -32,8 +34,7 @@ export default function GithubButton() {
         localStorage.setItem("servineo_token", data.token);
 
         if (data.isFirstTime) {
-          // Redirigir al flujo de Foto de Perfil (HU1) cuando es primera vez
-          router.push("/Login/HU1/FotoPerfil");
+          router.push("/controlC/HU3/ubicacion");
         } else {
           router.push("/");
         }

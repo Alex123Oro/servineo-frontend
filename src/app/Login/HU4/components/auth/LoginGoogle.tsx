@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { api, ApiResponse } from "../../lib/api";
+import { persistSession } from "../../lib/session";
 
 interface LoginGoogleProps {
   onMensajeChange: (mensaje: string, tipo: 'error') => void; // solo error
@@ -16,7 +17,7 @@ export default function LoginGoogle({ onMensajeChange }: LoginGoogleProps) {
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: ApiResponse<any> = await api.post("/auth/google", {
+      const res: ApiResponse<any> = await api.post("/google/auth", {
         credential: credentialResponse.credential,
         token: credentialResponse.credential,
         modo: "login",
@@ -26,6 +27,9 @@ export default function LoginGoogle({ onMensajeChange }: LoginGoogleProps) {
         // Guardamos token y usuario
         localStorage.setItem("servineo_token", res.data.token);
         localStorage.setItem("servineo_user", JSON.stringify(res.data.user));
+
+        // Persistimos sesión para que el Header muestre el avatar/menú
+        persistSession(res.data.user);
 
         // Guardamos mensaje de éxito en sessionStorage para Home
         const mensajeExito = res.data?.message || `¡Inicio de sesión exitoso con Google! Bienvenido, ${res.data.user.name}!`;

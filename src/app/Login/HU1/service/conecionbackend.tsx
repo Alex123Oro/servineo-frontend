@@ -1,4 +1,5 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || ''; 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+const BASE_URL = API_BASE ? `${API_BASE}/api/controlC` : '';
 
 export interface User {
   email: string;
@@ -23,7 +24,7 @@ export async function enviarRegistroManual(
   email: string,
   password: string
 ): Promise<RegistroResponse> {
-  const url = `${BASE_URL}/api/controlC/registro/manual`;
+  const url = `${BASE_URL}/registro/manual`;
 
   try {
     const res = await fetch(url, {
@@ -63,7 +64,7 @@ export async function enviarUbicacion(
   departamento: string | null,
   pais: string | null
 ): Promise<UbicacionResponse> {
-  const url = `${BASE_URL}/api/controlC/ubicacion`;
+  const url = `${BASE_URL}/ubicacion`;
 
     try {
     const token = localStorage.getItem("servineo_token");

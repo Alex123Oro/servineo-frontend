@@ -1,4 +1,7 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+// Base de API sin rutas; añadimos el prefijo del router
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+  ? `${process.env.NEXT_PUBLIC_API_URL}/api/controlC`
+  : '';
 
 export interface ApiResponse<T> {
   success: boolean;

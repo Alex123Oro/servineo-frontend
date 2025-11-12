@@ -22,7 +22,7 @@ export async function cambiarContrasena(
 
   try {
     // 🔧 URL limpia sin espacios ni saltos de línea
-    const url = `${API_URL}/api/controlC/cambiar-contrasena/change-password`.trim();
+    const url = `${API_URL}/cambiar-contrasena/change-password`.trim();
     
     console.log('🌐 URL final:', url);
     

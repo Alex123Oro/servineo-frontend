@@ -29,8 +29,9 @@ export default function VincularDiscord({ onLinked }: VincularDiscordProps) {
       })
     );
 
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
     const popup = window.open(
-      `http://localhost:8000/auth/discord?state=${state}`,
+      `${API_BASE}/auth/discord?state=${state}`,
       "DiscordLink",
       "width=600,height=700"
     );
@@ -42,7 +43,8 @@ export default function VincularDiscord({ onLinked }: VincularDiscordProps) {
     }
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== "http://localhost:8000") return;
+      const API_ORIGIN = API_BASE;
+      if (event.origin !== API_ORIGIN) return;
 
       const data = event.data;
 

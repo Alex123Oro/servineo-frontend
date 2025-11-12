@@ -1,4 +1,5 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || ''; 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+const BASE_URL = API_BASE ? `${API_BASE}/api/controlC` : '';
 
 export interface User {
   email: string;
@@ -21,7 +22,7 @@ export interface UbicacionResponse {
 
 export async function enviarTokenGoogle(token: string): Promise<GoogleAuthResponse> {
   try {
-    const res = await fetch(`${BASE_URL}/api/controlC/google/auth`, {
+    const res = await fetch(`${BASE_URL}/google/auth`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
@@ -37,7 +38,7 @@ export async function enviarTokenGoogle(token: string): Promise<GoogleAuthRespon
 
 export async function verificarSesionBackend(token: string) {
   try {
-    const res = await fetch(`${BASE_URL}/api/controlC/google/verify`, {
+    const res = await fetch(`${BASE_URL}/google/verify`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -59,7 +60,7 @@ export async function enviarUbicacion(
 ): Promise<UbicacionResponse> {
   const token = localStorage.getItem("servineo_token");
   try {
-    const res = await fetch(`${BASE_URL}/api/controlC/ubicacion`, {
+    const res = await fetch(`${BASE_URL}/ubicacion`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -87,7 +88,7 @@ export interface RegistroResponse {
 
 export async function enviarRegistroManual(name: string, email: string, password: string): Promise<RegistroResponse> {
   try {
-    const res = await fetch(`${BASE_URL}/api/controlC/registro/manual`, {
+    const res = await fetch(`${BASE_URL}/registro/manual`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),

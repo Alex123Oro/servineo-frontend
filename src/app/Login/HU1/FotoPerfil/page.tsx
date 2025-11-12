@@ -1,15 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getUserIdFromToken } from "../decoder/getID";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { persistSession } from "../../HU4/lib/session";
 
 export default function FotoPerfil() {
   const router = useRouter();
   const [archivo, setArchivo] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+
+  // Mostrar toast de bienvenida y disparar cuadro "Guardar contraseña" si hay credenciales
+  useEffect(() => {
+    try {
+      const msg = sessionStorage.getItem("toastMessage");
+      if (msg) {
+        toast.success(msg, { position: "bottom-right" });
+        sessionStorage.removeItem("toastMessage");
+      }
+
+      const credsRaw = sessionStorage.getItem("signup_credentials");
+      if (credsRaw) {
+        const creds = JSON.parse(credsRaw);
+        // Intentar usar el Credential Management API para provocar el diálogo de guardar contraseña
+        const PasswordCredentialCtor = (window as any).PasswordCredential;
+        if (navigator && "credentials" in navigator && PasswordCredentialCtor) {
+          try {
+            const c = new PasswordCredentialCtor({
+              id: creds.email,
+              password: creds.password,
+              name: creds.name,
+              iconURL: "/avatar.png",
+            });
+            (navigator as any).credentials.store(c).catch(() => {});
+          } catch {
+            // Silencioso si no soporta
+          }
+        }
+      }
+    } catch {}
+  }, []);
 
   const manejarCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -48,7 +82,7 @@ export default function FotoPerfil() {
     try {
       const base64Foto = await fileToBase64(archivo);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/controlC/fotoPerfil/usuarios/foto`, {
+      const response = await fetch("https://fronted-pearl.vercel.app/api/controlC/fotoPerfil/usuarios/foto", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -58,13 +92,18 @@ export default function FotoPerfil() {
       });
 
       if (response.ok) {
-        alert("Foto actualizada correctamente");
+        // Actualizar sesión local para que el Header muestre la imagen inmediatamente
+        try {
+          persistSession({ photo: base64Foto });
+          window.dispatchEvent(new CustomEvent("booka-profile-updated"));
+        } catch {}
+        toast.success("Foto actualizada correctamente", { position: "bottom-right" });
       } else {
-        alert("Error al subir la foto, selecciona otra foto más ligera");
+        toast.error("Error al subir la foto, selecciona otra más ligera", { position: "bottom-right" });
       }
     } catch (error) {
       console.error("Error al subir la foto:", error);
-      alert("Error de conexión con el servidor");
+      toast.error("Error de conexión con el servidor", { position: "bottom-right" });
     }
   };
 
@@ -76,6 +115,7 @@ export default function FotoPerfil() {
       }}
     >
       <main className="flex flex-col items-center justify-center flex-1 p-6">
+        <ToastContainer position="bottom-right" />
         {/* Aumentamos opacidad del recuadro central */}
         <div className="bg-white/30 backdrop-blur-lg border border-white/40 shadow-2xl rounded-3xl p-10 w-full max-w-md text-center">
           <h2 className="text-2xl font-semibold mb-6">Foto de perfil</h2>

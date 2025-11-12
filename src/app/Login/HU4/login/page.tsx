@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { api, ApiResponse } from '../lib/api';
+import { persistSession } from '../lib/session';
 import { Eye, EyeOff } from 'lucide-react';
 import LoginGoogle from "../components/auth/LoginGoogle";
 import { useRouter } from 'next/navigation';
@@ -32,6 +33,9 @@ export default function LoginPage() {
         localStorage.setItem("servineo_user", JSON.stringify(data.user));
         setUser(data.user);
 
+        // Persistir sesión para Header/UserProfile
+        persistSession(data.user);
+
         // Guardamos mensaje de éxito en sessionStorage para Home
         const mensajeExito = data.message || `¡Cuenta Creada Exitosamente! Bienvenido, ${data.user.name}!`;
         sessionStorage.setItem("toastMessage", mensajeExito);
@@ -39,11 +43,11 @@ export default function LoginPage() {
         router.push('/');
 
       } else {
-        const mensajeError =
-          res.message ||
-          res.data?.message ||
-          res.error ||
-          'Credenciales inválidas o error en el servidor.';
+        const mensajeBruto = res.message || res.data?.message || res.error || '';
+        // Mejora de mensaje: caso "Hash de contraseña no encontrado"
+        const mensajeError = mensajeBruto?.includes('Hash de contraseña no encontrado')
+          ? 'Tu cuenta fue creada con Google y no tiene contraseña. Inicia sesión con Google o crea una contraseña en Configuración > Seguridad.'
+          : (mensajeBruto || 'Credenciales inválidas o error en el servidor.');
 
         toast.error(mensajeError, {
           position: "top-center",

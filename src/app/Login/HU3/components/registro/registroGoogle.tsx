@@ -25,8 +25,7 @@ export default function RegistroGoogle({ onSuccessClose }: { onSuccessClose?: ()
 
       if (data.firstTime) {
         sessionStorage.setItem("google_token_temp", token);
-        // Redirigir al flujo de Foto de Perfil (HU1) en vez de al mapa
-        router.push("/Login/HU1/FotoPerfil");
+        router.push("../HU3/ubicacion");
         return;
       }
 

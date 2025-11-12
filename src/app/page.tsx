@@ -10,6 +10,8 @@ import { TrabajosRecientes } from '../components/TrabajosRecientes';
 import Footer from './Home/Footer/Footer';
 import Buscador from './Home/Buscador/Buscador';
 import ServiciosPage from './servicios/servicios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // Importa otros componentes según sea necesario
 // Dynamic import para Leaflet Map (evita errores SSR)
 const Map = dynamic(() => import('@/app/busqueda/components/map/Map'), { ssr: false });
@@ -40,8 +42,20 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    // Mostrar mensaje verde de "Cuenta creada" si viene del flujo de registro
+    try {
+      const msg = localStorage.getItem('signup_success_toast');
+      if (msg) {
+        toast.success(msg, { position: 'bottom-right' });
+        localStorage.removeItem('signup_success_toast');
+      }
+    } catch {}
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      <ToastContainer position="bottom-right" />
       {/* Hero Section */}
       <section className="w-full pt-28 pb-16 px-4 md:px-12 text-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>

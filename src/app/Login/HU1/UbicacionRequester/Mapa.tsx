@@ -110,7 +110,16 @@ try {
       departamento || null,
       pais || null
     );
-
+    // Preparar mensaje de éxito para Home
+    try {
+      const store = localStorage.getItem("booka_user");
+      const user = store ? JSON.parse(store) : {};
+      const nombre = user?.name || null;
+      const msg = nombre
+        ? `¡Cuenta Creada Exitosamente! ¡Bienvenido, ${nombre}!`
+        : "¡Cuenta Creada Exitosamente!";
+      localStorage.setItem("signup_success_toast", msg);
+    } catch {}
     router.push("/");
   } catch (error) {
     console.error(error);
