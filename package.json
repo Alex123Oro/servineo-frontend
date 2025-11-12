@@ -11,10 +11,12 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-popover": "^1.1.15",
+    "@react-oauth/google": "^0.12.2",
     "@types/leaflet": "^1.9.21",
     "animate.css": "^4.1.1",
-    "axios": "^1.12.2",
+    "axios": "^1.13.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.545.0",
     "next": "15.5.4",
@@ -22,7 +24,8 @@
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0",
     "react-leaflet": "^5.0.0",
-    "react-player": "^3.3.3"
+    "react-player": "^3.3.3",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -303,7 +303,7 @@ const Header = () => {
             {!isLoggedIn ? (
               <>
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => router.push('/Login/HU4/login')}
                   className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
                   aria-label="Acceder"
                 >
@@ -357,7 +357,7 @@ const Header = () => {
               {!isAuthenticated ? (
                 <>
                   <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => router.push('/Login/HU4/login')}
                     className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm font-medium"
                     aria-label="Registrarse"
                   >

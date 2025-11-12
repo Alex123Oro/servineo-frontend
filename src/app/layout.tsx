@@ -3,6 +3,7 @@ import { Roboto } from 'next/font/google';
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import Header from './Home/Header/header';
+import AuthProviderClient from './components/AuthProviderClient';
 
 const roboto = Roboto({
   variable: '--font-roboto',
@@ -23,8 +24,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${roboto.variable} antialiased`}>
-        <Header />
-        <main className="pb-20 lg:pb-0">{children}</main>
+        <AuthProviderClient>
+          <Header />
+          <main className="pb-20 lg:pb-0">{children}</main>
+        </AuthProviderClient>
       </body>
     </html>
   );
