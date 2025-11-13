@@ -27,10 +27,8 @@ const Header = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const [user, setUser] = useState(mockUser);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const iconRef = useRef<HTMLImageElement | null>(null);
@@ -39,7 +37,6 @@ const Header = () => {
 
   useEffect(() => setIsClient(true), []);
 
-  //logica modal registro: escucha cambios en localStorage para auth
   useEffect(() => {
     const checkAuth = () => {
       const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
@@ -48,14 +45,11 @@ const Header = () => {
       setIsAuthenticated(!!session?.loggedIn);
       setIsLoggedIn(!!session?.loggedIn);
     };
-
     window.addEventListener('storage', checkAuth);
     checkAuth();
-
     return () => window.removeEventListener('storage', checkAuth);
   }, []);
 
-  // ========= LÓGICA DE PERFIL (inicialización y listeners) =========
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const win = window as any;
@@ -65,7 +59,6 @@ const Header = () => {
       }
       win.__booka_userProfileInitialized = true;
     }
-
     const deviceId = localStorage.getItem('booka_device_id') || win.deviceId || 'dev-default';
     let currentUser: any = mockUser;
     try {
@@ -80,12 +73,10 @@ const Header = () => {
     } catch (e) {
       currentUser = win.userProfile || mockUser;
     }
-
     const loggedIn = !!currentUser?.loggedIn;
     setUser(currentUser);
     setIsAuthenticated(loggedIn);
     setIsLoggedIn(loggedIn);
-
     const handleProfileUpdated = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (detail) {
@@ -98,7 +89,6 @@ const Header = () => {
       setIsAuthenticated(false);
       setIsLoggedIn(false);
     };
-
     window.addEventListener('booka-profile-updated', handleProfileUpdated);
     window.addEventListener('booka-logout', handleLogout);
     return () => {
@@ -107,18 +97,14 @@ const Header = () => {
     };
   }, []);
 
-  // Exponer funciones globales para togglear menú (usadas en otros scripts)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
     const win = window as any;
-
     win.toggleMenu = (e?: any) => {
       e?.stopPropagation?.();
       setIsMenuOpen((prev) => !prev);
     };
     win.closeMenu = () => setIsMenuOpen(false);
-
     return () => {
       try {
         delete window.toggleMenu;
@@ -127,7 +113,6 @@ const Header = () => {
     };
   }, [pathname]);
 
-  // Cerrar menú al hacer clic fuera
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (isMenuOpen && menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -137,22 +122,21 @@ const Header = () => {
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, [isMenuOpen]);
-  
-  // ========= Funciones de perfil =========
+
   const onLogout = () => {
-    console.log('👋 Clic en cerrar sesión');
+    console.log(' 👋  Clic en cerrar sesión');
     window.closeMenu?.();
     setTimeout(() => {
-      window.logout?.(); // ya actualizará localStorage + emitirá eventos
+      window.logout?.();
       router.push('/');
     }, 150);
   };
-
+  
   const onOpenEdit = () => {
     window.closeMenu?.();
     setTimeout(() => window.openEdit?.(), 150);
   };
-
+  
   const onConvertFixer = () => {
     window.closeMenu?.();
     setTimeout(() => window.convertFixer?.(), 150);
@@ -167,7 +151,6 @@ const Header = () => {
     }
   };
 
-  // Escucha actualizaciones de login/logout globales
   useEffect(() => {
     const handleAuthUpdate = (e: Event) => {
       const detail = (e as CustomEvent).detail;
@@ -188,12 +171,10 @@ const Header = () => {
         window.isAuthenticated = !!session?.loggedIn;
       }
     };
-
     window.addEventListener('booka-auth-updated', handleAuthUpdate);
     return () => window.removeEventListener('booka-auth-updated', handleAuthUpdate);
   }, []);
 
- // Implementar navegación con teclas de flecha
   useEffect(() => {
     const handleKeyNavigation = (e: KeyboardEvent) => {
       const active = document.activeElement as HTMLElement | null;
@@ -219,21 +200,18 @@ const Header = () => {
         navItems[prev].focus();
       }
     };
-
     window.addEventListener('keydown', handleKeyNavigation);
     return () => window.removeEventListener('keydown', handleKeyNavigation);
   }, []);
-  
+
   if (!isClient) return null;
 
-  // ========= Render =========
   return (
     <>
       <header
         className="fixed top-0 left-0 right-0 z-50 bg-white bg-opacity-95 shadow-lg backdrop-blur-md transition-all duration-300 border-b border-gray-100"
         role="banner"
       >
-        {/* Header Desktop */}
         <div className="hidden lg:flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
           <div className="flex items-center">
             <button
@@ -254,8 +232,7 @@ const Header = () => {
                 Servineo
               </span>
             </button>
-         </div>
-
+          </div>
           <nav className="hidden lg:flex gap-6" role="navigation" aria-label="Menú principal">
             <Link
               href="/servicios"
@@ -298,8 +275,7 @@ const Header = () => {
               Ayuda
             </a>
           </nav>
-
-          <div className="flex items-center gap-4">
+          <div id="header-auth" className="flex items-center gap-4">
             {!isLoggedIn ? (
               <>
                 <button
@@ -323,15 +299,12 @@ const Header = () => {
                   ) : (
                     <Image src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"} alt="Avatar" width={32} height={32} className="rounded-full" />
                   )}
-
                   <span className="font-medium text-gray-800">{user.name.split(' ')[0]}</span>
                 </button>
               </div>
             )}
           </div>
         </div>
-
-        {/* Header Mobile */}
         <div className="lg:hidden flex flex-col justify-between h-[60px]">
           <div className="flex items-center justify-between px-4 py-2">
             <button
@@ -352,8 +325,7 @@ const Header = () => {
                 Servineo
               </span>
             </button>
-
-            <div className="flex items-center gap-2">
+            <div id="header-auth-mobile" className="flex items-center gap-2">
               {!isAuthenticated ? (
                 <>
                   <button
@@ -386,8 +358,6 @@ const Header = () => {
           </div>
         </div>
       </header>
-
-      {/* Barra inferior de iconos */}
       <div
         className="lg:hidden fixed bottom-0 left-0 right-0 h-20 border-t border-gray-200 bg-white flex justify-around items-center z-50"
         role="navigation"
@@ -426,8 +396,6 @@ const Header = () => {
           <span className="text-xs mt-1">Ayuda</span>
         </button>
       </div>
-
-      {/* Menú de perfil */}
       <div
         id="profileMenu"
         ref={menuRef}
@@ -448,7 +416,6 @@ const Header = () => {
         <p className="font-medium">{user.name}</p>
         <p className="text-gray-500 text-sm mb-2">{user.email}</p>
         <p className="text-gray-500 text-sm mb-2">{user.phone || 'Sin número registrado'}</p>
-
         <div className="menu-item" onClick={onOpenEdit}>
           Editar perfil
         </div>
@@ -459,7 +426,6 @@ const Header = () => {
           Cerrar sesión
         </div>
       </div>
-
       <Registro isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );

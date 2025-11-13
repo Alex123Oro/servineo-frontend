@@ -1,4 +1,5 @@
 "use client";
+
 import { services } from './data';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -17,12 +18,10 @@ export default function ServiciosPage({
   title?: string;
   subtitle?: string;
 }) {
-  // Dataset de servicios importado arriba
   const servicesToShow = showAllServices ? services : services.slice(0, 6);
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Navegación por teclado entre tarjetas: flechas y Home/End + Enter/Espacio para abrir
   const handleCardKey = (e: React.KeyboardEvent<HTMLDivElement>, idx: number, slug: string) => {
     const cards = document.querySelectorAll('[data-service-card="true"]');
     const last = cards.length - 1;
@@ -44,12 +43,12 @@ export default function ServiciosPage({
         target = last;
         break;
       case 'Enter':
-      case ' ': // Space
+      case ' ':
         router.push(`/servicios/${slug}`);
         e.preventDefault();
         return;
       default:
-        return; // no interceptar otras teclas
+        return;
     }
 
     setActiveIndex(target);
@@ -59,7 +58,6 @@ export default function ServiciosPage({
 
   return (
     <div className="min-h-screen bg-white pt-16">
-      {/* Hero Section */}
       {showHero && (
         <section className="w-full py-16 px-4 bg-gradient-to-b from-blue-600 to-blue-800 text-white">
           <div className="max-w-7xl mx-auto text-center">
@@ -73,7 +71,6 @@ export default function ServiciosPage({
         </section>
       )}
 
-      {/* Services Grid */}
       <section className="w-full py-16 px-4">
         <div className="max-w-7xl mx-auto">
           {!showHero && title && (
@@ -82,6 +79,7 @@ export default function ServiciosPage({
               {subtitle && <p className="text-lg text-gray-600 max-w-2xl mx-auto">{subtitle}</p>}
             </div>
           )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" role="grid">
             {servicesToShow.map((service, index) => (
               <div
@@ -98,10 +96,8 @@ export default function ServiciosPage({
                 <div className="flex items-start justify-between mb-6">
                   <div className="text-5xl">{service.icon}</div>
                 </div>
-
                 <h3 className="text-2xl font-bold text-gray-800 mb-3">{service.name}</h3>
                 <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
-
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium text-gray-700">
@@ -115,13 +111,10 @@ export default function ServiciosPage({
                     ></div>
                   </div>
                 </div>
-
-                {/* Acciones dentro de la tarjeta removidas para diseño más limpio */}
               </div>
             ))}
           </div>
 
-          {/* Botón Ver más servicios */}
           {!showAllServices && (
             <div className="flex justify-center mt-12">
               <Link
@@ -135,15 +128,13 @@ export default function ServiciosPage({
         </div>
       </section>
 
-      {/* Call to Action Section */}
       {showCTA && (
-        <section className="w-full py-16 px-4 bg-gradient-to-r from-blue-600 to-blue-700">
+        <section id="cta-final" className="w-full py-16 px-4 bg-gradient-to-r from-blue-600 to-blue-700 scroll-mt-24">
           <div className="max-w-4xl mx-auto text-center text-white">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">¿No encuentras lo que buscas?</h2>
             <p className="text-lg md:text-xl mb-8 opacity-90">
               Contáctanos y te ayudamos a encontrar el profesional perfecto para tu proyecto
             </p>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                 Solicitar servicio personalizado
