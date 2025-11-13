@@ -3,8 +3,8 @@
 import React, { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import jobs from '@/jsons/jobs.json'
-import { JobCard } from '@/componets/JobCard'
-import { JobListEmpty } from '@/componets/JobListEmpty'
+import { JobCard } from '@/components/JobCard'
+import { JobListEmpty } from '@/components/JobListEmpty'
 
 function TrabajosRecientesContent() {
   const [visible, setVisible] = useState(10)
@@ -107,7 +107,7 @@ function TrabajosRecientesContent() {
                         nombre={item.nombreFixer}
                         apellido={item.apellidoFixer}
                         ubicacion={item.ubicacion}
-                        tiempo={item.tiempoPublicado}
+                        fechaDePublicacion={item.fechaDePublicacion}
                         calificacion={item.calificacion}
                         telefono={item.telefono}
                         precio={{
