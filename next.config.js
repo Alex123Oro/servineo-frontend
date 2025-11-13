@@ -7,9 +7,23 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   images: {
     remotePatterns: [
+      // Avatares de demostración
       {
         protocol: 'https',
         hostname: 'i.pravatar.cc',
+        pathname: '/**',
+      },
+      // Avatares de Google OAuth
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
+      // Avatares de GitHub (si se usan)
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        pathname: '/**',
       },
     ],
   },

@@ -11,20 +11,27 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@react-oauth/google": "^0.12.2",
     "@types/leaflet": "^1.9.21",
     "animate.css": "^4.1.1",
-    "axios": "^1.12.2",
+    "axios": "^1.13.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.545.0",
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0",
-    "react-joyride": "^2.9.3",
     "react-leaflet": "^5.0.0",
     "react-player": "^3.3.3",
-    "reactour": "^1.19.4"
+    "react-toastify": "^11.0.5",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

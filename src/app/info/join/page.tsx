@@ -37,7 +37,9 @@ export default function JoinPage() {
   ];
 
   const MainCTAButton = ({ text = "Postúlate y Únete a la Red", size = 'text-xl' }) => (
-    <button className={`bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] hover:from-[var(--dark-purple)] hover:to-[var(--accent)] text-white ${size} font-bold px-12 py-4 rounded-full transition-all duration-500 shadow-2xl hover:shadow-3xl transform hover:scale-105`}>
+    <button
+      className={`bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white ${size} font-bold px-12 py-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.03]`}
+    >
       {text}
     </button>
   );
