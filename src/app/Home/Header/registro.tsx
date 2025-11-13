@@ -79,12 +79,12 @@ const Registro: React.FC<RegistroProps> = ({ isOpen, onClose }) => {
         </p>
 
         {/* Campo correo (rellenado y bloqueado) */}
-        <input
-          type="email"
-          value={user.email}
-          readOnly
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 bg-gray-100 text-gray-600 cursor-not-allowed text-sm md:text-base"
-        />
+<input
+  type="email"
+  value={user.email || ''} // <- aquí se cambió
+  readOnly
+  className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 bg-gray-100 text-gray-600 cursor-not-allowed text-sm md:text-base"
+/>
 
         <button
           onClick={handleContinuar}
