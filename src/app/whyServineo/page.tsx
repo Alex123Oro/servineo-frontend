@@ -76,18 +76,39 @@ export default function WhyServineoPage() {
     },
   ];
   useEffect(() => {
-    const savedScroll = sessionStorage.getItem('whyServineoScroll');
-    if (savedScroll) {
-      window.scrollTo(0, parseInt(savedScroll, 10));
-    }
+    if (typeof window === 'undefined') return;
+    const restoreScroll = () => {
+      const savedScroll = sessionStorage.getItem('whyServineoScroll');
+      if (savedScroll) {
+        setTimeout(() => {
+          window.scrollTo(0, parseInt(savedScroll, 10));
+        }, 50);
+      }
+    };
 
+    restoreScroll();
+
+    // Restaurar scroll si el usuario vuelve a la pestaña
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        restoreScroll();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // Guardar scroll mientras el usuario navega
     const handleScroll = () => {
       sessionStorage.setItem('whyServineoScroll', String(window.scrollY));
     };
-
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
+
   // Hook para animación
   const { refs, inViewStates } = useInViewMultiple(banners.length);
 

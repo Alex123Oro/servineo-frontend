@@ -19,6 +19,7 @@ declare global {
     toggleMenu?: (e?: any) => void;
     closeMenu?: () => void;
     deviceId?: string;
+    userProfile?: any;
   }
 }
 
@@ -31,7 +32,7 @@ const Header = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const iconRef = useRef<HTMLImageElement | null>(null);
+  const iconRef = useRef<HTMLButtonElement | null>(null);
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   const [isClient, setIsClient] = useState(false);
 
@@ -124,19 +125,18 @@ const Header = () => {
   }, [isMenuOpen]);
 
   const onLogout = () => {
-    console.log(' 👋  Clic en cerrar sesión');
     window.closeMenu?.();
     setTimeout(() => {
       window.logout?.();
       router.push('/');
     }, 150);
   };
-  
+
   const onOpenEdit = () => {
     window.closeMenu?.();
     setTimeout(() => window.openEdit?.(), 150);
   };
-  
+
   const onConvertFixer = () => {
     window.closeMenu?.();
     setTimeout(() => window.convertFixer?.(), 150);
@@ -180,12 +180,12 @@ const Header = () => {
       const active = document.activeElement as HTMLElement | null;
       if (!active) return;
       const isNavElement = Boolean(
-        active.closest && active.closest('nav[aria-label="Menú principal"], header')
+        active.closest && active.closest('nav[aria-label="Menú principal"], header'),
       );
       if (!isNavElement) return;
       const navItems = Array.from(
         document.querySelectorAll<HTMLElement>(
-          'nav[aria-label="Menú principal"] a, nav[aria-label="Menú principal"] [href], .flex.items-center.gap-4 button, header button'
+          'nav[aria-label="Menú principal"] a, nav[aria-label="Menú principal"] [href], .flex.items-center.gap-4 button, header button',
         ),
       ).filter(Boolean);
       const index = navItems.indexOf(active);
@@ -236,7 +236,13 @@ const Header = () => {
           <nav className="hidden lg:flex gap-6" role="navigation" aria-label="Menú principal">
             <Link
               href="/servicios"
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600 after:transition-all
+      ${
+        pathname === '/servicios'
+          ? 'text-blue-600 after:w-full'
+          : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
+      }
+    `}
               aria-label="Ver todos los servicios disponibles"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -247,9 +253,16 @@ const Header = () => {
             >
               Servicios
             </Link>
+
             <Link
               href="/ofertas"
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600 after:transition-all
+      ${
+        pathname === '/ofertas'
+          ? 'text-blue-600 after:w-full'
+          : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
+      }
+    `}
               aria-label="Ver ofertas de trabajo disponibles"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -260,10 +273,17 @@ const Header = () => {
             >
               Ofertas de trabajo
             </Link>
+
             <a
               href="/ayuda"
               onClick={handleAyudaClick}
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600 after:transition-all
+      ${
+        pathname === '/ayuda'
+          ? 'text-blue-600 after:w-full'
+          : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
+      }
+    `}
               aria-label="Abrir ayuda"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -275,17 +295,16 @@ const Header = () => {
               Ayuda
             </a>
           </nav>
+
           <div id="header-auth" className="flex items-center gap-4">
             {!isLoggedIn ? (
-              <>
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
-                  aria-label="Acceder"
-                >
-                  Acceder
-                </button>
-              </>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
+                aria-label="Acceder"
+              >
+                Acceder
+              </button>
             ) : (
               <div className="relative">
                 <button
@@ -295,16 +314,32 @@ const Header = () => {
                   ref={iconRef as any}
                 >
                   {user.photo?.startsWith('data:') ? (
-                    <img src={user.photo} alt="Avatar" width={32} height={32} className="rounded-full" />
+                    <img
+                      src={user.photo}
+                      alt="Avatar"
+                      width={32}
+                      height={32}
+                      className="rounded-full"
+                    />
                   ) : (
-                    <Image src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"} alt="Avatar" width={32} height={32} className="rounded-full" />
+                    <Image
+                      src={user.photo?.trim() !== '' ? user.photo : '/avatar.png'}
+                      alt="Avatar"
+                      width={32}
+                      height={32}
+                      className="rounded-full"
+                    />
                   )}
-                  <span className="font-medium text-gray-800">{user.name.split(' ')[0]}</span>
+                  <span className="font-medium text-gray-800">
+                    {(user.name || '').split(' ')[0]}
+                  </span>
                 </button>
               </div>
             )}
           </div>
         </div>
+
+        {/* Mobile header */}
         <div className="lg:hidden flex flex-col justify-between h-[60px]">
           <div className="flex items-center justify-between px-4 py-2">
             <button
@@ -327,15 +362,13 @@ const Header = () => {
             </button>
             <div id="header-auth-mobile" className="flex items-center gap-2">
               {!isAuthenticated ? (
-                <>
-                  <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm font-medium"
-                    aria-label="Registrarse"
-                  >
-                    Acceder
-                  </button>
-                </>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm font-medium"
+                  aria-label="Registrarse"
+                >
+                  Acceder
+                </button>
               ) : (
                 <div className="relative">
                   <button
@@ -344,13 +377,13 @@ const Header = () => {
                     aria-label="Abrir menú de perfil"
                   >
                     <Image
-                      src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"}
+                      src={user.photo?.trim() !== '' ? user.photo : '/avatar.png'}
                       alt="Avatar"
                       width={24}
                       height={24}
                       className="rounded-full"
                     />
-                    <span>{user.name.split(' ')[0]}</span>
+                    <span>{(user.name || '').split(' ')[0]}</span>
                   </button>
                 </div>
               )}
@@ -358,6 +391,8 @@ const Header = () => {
           </div>
         </div>
       </header>
+
+      {/* Bottom navigation */}
       <div
         className="lg:hidden fixed bottom-0 left-0 right-0 h-20 border-t border-gray-200 bg-white flex justify-around items-center z-50"
         role="navigation"
@@ -396,6 +431,8 @@ const Header = () => {
           <span className="text-xs mt-1">Ayuda</span>
         </button>
       </div>
+
+      {/* Profile menu */}
       <div
         id="profileMenu"
         ref={menuRef}
@@ -410,11 +447,11 @@ const Header = () => {
         </div>
         <img
           className="profile-preview"
-          src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"}
+          src={user.photo?.trim() !== '' ? user.photo : '/avatar.png'}
           alt="Foto"
         />
-        <p className="font-medium">{user.name}</p>
-        <p className="text-gray-500 text-sm mb-2">{user.email}</p>
+        <p className="font-medium">{user.name || ''}</p>
+        <p className="text-gray-500 text-sm mb-2">{user.email || ''}</p>
         <p className="text-gray-500 text-sm mb-2">{user.phone || 'Sin número registrado'}</p>
         <div className="menu-item" onClick={onOpenEdit}>
           Editar perfil
@@ -426,6 +463,7 @@ const Header = () => {
           Cerrar sesión
         </div>
       </div>
+
       <Registro isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
