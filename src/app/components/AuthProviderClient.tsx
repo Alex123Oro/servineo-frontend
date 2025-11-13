@@ -8,11 +8,22 @@ export default function AuthProviderClient({
 }: { 
   children: React.ReactNode 
 }) {
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const content = (
+    <AuthProvider>
+      {children}
+    </AuthProvider>
+  );
+
+  // Si no hay clientId configurado, evitamos montar GoogleOAuthProvider
+  // para prevenir errores en tiempo de ejecución y mantener la UI operativa.
+  if (!clientId) {
+    return content;
+  }
+
   return (
-    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+    <GoogleOAuthProvider clientId={clientId}>
+      {content}
     </GoogleOAuthProvider>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/app/controlC/HU6/ui/button";
-import { Card, CardContent } from "@/app/controlC/HU6/ui/card";
+import { Button } from "@/app/Login/HU6/ui/button";
+import { Card, CardContent } from "@/app/Login/HU6/ui/card";
 import { ArrowLeft, Laptop, Monitor, Smartphone, PlusCircle } from "lucide-react";
 
 interface Device {
