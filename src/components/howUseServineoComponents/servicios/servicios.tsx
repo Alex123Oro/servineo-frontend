@@ -1,5 +1,4 @@
-"use client";
-
+'use client';
 import { services } from './data';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -43,14 +42,13 @@ export default function ServiciosPage({
         target = last;
         break;
       case 'Enter':
-      case ' ':
+      case ' ': 
         router.push(`/servicios/${slug}`);
         e.preventDefault();
         return;
       default:
         return;
     }
-
     setActiveIndex(target);
     (cards[target] as HTMLElement)?.focus();
     e.preventDefault();

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useTour, StepType } from '@reactour/tour';
@@ -30,7 +29,8 @@ const tourSteps: StepType[] = [
       <div>
         <h4 className="font-bold text-lg mb-3 text-gray-800">Búsqueda inteligente</h4>
         <p className="text-gray-600 leading-relaxed">
-          Encuentra el profesional ideal escribiendo el servicio que necesitas y tu ubicación. Nuestro sistema te mostrará los mejores resultados cercanos a ti.
+          Encuentra el profesional ideal escribiendo el servicio que necesitas y tu ubicación.
+          Nuestro sistema te mostrará los mejores resultados cercanos a ti.
         </p>
       </div>
     ),
@@ -54,7 +54,8 @@ const tourSteps: StepType[] = [
       <div>
         <h4 className="font-bold text-lg mb-3 text-gray-800">Mapa interactivo</h4>
         <p className="text-gray-600 leading-relaxed">
-          Visualiza en tiempo real la ubicación de los profesionales disponibles. Haz zoom y explora tu zona para encontrar el más cercano.
+          Visualiza en tiempo real la ubicación de los profesionales disponibles.
+          Haz zoom y explora tu zona para encontrar el más cercano.
         </p>
       </div>
     ),
@@ -90,7 +91,8 @@ const tourSteps: StepType[] = [
       <div>
         <h4 className="font-bold text-lg mb-3 text-gray-800">¿No encuentras lo que buscas?</h4>
         <p className="text-gray-600 leading-relaxed">
-          Si no encuentras un servicio específico, puedes solicitar uno personalizado o hablar con un asesor. Estamos aquí para ayudarte con cualquier proyecto.
+          Si no encuentras un servicio específico, puedes solicitar uno personalizado o hablar con un asesor.
+          Estamos aquí para ayudarte con cualquier proyecto.
         </p>
       </div>
     ),
@@ -137,23 +139,23 @@ const tourSteps: StepType[] = [
 export default function Home() {
   const [searchText, setSearchText] = useState('');
   const { setSteps, setIsOpen, setCurrentStep, isOpen } = useTour();
-  
+
   const startTour = () => {
     setIsOpen(false);
-    
+
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      
+
       setTimeout(() => {
         const isMobile = window.innerWidth < 1024;
         const filteredSteps = tourSteps.filter(step => {
           if (isMobile) return step.selector !== '#header-auth';
           return step.selector !== '#header-auth-mobile';
         });
-        
+
         setSteps(filteredSteps);
         setCurrentStep(0);
-        
+
         setTimeout(() => {
           setIsOpen(true);
         }, 200);
@@ -163,12 +165,12 @@ export default function Home() {
 
   useEffect(() => {
     const tourVisto = localStorage.getItem('servineoTourVisto');
-    
+
     if (!tourVisto) {
       const timer = setTimeout(() => {
         startTour();
       }, 1500);
-      
+
       return () => clearTimeout(timer);
     }
   }, []);
@@ -181,11 +183,12 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      {/* Hero Section */}
       <section className="w-full pt-28 pb-16 px-4 md:px-12 text-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        
+
         <div className="max-w-6xl mx-auto relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 bg-clip-text text-transparent drop-shadow-sm">
             Encuentra el profesional perfecto
@@ -193,11 +196,11 @@ export default function Home() {
           <p className="text-lg md:text-xl text-gray-700 mb-12 max-w-3xl mx-auto font-medium">
             Conectamos tu hogar con expertos verificados en Cochabamba
           </p>
-          
+
           <div id="buscador-principal" className="mb-10 shadow-xl rounded-xl bg-white p-2">
             <Buscador value={searchText} onChange={setSearchText} />
           </div>
-          
+
           <div className="mb-16">
             <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
               <span className="font-semibold text-gray-700 text-lg">Búsquedas populares:</span>
@@ -216,7 +219,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
             <div className="text-center bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-6 shadow-md transform transition-all duration-500 hover:scale-105 hover:shadow-lg">
               <p className="text-3xl md:text-5xl font-bold text-blue-600 mb-2">1,000+</p>
@@ -227,13 +230,13 @@ export default function Home() {
               <p className="text-gray-700 text-lg font-medium">Trabajos realizados</p>
             </div>
             <div className="text-center bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-6 shadow-md transform transition-all duration-500 hover:scale-105 hover:shadow-lg">
-              <p className="text-3xl md:text-5xl font-bold text-blue-600 mb-2">4.8★</p>
+              <p className="text-3xl md:text-5xl font-bold text-blue-600 mb-2">4.8 ★ </p>
               <p className="text-gray-700 text-lg font-medium">Calificación promedio</p>
             </div>
           </div>
         </div>
       </section>
-      
+
       <section id="carrusel-inspiracion" className="w-full py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -260,17 +263,35 @@ export default function Home() {
       <section id="trabajos-recientes" className="w-full max-w-7xl mx-auto scroll-mt-24">
         <TrabajosRecientes />
       </section>
-      
+
       <div id="servicios-disponibles">
         <ServiciosPage
           showHero={false}
           showAllServices={false}
           title="Servicios Disponibles"
           subtitle="Encuentra el profesional perfecto para cualquier trabajo en tu hogar"
-          showCTA={true}
+          showCTA={false} /* Desactivamos el CTA interno para usar el explícito de abajo */
         />
       </div>
-      
+
+      {/* SECCIÓN AGREGADA EXPLÍCITAMENTE PARA GARANTIZAR QUE APAREZCA */}
+      <section id="cta-final" className="w-full py-16 px-4 bg-gradient-to-r from-blue-600 to-blue-700 scroll-mt-24">
+        <div className="max-w-4xl mx-auto text-center text-white">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">¿No encuentras lo que buscas?</h2>
+          <p className="text-lg md:text-xl mb-8 opacity-90">
+            Contáctanos y te ayudamos a encontrar el profesional perfecto para tu proyecto
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              Solicitar servicio personalizado
+            </button>
+            <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+              Hablar con un asesor
+            </button>
+          </div>
+        </div>
+      </section>
+
       <div id="footer-principal">
         <Footer onRestartTour={() => {
           localStorage.removeItem('servineoTourVisto');
