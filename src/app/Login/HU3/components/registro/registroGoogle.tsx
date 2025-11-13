@@ -5,6 +5,8 @@ import { enviarTokenGoogle, GoogleAuthResponse } from "../../services/conexionBa
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../hooks/usoAutentificacion";
 import { CredentialResponse } from "@react-oauth/google";
+// Ajuste de ruta: desde HU3/components/registro hacia HU4/lib/session
+import { persistSession } from "../../../HU4/lib/session";
 
 export default function RegistroGoogle({ onSuccessClose }: { onSuccessClose?: () => void }) {
   const router = useRouter();
@@ -35,6 +37,8 @@ export default function RegistroGoogle({ onSuccessClose }: { onSuccessClose?: ()
       if (data.user) {
         localStorage.setItem("servineo_user", JSON.stringify(data.user));
         setUser(data.user);
+        // Persistir sesión para que el Header muestre avatar/menú inmediatamente
+        try { persistSession(data.user as any); } catch {}
         sessionStorage.setItem("toastMessage", `¡Bienvenido, ${data.user.name}!`);
       }
 

@@ -168,7 +168,24 @@ const Header = () => {
 
   const onOpenEdit = () => {
     window.closeMenu?.();
-    setTimeout(() => window.openEdit?.(), 150);
+    // Asegurar que la lógica de perfil esté inicializada antes de abrir
+    const ensureInitAndOpen = () => {
+      if (typeof window.openEdit === 'function') {
+        window.openEdit();
+        return;
+      }
+      try {
+        // Inicialización perezosa si aún no está lista (corrige navegación sin refrescar)
+        if (typeof initUserProfileLogic === 'function') {
+          (window as any).__booka_userProfileInitialized = false;
+          initUserProfileLogic();
+        }
+      } catch {}
+      setTimeout(() => {
+        if (typeof window.openEdit === 'function') window.openEdit();
+      }, 150);
+    };
+    setTimeout(ensureInitAndOpen, 150);
   };
 
   const onConvertFixer = () => {

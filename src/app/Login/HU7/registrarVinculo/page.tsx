@@ -34,6 +34,7 @@ interface FullAuthProvider extends AuthProvider {
 export default function Page({ token = "" }: Props) {
   const [methods, setMethods] = useState<FullAuthProvider[]>([]);
   const [showEmailForm, setShowEmailForm] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const buildFullMethodsList = (
     linkedMethodsFromAPI: AuthProvider[]
@@ -56,12 +57,25 @@ export default function Page({ token = "" }: Props) {
 
   useEffect(() => {
     async function fetchMethods() {
+      const tokenLS = typeof window !== "undefined" ? localStorage.getItem("servineo_token") : null;
+      const hasToken = !!(tokenLS || token);
+      setIsAuthenticated(hasToken);
+
+      if (!hasToken) {
+        // Sin token: no llamamos al backend y evitamos errores en consola.
+        setMethods(buildFullMethodsList([]));
+        console.info("HU7: usuario no autenticado, omitiendo carga de métodos");
+        return;
+      }
+
       try {
         const linkedMethodsFromAPI = await obtenerMetodosCliente();
         const fullList = buildFullMethodsList(linkedMethodsFromAPI);
         setMethods(fullList);
       } catch (err) {
-        console.error("Error al cargar métodos:", err);
+        // Mostramos una advertencia silenciosa y mantenemos la UI operativa.
+        console.warn("HU7: no se pudieron cargar métodos de autenticación", err);
+        setMethods(buildFullMethodsList([]));
       }
     }
     fetchMethods();
@@ -112,6 +126,12 @@ export default function Page({ token = "" }: Props) {
         <h1 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
           Configuración de Cuentas Vinculadas
         </h1>
+
+        {!isAuthenticated && (
+          <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800 px-4 py-3 text-sm">
+            Inicia sesión para gestionar y vincular tus métodos de acceso.
+          </div>
+        )}
 
         {/* Métodos vinculados */}
         <section className="mb-10">

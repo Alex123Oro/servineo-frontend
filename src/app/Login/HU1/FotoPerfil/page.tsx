@@ -9,6 +9,9 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { persistSession } from "../../HU4/lib/session";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const CLIENT_BASE = "/api/controlC/cliente";
+
 export default function FotoPerfil() {
   const router = useRouter();
   const [archivo, setArchivo] = useState<File | null>(null);
@@ -126,34 +129,61 @@ export default function FotoPerfil() {
     }
 
     const usuarioId = getUserIdFromToken();
-    if (!usuarioId) {
-      // Sin ID: guardamos la foto localmente para el Header y seguimos al mapa
-      try {
-        const base64Foto = fotoPreview || (archivo ? await compressImage(archivo) : null);
-        if (base64Foto) {
-          const currentRaw = localStorage.getItem("booka_user");
-          const current = currentRaw ? JSON.parse(currentRaw) : {};
-          persistSession({ ...current, photo: base64Foto });
-        }
-      } catch {}
-      toast.warning("No se encontró el ID, continuando para completar ubicación", { position: "bottom-right" });
-      return true; // permitir continuar al mapa; la ubicación usa el token
-    }
+    // Siempre intentamos guardar con token; si no hay token o falla, aplicamos fallback.
+    const token = localStorage.getItem("servineo_token");
 
     try {
       // Comprimir para evitar superar el límite de localStorage y mejorar rendimiento
       const base64Foto = fotoPreview || await compressImage(archivo);
 
-      const response = await fetch("https://fronted-pearl.vercel.app/api/controlC/fotoPerfil/usuarios/foto", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuarioId,
+      let ok = false;
+      // Intento 1: actualizar perfil del cliente con token
+      if (token) {
+        // Enviar con ambos nombres para máxima compatibilidad
+        const payload = {
           fotoPerfil: base64Foto,
-        }),
-      });
+          photo: base64Foto,
+        };
+        let res = await fetch(`${BASE_URL}${CLIENT_BASE}/profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+        let body = await res.json().catch(() => ({}));
+        if (!res.ok && (res.status === 404 || res.status === 405)) {
+          // Fallback si el backend usa PATCH
+          try {
+            res = await fetch(`${BASE_URL}${CLIENT_BASE}/profile`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(payload),
+            });
+            body = await res.json().catch(() => ({}));
+          } catch {}
+        }
+        ok = res.ok;
+        if (!ok && body?.message) {
+          console.warn("Actualizar foto vía cliente/profile falló:", body.message);
+        }
+      }
 
-      if (response.ok) {
+      // Intento 2: si no hay token o el intento anterior falló, usar endpoint legacy con usuarioId
+      if (!ok && usuarioId) {
+        const response = await fetch(`${BASE_URL}/api/controlC/fotoPerfil/usuarios/foto`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuarioId, fotoPerfil: base64Foto }),
+        });
+        ok = response.ok;
+      }
+
+      if (ok) {
         // Actualizar sesión local para que el Header muestre la imagen inmediatamente
         try {
           const currentRaw = localStorage.getItem("booka_user");
@@ -166,13 +196,20 @@ export default function FotoPerfil() {
         toast.success("Foto actualizada correctamente", { position: "bottom-right" });
         return true;
       } else {
-        toast.error("Error al subir la foto, selecciona otra más ligera", { position: "bottom-right" });
-        return false;
+        // Si falla todo, guardamos local y continuamos al mapa
+        try {
+          const currentRaw = localStorage.getItem("booka_user");
+          const current = currentRaw ? JSON.parse(currentRaw) : {};
+          persistSession({ ...current, photo: base64Foto });
+        } catch {}
+        toast.warning("No se pudo guardar en servidor, continua para completar ubicación", { position: "bottom-right" });
+        return true;
       }
     } catch (error) {
       console.error("Error al subir la foto:", error);
       toast.error("Error de conexión con el servidor", { position: "bottom-right" });
-      return false;
+      // permmitimos continuar para no bloquear el flujo
+      return true;
     }
   };
 

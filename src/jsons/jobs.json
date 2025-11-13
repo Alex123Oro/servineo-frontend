@@ -332,7 +332,7 @@
     },
     {
         "destacado": false,
-        "imagen": "/images/im.jpg",
+        "imagen": "/images/imagenNoDisponible.jpg",
         "titulo": "Pintura de paredes",
         "descripcion": "Pintado y mantenimiento de paredes en interiores y exteriores.",
         "categoria": "pintura",
