@@ -26,7 +26,7 @@ export default function Footer() {
 
   const exploreLinks = [
     { name: 'Servicios', path: '/servicios' },
-    { name: 'Convertirse en Reparador', path: '/info/reparador' },
+    { name: 'Ofrece tus servicios', path: '/info/reparador' },
     { name: 'Ofertas de trabajo', path: 'ofertas' }, // o la ruta donde se publiquen los empleos
   ];  
 
