@@ -4,6 +4,7 @@ import { Roboto } from 'next/font/google';
 import './globals.css';
 import Header from './Home/Header/header';
 import BottomNav from './Home/BottomNav/BottomNav';
+import Footer from './Home/Footer/Footer';
 
 const roboto = Roboto({
   variable: '--font-roboto',
@@ -27,6 +28,7 @@ export default function RootLayout({
         <Header />
         <main className="pb-20 lg:pb-0">{children}</main>
         <BottomNav />
+        <Footer />
       </body>
     </html>
   );

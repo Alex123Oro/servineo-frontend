@@ -101,8 +101,7 @@ export default function Home() {
         subtitle="Encuentra el profesional perfecto para cualquier trabajo en tu hogar" 
       />
       
-      {/* Footer Component */}
-      <Footer />
+      
     </div>
   );
 }
