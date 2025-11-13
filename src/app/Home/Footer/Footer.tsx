@@ -172,7 +172,6 @@ export default function Footer({ onRestartTour }: FooterProps) {
               </div>
             </div>
           </div>
-        </div>
 
         {/* Redes sociales + selector de idioma */}
         <div
@@ -219,51 +218,43 @@ export default function Footer({ onRestartTour }: FooterProps) {
             </div>
           </div>
 
-          {/* Derecha: Selector de idioma */}
-          <div className="flex items-center justify-center sm:justify-end gap-2">
-            <Globe className="h-5 w-5 text-gray-400" aria-hidden="true" />
-            <span className="text-gray-200 font-medium">Idiomas</span>
-            <select
-              className="bg-[#0D1B3E] text-white border border-gray-600 rounded px-2 py-1 focus:outline-none focus:border-[var(--secondary)]"
-              aria-label="Seleccionar idioma"
-              defaultValue="es"
-            >
-              <option value="es">Español</option>
-              <option value="en">Inglés</option>
-            </select>
-          </div>
-          
-          {/* 3. OPCIÓN PARA REINICIAR LA GUÍA (Solo si la prop existe) */}
-          {onRestartTour && (
-            <button
-              onClick={onRestartTour}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
-            >
-              Reiniciar Guía
-            </button>
-          )}
+  {/* Derecha: Selector de idioma */}
+  <div className="flex items-center justify-center sm:justify-end gap-2">
+    <Globe className="h-5 w-5 text-gray-400" aria-hidden="true" />
+    <span className="text-gray-200 font-medium">Idiomas</span>
+    <select
+      className="bg-[#0D1B3E] text-white border border-gray-600 rounded px-2 py-1 focus:outline-none focus:border-[var(--secondary)]"
+      aria-label="Seleccionar idioma"
+      defaultValue="es"
+    >
+      <option value="es">Español</option>
+      <option value="en">Inglés</option>
+    </select>
+  </div>
+</div>
 
-        </div>
-        
-        {/* Línea divisora */}
-        <div className="border-t border-gray-700" role="separator" aria-hidden="true" />
+  
 
-        {/* Bottom Bar */}
-        <div
-          className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-sm pt-8"
-          aria-label="Créditos y derechos de autor"
-        >
-          <div>© 2024 Servineo. Todos los derechos reservados.</div>
-          <div className="flex items-center space-x-4">
-            <span>Hecho con ❤️ en Cochabamba</span>
-            <div className="flex items-center space-x-2">
-              <div className="w-2.5 h-2.5 bg-green-500 rounded-full" aria-hidden="true" />
-              <span>Sistema operativo</span>
+                  </div>
+
+            {/* Línea divisora */}
+            <div className="border-t border-gray-700" role="separator" aria-hidden="true" />
+
+            {/* Bottom Bar */}
+            <div
+              className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-sm pt-8"
+              aria-label="Créditos y derechos de autor"
+            >
+              <div>© 2024 Servineo. Todos los derechos reservados.</div>
+              <div className="flex items-center space-x-4">
+                <span>Hecho con ❤️ en Cochabamba</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2.5 h-2.5 bg-green-500 rounded-full" aria-hidden="true" />
+                  <span>Sistema operativo</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        </div>
-    
     </footer>
   );
 }

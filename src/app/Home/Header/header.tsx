@@ -383,7 +383,7 @@ const Header = () => {
                       height={24}
                       className="rounded-full"
                     />
-                    <span>{user.name.split(' ')[0]}</span>
+                    <span>{(user.name || '').split(' ')[0]}</span>
                   </button>
                 </div>
               )}
@@ -447,7 +447,7 @@ const Header = () => {
         </div>
         <img
           className="profile-preview"
-          src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"}
+          src={user.photo?.trim() !== '' ? user.photo : '/avatar.png'}
           alt="Foto"
         />
         <p className="font-medium">{user.name || ''}</p>
