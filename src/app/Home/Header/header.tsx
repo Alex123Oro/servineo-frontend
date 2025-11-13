@@ -180,12 +180,12 @@ const Header = () => {
       const active = document.activeElement as HTMLElement | null;
       if (!active) return;
       const isNavElement = Boolean(
-        active.closest && active.closest('nav[aria-label="Menú principal"], header')
+        active.closest && active.closest('nav[aria-label="Menú principal"], header'),
       );
       if (!isNavElement) return;
       const navItems = Array.from(
         document.querySelectorAll<HTMLElement>(
-          'nav[aria-label="Menú principal"] a, nav[aria-label="Menú principal"] [href], .flex.items-center.gap-4 button, header button'
+          'nav[aria-label="Menú principal"] a, nav[aria-label="Menú principal"] [href], .flex.items-center.gap-4 button, header button',
         ),
       ).filter(Boolean);
       const index = navItems.indexOf(active);
@@ -236,7 +236,13 @@ const Header = () => {
           <nav className="hidden lg:flex gap-6" role="navigation" aria-label="Menú principal">
             <Link
               href="/servicios"
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600 after:transition-all
+      ${
+        pathname === '/servicios'
+          ? 'text-blue-600 after:w-full'
+          : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
+      }
+    `}
               aria-label="Ver todos los servicios disponibles"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -247,9 +253,16 @@ const Header = () => {
             >
               Servicios
             </Link>
+
             <Link
               href="/ofertas"
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600 after:transition-all
+      ${
+        pathname === '/ofertas'
+          ? 'text-blue-600 after:w-full'
+          : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
+      }
+    `}
               aria-label="Ver ofertas de trabajo disponibles"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -260,10 +273,17 @@ const Header = () => {
             >
               Ofertas de trabajo
             </Link>
+
             <a
               href="/ayuda"
               onClick={handleAyudaClick}
-              className="text-gray-700 hover:text-blue-600 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full"
+              className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600 after:transition-all
+      ${
+        pathname === '/ayuda'
+          ? 'text-blue-600 after:w-full'
+          : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
+      }
+    `}
               aria-label="Abrir ayuda"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -275,6 +295,7 @@ const Header = () => {
               Ayuda
             </a>
           </nav>
+
           <div id="header-auth" className="flex items-center gap-4">
             {!isLoggedIn ? (
               <button
@@ -293,7 +314,13 @@ const Header = () => {
                   ref={iconRef as any}
                 >
                   {user.photo?.startsWith('data:') ? (
-                    <img src={user.photo} alt="Avatar" width={32} height={32} className="rounded-full" />
+                    <img
+                      src={user.photo}
+                      alt="Avatar"
+                      width={32}
+                      height={32}
+                      className="rounded-full"
+                    />
                   ) : (
                     <Image
                       src={user.photo?.trim() !== '' ? user.photo : '/avatar.png'}
@@ -303,7 +330,9 @@ const Header = () => {
                       className="rounded-full"
                     />
                   )}
-                  <span className="font-medium text-gray-800">{(user.name || '').split(' ')[0]}</span>
+                  <span className="font-medium text-gray-800">
+                    {(user.name || '').split(' ')[0]}
+                  </span>
                 </button>
               </div>
             )}
