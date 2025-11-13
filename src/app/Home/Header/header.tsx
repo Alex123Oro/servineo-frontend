@@ -19,7 +19,7 @@ declare global {
     toggleMenu?: (e?: any) => void;
     closeMenu?: () => void;
     deviceId?: string;
-    userProfile?: any;
+    // userProfile ya está declarado en userProfileLogic.ts, por eso lo quitamos de aquí
   }
 }
 
@@ -311,7 +311,7 @@ const Header = () => {
                   onClick={(e) => (window as any).toggleMenu?.(e)}
                   className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition"
                   aria-label="Abrir menú de perfil"
-                  ref={iconRef as any}
+                  ref={iconRef}
                 >
                   {user.photo?.startsWith('data:') ? (
                     <img
@@ -383,7 +383,7 @@ const Header = () => {
                       height={24}
                       className="rounded-full"
                     />
-                    <span>{(user.name || '').split(' ')[0]}</span>
+                    <span>{user.name.split(' ')[0]}</span>
                   </button>
                 </div>
               )}
@@ -447,7 +447,7 @@ const Header = () => {
         </div>
         <img
           className="profile-preview"
-          src={user.photo?.trim() !== '' ? user.photo : '/avatar.png'}
+          src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"}
           alt="Foto"
         />
         <p className="font-medium">{user.name || ''}</p>
