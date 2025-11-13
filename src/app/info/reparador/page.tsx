@@ -14,7 +14,7 @@ export default function ParaReparadores() {
             Ofrece tus servicios
           </h1>
           <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto">
-            Conecta con clientes de manera confiable y profesional. Gestiona tus servicios, agenda reparaciones y crece junto a nosotros.
+            Conecta con clientes de manera confiable y profesional. Gestiona tus citas, agenda reparaciones y crece junto a nosotros.
           </p>
         </div>
       </section>
@@ -23,7 +23,7 @@ export default function ParaReparadores() {
       <section className="max-w-6xl mx-auto py-12 px-6 md:px-10">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-[color:var(--secondary)] mb-2">
-            Beneficios para Reparadores
+            Beneficios
           </h2>
           <div className="w-20 h-1 bg-[color:var(--primary)] mx-auto"></div>
         </div>

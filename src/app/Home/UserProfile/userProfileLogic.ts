@@ -67,11 +67,9 @@ function injectUserProfileHTMLIfNeeded(): void {
       <input id="emailInput" type="email" placeholder="correo@ejemplo.com" aria-required="true" />
       <small id="emailErr" class="error" style="display:none"></small>
 
-      <label for="phoneInput" style="margin-top:8px">Teléfono</label>
-      <input id="phoneInput" type="text" placeholder="Ej: +591 7xxxxxxx" />
+      <label for="phoneInput">Teléfono</label>
+      <input id="phoneInput" type="tel" placeholder="71234567" aria-required="false" />
       <small id="phoneErr" class="error" style="display:none"></small>
-
-      <button type="button" class="btn" id="changeLocationBtn" style="margin-top:8px">Cambiar ubicación</button>
 
       <label class="toggle" style="margin-top:8px">
         <input type="checkbox" id="notifToggle" /> Notificaciones
@@ -90,12 +88,13 @@ function injectUserProfileHTMLIfNeeded(): void {
           <div style="position:relative">
     <input type="password" id="currentPassword" style="width:100%;padding-right:35px" />
     <button type="button" class="togglePw" id="toggleCurrentPwd"
-      style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">
+      style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:#000;">
       <!-- ICONO OJO NORMAL -->
-      <svg width="20" height="20" viewBox="0 0 24 24">
-        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-        <circle cx="12" cy="12" r="3" fill="black"/>
-      </svg>
+<svg width="20" height="20" viewBox="0 0 24 24">
+  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="12" cy="12" r="3" fill="currentColor"/>
+</svg>
+
     </button>
   </div>
 
@@ -104,12 +103,13 @@ function injectUserProfileHTMLIfNeeded(): void {
   <div style="position:relative">
     <input type="password" id="newPassword" style="width:100%;padding-right:35px" />
     <button type="button" class="togglePw" id="toggleNewPwd"
-      style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">
+      style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:#000;">
       <!-- ICONO OJO NORMAL -->
-      <svg width="20" height="20" viewBox="0 0 24 24">
-        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-        <circle cx="12" cy="12" r="3" fill="black"/>
-      </svg>
+<svg width="20" height="20" viewBox="0 0 24 24">
+  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="12" cy="12" r="3" fill="currentColor"/>
+</svg>
+
     </button>
   </div>
         <div id="pwBar" class="password-strength"><i></i></div>
@@ -293,7 +293,6 @@ export function initUserProfileLogic(): void {
   const newPassword = document.getElementById("newPassword") as HTMLInputElement | null;
   const pwBar = document.getElementById("pwBar") as HTMLElement | null;
   const notifToggle = document.getElementById("notifToggle") as HTMLInputElement | null;
-  const changeLocationBtn = document.getElementById("changeLocationBtn") as HTMLButtonElement | null;
 
   const saveProfileBtn = document.getElementById("saveProfileBtn") as HTMLButtonElement | null;
   const cancelEditBtn = document.getElementById("cancelEditBtn") as HTMLButtonElement | null;
@@ -357,18 +356,27 @@ export function initUserProfileLogic(): void {
     const devId = localStorage.getItem("booka_device_id");
     const existing = devId && storeObj.sessions ? storeObj.sessions[devId] : null;
 
-    // Preferir el último usuario guardado en 'booka_user' para mantener todos los cambios.
-    const savedUserRaw = localStorage.getItem("booka_user");
-    const savedUser = savedUserRaw ? JSON.parse(savedUserRaw) : null;
+    const hasRealData =
+      existing &&
+      (existing.name || existing.email || existing.phone || existing.photo);
 
-    const base = savedUser || existing || { ...mockUser };
-    const user: User = { ...base, loggedIn: true };
+    const user: User = hasRealData
+      ? { ...existing, loggedIn: true }
+      : { ...mockUser, loggedIn: true };
 
     setUserForDevice(user);
     window.userProfile = user;
     window.isAuthenticated = true;
     renderUI();
     updateMaskedPassword();
+
+        // Aseguramos que el menú no quede con display:none inline tras re-login
+    const profileMenu = document.getElementById("profileMenu");
+    if (profileMenu) {
+      profileMenu.setAttribute("aria-hidden", "true");
+      profileMenu.style.display = ""; // limpiar cualquier inline style previo
+    }
+
 
     alert(
       "Bienvenido a Servineo\n\nPara acceder a la opción \"Ayuda\", inicia sesión o crea una cuenta."
@@ -401,13 +409,18 @@ export function initUserProfileLogic(): void {
     window.userProfile = updated;
     window.isAuthenticated = false;
     
-     try { (window as any).closeMenu?.(); } catch {}
-     const profileMenu = document.getElementById("profileMenu");
-    if (profileMenu) {
-    profileMenu.classList.remove("show");
-    profileMenu.setAttribute("aria-hidden", "true");
-    profileMenu.style.display = "none";
-    } 
+ // intenta usar la función global si existe para cerrar el menú
+ try { (window as any).closeMenu?.(); } catch {}
+
+ // resetear el estado del menú sin "ocultarlo permanentemente" vía style.display
+ const profileMenu = document.getElementById("profileMenu");
+ if (profileMenu) {
+   profileMenu.classList.remove("show");
+   profileMenu.setAttribute("aria-hidden", "true");
+   // eliminar estilos inline que podrían impedir que otros toggles lo muestren
+   profileMenu.style.display = ""; // limpiar inline style en vez de forzar 'none'
+ }
+
     renderUI();
 
     window.dispatchEvent(new CustomEvent("booka-auth-updated", { detail: updated }));
@@ -708,7 +721,7 @@ const onPointerUp = (ev: PointerEvent) => {
 // --- saveProfile: validación y guardado ---
 async function saveProfile(): Promise<void> {
   const u = getUser();
-  if (!nameInput || !emailInput) {
+  if (!nameInput || !emailInput || !phoneInput) {
     console.warn("Campos de edición no encontrados");
     return;
   }
@@ -722,10 +735,88 @@ async function saveProfile(): Promise<void> {
     if (nameErr) { nameErr.textContent = "El nombre es obligatorio."; nameErr.style.display = "block"; }
     valid = false;
   }
-  if (!/\S+@\S+\.\S+/.test(emailInput.value)) {
-    if (emailErr) { emailErr.textContent = "Correo inválido."; emailErr.style.display = "block"; }
-    valid = false;
+
+// --- Validación avanzada de correo electrónico ---
+const email = emailInput.value.trim();
+const emailPattern = /^[a-zA-Z0-9](?:[a-zA-Z0-9._%+-]{0,63})@[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+$/;
+
+
+if (!emailPattern.test(email)) {
+  if (emailErr) {
+    emailErr.textContent = "correo inválido.";
+    emailErr.style.display = "block";
   }
+  valid = false;
+} else {
+  const domain = email.split("@")[1].toLowerCase();
+  const [provider, ...rest] = domain.split(".");
+  const tld = rest.join("."); // ejemplo: "com", "com.bo", "edu.bo"
+
+  // 🔒 Dominios conocidos y válidos
+  const strictDomains: Record<string, string[]> = {
+    gmail: ["com"],
+    outlook: ["com", "es"],
+    hotmail: ["com", "es"],
+    yahoo: ["com", "es"],
+    icloud: ["com"],
+    protonmail: ["com"],
+  };
+
+  // 🧠 Detectar errores comunes de tipeo (gml, gmial, outlok, etc.)
+  const similarToKnown = Object.keys(strictDomains).find(d =>
+    provider.length >= 3 &&
+    (
+      provider.includes(d.slice(0, 3)) ||
+      d.includes(provider) ||
+      Math.abs(provider.length - d.length) <= 1
+    )
+  );
+
+  if (similarToKnown && !strictDomains[provider]) {
+    if (emailErr) {
+      emailErr.textContent = `correo inválido.`;
+      emailErr.style.display = "block";
+    }
+    valid = false;
+    return;
+  }
+
+  // ✅ Validar dominios conocidos
+  if (strictDomains[provider]) {
+    const validEndings = strictDomains[provider];
+    const validMatch = validEndings.some(end => tld === end);
+
+    if (!validMatch) {
+      if (emailErr) {
+        emailErr.textContent = "correo inválido.";
+        emailErr.style.display = "block";
+      }
+      valid = false;
+      return;
+    }
+  }
+
+  // 🚫 Bloquear falsos dominios educativos (.edu.com)
+  if (domain.includes(".edu.com")) {
+    if (emailErr) {
+      emailErr.textContent = "correo inválido.";
+      emailErr.style.display = "block";
+    }
+    valid = false;
+    return;
+  }
+
+  // 🚫 Evitar dominios con puntos repetidos o vacíos
+  if (domain.includes("..") || domain.endsWith(".")) {
+    if (emailErr) {
+      emailErr.textContent = "correo inválido.";
+      emailErr.style.display = "block";
+    }
+    valid = false;
+    return;
+  }
+}
+
   if (phoneInput && !/^[0-9+\s()-]{6,20}$/.test(phoneInput.value) && phoneInput.value.trim() !== "") {
     if (phoneErr) { phoneErr.textContent = "Teléfono inválido."; phoneErr.style.display = "block"; }
     valid = false;
@@ -736,7 +827,7 @@ async function saveProfile(): Promise<void> {
   const updated: User = Object.assign({}, u);
   updated.name = nameInput.value.trim();
   updated.email = emailInput.value.trim();
-  updated.phone = phoneInput ? phoneInput.value.trim() : (u?.phone || "");
+  updated.phone = phoneInput.value.trim();
   updated.notif = !!(notifToggle && notifToggle.checked);
 
   const file = photoInput && photoInput.files && photoInput.files[0];
@@ -796,7 +887,6 @@ async function saveProfile(): Promise<void> {
   }
 
   alert("Perfil guardado correctamente.");
-  try { (window as any).openProfileMenu?.(); } catch {}
 }
 
 // --- password change ---
@@ -857,7 +947,8 @@ function savePasswordChange(): void {
     console.warn("[savePasswordChange] error sincronizando:", err);
   }
 
-  alert("Contraseña cambiada correctamente.");
+  alert("Contraseña cambiada correctamente.\n\nTu sesión se cerrará por seguridad.");
+
   if (currentPassword) currentPassword.value = "";
   if (newPassword) newPassword.value = "";
 
@@ -873,6 +964,11 @@ function savePasswordChange(): void {
     }
   }
   if (pwErr) pwErr.style.display = "none";
+
+  logout();
+  setTimeout(() => {
+    window.location.href = "/";
+  }, 400);
 }
 
 // --- update masked pw display ---
@@ -903,27 +999,13 @@ function openEdit(): void {
     } catch (err) {
       console.warn("[openEdit] Error leyendo usuarios del almacenamiento:", err);
     }
-    // Fallback al último usuario guardado
-    try {
-      const savedUserRaw = localStorage.getItem("booka_user");
-      const saved = savedUserRaw ? JSON.parse(savedUserRaw) : null;
-      if (saved) return saved as User;
-    } catch {}
     return (window.userProfile as User) || mockUser;
   })();
 
-  // Aplicar borrador si existe para preservar cambios no guardados
-  let merged = u;
-  try {
-    const raw = localStorage.getItem("booka_profile_draft");
-    const draft = raw ? (JSON.parse(raw) as Partial<User>) : null;
-    if (draft) merged = { ...u, ...draft };
-  } catch {}
-
-  if (nameInput) nameInput.value = merged.name || "";
-  if (emailInput) emailInput.value = merged.email || "";
-  if (phoneInput) phoneInput.value = merged.phone || "";
-  if (notifToggle) notifToggle.checked = !!merged.notif;
+  if (nameInput) nameInput.value = u.name || "";
+  if (emailInput) emailInput.value = u.email || "";
+  if (phoneInput) phoneInput.value = u.phone || "";
+  if (notifToggle) notifToggle.checked = !!u.notif;
 
   _originalPhotoBeforeEdit = u.photo || "/avatar.png";
 
@@ -1027,8 +1109,8 @@ function cancelPasswordChange(): void {
 
   const eyeOpen = `
     <svg width="20" height="20" viewBox="0 0 24 24">
-      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-      <circle cx="12" cy="12" r="3" fill="black"/>
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="currentColor" stroke-width="2" fill="none"/>
+      <circle cx="12" cy="12" r="3" fill="currentColor/>
     </svg>
   `;
 
@@ -1055,16 +1137,16 @@ function togglePasswordVisibility(inputId: string, btn?: HTMLElement): void {
 
   const eyeOpen = `
     <svg width="20" height="20" viewBox="0 0 24 24">
-      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-      <circle cx="12" cy="12" r="3" fill="black"/>
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="currentColor" stroke-width="2" fill="none"/>
+      <circle cx="12" cy="12" r="3" fill="currentColor"/>
     </svg>
   `;
 
   const eyeClosed = `
     <svg width="20" height="20" viewBox="0 0 24 24">
-      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-      <circle cx="12" cy="12" r="3" fill="black"/>
-      <line x1="3" y1="3" x2="21" y2="21" stroke="black" stroke-width="2"/>
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="currentColor" stroke-width="2" fill="none"/>
+      <circle cx="12" cy="12" r="3" fill="currentColor"/>
+      <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2"/>
     </svg>
   `;
 
@@ -1142,25 +1224,8 @@ window.isAuthenticated = !!(session && session.loggedIn);
 renderUI();
 updateMaskedPassword();
 
-// Si HU5 pidió volver al Home con el modal abierto, solo abrir en Home
-try {
-  const shouldOpen = localStorage.getItem("booka_open_edit_on_home");
-  const path = typeof window !== "undefined" ? window.location.pathname : "";
-  const isHome = path === "/" || path === "/Home";
-  if (shouldOpen === "1" && isHome) {
-    localStorage.removeItem("booka_open_edit_on_home");
-    setTimeout(() => {
-      try { openEdit(); } catch {}
-    }, 0);
-  }
-} catch {}
-
 if (saveProfileBtn) saveProfileBtn.addEventListener("click", saveProfile);
-if (cancelEditBtn) cancelEditBtn.addEventListener("click", () => {
-  try { localStorage.removeItem("booka_profile_draft"); } catch {}
-  closeEdit();
-  try { (window as any).openProfileMenu?.(); } catch {}
-});
+if (cancelEditBtn) cancelEditBtn.addEventListener("click", closeEdit);
 if (saveNewPwBtn) saveNewPwBtn.addEventListener("click", savePasswordChange);
 if (cancelNewPwBtn) cancelNewPwBtn.addEventListener("click", cancelPasswordChange);
 if (changePasswordBtn) changePasswordBtn.addEventListener("click", togglePasswordChange);
@@ -1181,28 +1246,6 @@ if (closeProfileViewBtn)
     }
   });
 
-// botón para cambiar ubicación → navegar a /Login/HU5
-if (changeLocationBtn) {
-  changeLocationBtn.addEventListener("click", () => {
-    // Guardar borrador y marcar para abrir al volver
-    try {
-      const draft: Partial<User> = {};
-      const nameInput = document.getElementById("nameInput") as HTMLInputElement | null;
-      const emailInput = document.getElementById("emailInput") as HTMLInputElement | null;
-      const phoneInput = document.getElementById("phoneInput") as HTMLInputElement | null;
-      const notifToggle = document.getElementById("notifToggle") as HTMLInputElement | null;
-      if (nameInput) draft.name = nameInput.value;
-      if (emailInput) draft.email = emailInput.value;
-      if (phoneInput) draft.phone = phoneInput.value;
-      if (notifToggle) draft.notif = !!notifToggle.checked;
-      localStorage.setItem("booka_profile_draft", JSON.stringify(draft));
-      localStorage.setItem("booka_open_edit_on_home", "1");
-    } catch {}
-    try { window.closeEdit?.(); } catch {}
-    window.location.href = "/Login/HU5";
-  });
-}
-
 // profile updated event handler
 const handleProfileUpdated = (e: Event) => {
   try {
@@ -1210,7 +1253,6 @@ const handleProfileUpdated = (e: Event) => {
     if (updated) {
       setUserForDevice(updated);
       window.userProfile = updated;
-      try { localStorage.removeItem("booka_profile_draft"); } catch {}
       renderUI();
     } else {
       renderUI();

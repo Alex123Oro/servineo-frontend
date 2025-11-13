@@ -19,6 +19,7 @@ declare global {
     toggleMenu?: (e?: any) => void;
     closeMenu?: () => void;
     deviceId?: string;
+    // SE ELIMINÓ 'userProfile?: any;' PARA CORREGIR EL ERROR DE CONFLICTO DE TIPOS
   }
 }
 
@@ -33,13 +34,13 @@ const Header = () => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const iconRef = useRef<HTMLImageElement | null>(null);
+  const iconRef = useRef<HTMLButtonElement | null>(null);
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => setIsClient(true), []);
 
-  //logica modal registro: escucha cambios en localStorage para auth
+  // Lógica modal registro: escucha cambios en localStorage para auth
   useEffect(() => {
     const checkAuth = () => {
       const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
@@ -354,7 +355,7 @@ const Header = () => {
             </a>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div id="header-auth" className="flex items-center gap-4">
             {!isLoggedIn ? (
               <>
                 <button
@@ -374,24 +375,11 @@ const Header = () => {
                   ref={iconRef as any}
                 >
                   {user.photo?.startsWith('data:') ? (
-                    <img
-                      src={user.photo}
-                      alt="Avatar"
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
+                    <img src={user.photo} alt="Avatar" width={32} height={32} className="rounded-full" />
                   ) : (
-                    <Image
-                      src={user.photo && user.photo.trim() !== '' ? user.photo : '/avatar.png'}
-                      alt="Avatar"
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
+                    <Image src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"} alt="Avatar" width={32} height={32} className="rounded-full" />
                   )}
-
-                  <span className="font-medium text-gray-800">{user?.name?.split(' ')[0]}</span>
+                  <span className="font-medium text-gray-800">{user.name.split(' ')[0]}</span>
                 </button>
               </div>
             )}
@@ -420,7 +408,7 @@ const Header = () => {
               </span>
             </button>
 
-            <div className="flex items-center gap-2">
+            <div id="header-auth-mobile" className="flex items-center gap-2">
               {!isAuthenticated ? (
                 <>
                   <button
@@ -439,7 +427,7 @@ const Header = () => {
                     aria-label="Abrir menú de perfil"
                   >
                     <Image
-                      src={user.photo && user.photo.trim() !== '' ? user.photo : '/avatar.png'}
+                      src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"}
                       alt="Avatar"
                       width={24}
                       height={24}
@@ -512,8 +500,8 @@ const Header = () => {
           src={user.photo && user.photo.trim() !== '' ? user.photo : '/avatar.png'}
           alt="Foto"
         />
-        <p className="font-medium">{user.name}</p>
-        <p className="text-gray-500 text-sm mb-2">{user.email}</p>
+        <p className="font-medium">{user.name || ''}</p>
+        <p className="text-gray-500 text-sm mb-2">{user.email || ''}</p>
         <p className="text-gray-500 text-sm mb-2">{user.phone || 'Sin número registrado'}</p>
 
         <div className="menu-item" onClick={onOpenEdit}>

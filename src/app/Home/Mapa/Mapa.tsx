@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import type { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './Mapa.module.css';
-import FIXERS_DATA, { Fixer } from './fixers-mock';
+import FIXERS_DATA from './fixers-mock';
 
 // Importación dinámica para evitar errores de SSR
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { 
