@@ -11,7 +11,7 @@ export default function ParaReparadores() {
         
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-            Únete a Servineo como Reparador
+            Ofrece tus servicios
           </h1>
           <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto">
             Conecta con clientes de manera confiable y profesional. Gestiona tus servicios, agenda reparaciones y crece junto a nosotros.
