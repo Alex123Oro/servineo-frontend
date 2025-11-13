@@ -13,6 +13,7 @@ interface VincularGoogleProps {
 }
 
 export default function VincularGoogle({ onLinked, tokenUsuario }: VincularGoogleProps) {
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const [loading, setLoading] = useState(false);
 
   const handleLoginSuccess = async (credentialResponse: CredentialResponse) => {
@@ -50,7 +51,7 @@ export default function VincularGoogle({ onLinked, tokenUsuario }: VincularGoogl
 
       <div className="relative">
         <button
-          disabled={loading}
+          disabled={loading || !clientId}
           className="flex items-center justify-center gap-2 bg-blue-600 text-white text-sm px-4 py-2 rounded-xl hover:bg-blue-700 transition disabled:opacity-60"
         >
           {loading ? (
@@ -58,16 +59,18 @@ export default function VincularGoogle({ onLinked, tokenUsuario }: VincularGoogl
               <Loader2 className="w-4 h-4 animate-spin" /> Vinculando...
             </>
           ) : (
-            "Vincular"
+            !clientId ? "Google no disponible" : "Vincular"
           )}
         </button>
 
-        <div className="absolute inset-0 opacity-0 cursor-pointer">
-          <GoogleLogin
-            onSuccess={handleLoginSuccess}
-            onError={() => toast.error("Error al iniciar sesión con Google")}
-          />
-        </div>
+        {clientId && (
+          <div className="absolute inset-0 opacity-0 cursor-pointer">
+            <GoogleLogin
+              onSuccess={handleLoginSuccess}
+              onError={() => toast.error("Error al iniciar sesión con Google")}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

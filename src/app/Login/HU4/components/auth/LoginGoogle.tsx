@@ -10,6 +10,7 @@ interface LoginGoogleProps {
 }
 
 export default function LoginGoogle({ onMensajeChange }: LoginGoogleProps) {
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const [loading, setLoading] = useState(false);
 
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
@@ -59,9 +60,15 @@ export default function LoginGoogle({ onMensajeChange }: LoginGoogleProps) {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="w-full flex justify-center">
-        <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
-      </div>
+      {!clientId ? (
+        <p className="text-sm text-gray-500">
+          Inicio con Google no disponible: falta configuración.
+        </p>
+      ) : (
+        <div className="w-full flex justify-center">
+          <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
+        </div>
+      )}
 
       {loading && (
         <p className="text-sm text-gray-500 mt-2 animate-pulse">
