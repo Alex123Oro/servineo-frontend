@@ -368,6 +368,14 @@ export function initUserProfileLogic(): void {
     renderUI();
     updateMaskedPassword();
 
+        // Aseguramos que el menú no quede con display:none inline tras re-login
+    const profileMenu = document.getElementById("profileMenu");
+    if (profileMenu) {
+      profileMenu.setAttribute("aria-hidden", "true");
+      profileMenu.style.display = ""; // limpiar cualquier inline style previo
+    }
+
+
     alert(
       "Bienvenido a Servineo\n\nPara acceder a la opción \"Ayuda\", inicia sesión o crea una cuenta."
     );
@@ -399,13 +407,18 @@ export function initUserProfileLogic(): void {
     window.userProfile = updated;
     window.isAuthenticated = false;
     
-     try { (window as any).closeMenu?.(); } catch {}
-     const profileMenu = document.getElementById("profileMenu");
-    if (profileMenu) {
-    profileMenu.classList.remove("show");
-    profileMenu.setAttribute("aria-hidden", "true");
-    profileMenu.style.display = "none";
-    } 
+ // intenta usar la función global si existe para cerrar el menú
+ try { (window as any).closeMenu?.(); } catch {}
+
+ // resetear el estado del menú sin "ocultarlo permanentemente" vía style.display
+ const profileMenu = document.getElementById("profileMenu");
+ if (profileMenu) {
+   profileMenu.classList.remove("show");
+   profileMenu.setAttribute("aria-hidden", "true");
+   // eliminar estilos inline que podrían impedir que otros toggles lo muestren
+   profileMenu.style.display = ""; // limpiar inline style en vez de forzar 'none'
+ }
+
     renderUI();
 
     window.dispatchEvent(new CustomEvent("booka-auth-updated", { detail: updated }));
@@ -470,6 +483,8 @@ let _cropImage = new Image();
 let _cropScale = 1;
 let _cropOffset = { x: 0, y: 0 };
 let _isDragging = false;
+let _minScale = 1;
+
 let _lastPointer = { x: 0, y: 0 };
 const _naturalSize = { w: 0, h: 0 };
 // soporte multi-touch para pinch-to-zoom
@@ -510,6 +525,7 @@ function openCropModal(file: File) {
       cropCanvas.height = canvasSize;
 
       const fitScale = Math.max(canvasSize / _naturalSize.w, canvasSize / _naturalSize.h);
+      _minScale = fitScale; 
       _cropScale = fitScale;
       _cropOffset = { x: 0, y: 0 };
       drawCropCanvas();
@@ -567,7 +583,7 @@ const onPointerDown = (ev: PointerEvent) => {
     const newDist = Math.sqrt(dx * dx + dy * dy);
     if (_initialPinchDist > 0) {
       const scaleFactor = newDist / _initialPinchDist;
-      _cropScale = Math.min(3, Math.max(0.5, _initialScale * scaleFactor));
+      _cropScale = Math.min(3, Math.max(_minScale, _initialScale * scaleFactor));
       drawCropCanvas();
     }
 

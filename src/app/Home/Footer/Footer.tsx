@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import styles from './Footer.module.css';
 
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Globe } from 'lucide-react';
 
 export default function Footer() {
   const [activeTab, setActiveTab] = useState<string | null>(null);
@@ -23,6 +23,12 @@ export default function Footer() {
     { name: 'Acuerdos de usuario', path: '/info/terms' } /* fue Terminos y condiciones */,
     { name: 'Política de cookies', path: '/info/cookies' },
   ];
+
+  const exploreLinks = [
+    { name: 'Servicios', path: '/servicios' },
+    { name: 'Convertirse en Reparador', path: '/info/reparador' },
+    { name: 'Ofertas de trabajo', path: 'ofertas' }, // o la ruta donde se publiquen los empleos
+  ];  
 
   return (
     <footer
@@ -57,6 +63,23 @@ export default function Footer() {
           role="navigation"
           aria-label="Enlaces del pie de página"
         >
+
+          {/* Exploremos SERVINEO */}
+          <div>
+            <h3 className="text-xl font-semibold text-[var(--secondary)] mb-2">
+              Exploremos SERVINEO
+            </h3>
+            <ul className="space-y-3 mt-2">
+              {exploreLinks.map((link, i) => (
+                <li key={i}>
+                  <Link href={link.path} className={styles.footerLink}>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Empresa */}
           <div aria-labelledby="empresa-heading">
             <h3 id="empresa-heading" className="text-xl font-semibold text-[var(--secondary)] mb-2">
@@ -151,89 +174,88 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Redes sociales */}
-          <div aria-labelledby="social-heading">
-            <h3 id="social-heading" className="text-xl font-semibold text-[var(--secondary)] mb-2">
-              Síguenos
-            </h3>
+          {/* Redes sociales + selector de idioma */}
+<div
+  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-t border-gray-700 pt-6"
+>
+  {/* Izquierda: Síguenos + íconos */}
+  <div className="flex items-center justify-center sm:justify-start gap-4">
+    <h3 className="text-xl font-semibold text-[var(--secondary)]">
+      Síguenos
+    </h3>
+
+    <div
+      className="flex flex-row gap-6"
+      role="list"
+      aria-label="Redes sociales de Servineo"
+    >
+      <a
+        href="https://facebook.com/DptoInformaticaSistemas/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
+        aria-label="Visitar Facebook de Servineo"
+      >
+        <Facebook className="h-6 w-6" aria-hidden="true" />
+      </a>
+      <a
+        href="https://instagram.com/dpto_informatica.sistemas.umss/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
+        aria-label="Visitar Instagram de Servineo"
+      >
+        <Instagram className="h-6 w-6" aria-hidden="true" />
+      </a>
+      <a
+        href="https://x.com/umssboloficial?lang=es"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
+        aria-label="Visitar X (antes Twitter) de Servineo"
+      >
+        <Twitter className="h-6 w-6" aria-hidden="true" />
+      </a>
+    </div>
+  </div>
+
+  {/* Derecha: Selector de idioma */}
+  <div className="flex items-center justify-center sm:justify-end gap-2">
+    <Globe className="h-5 w-5 text-gray-400" aria-hidden="true" />
+    <span className="text-gray-200 font-medium">Idiomas</span>
+    <select
+      className="bg-[#0D1B3E] text-white border border-gray-600 rounded px-2 py-1 focus:outline-none focus:border-[var(--secondary)]"
+      aria-label="Seleccionar idioma"
+      defaultValue="es"
+    >
+      <option value="es">Español</option>
+      <option value="en">Inglés</option>
+    </select>
+  </div>
+</div>
+
+  
+
+                  </div>
+
+            {/* Línea divisora */}
+            <div className="border-t border-gray-700" role="separator" aria-hidden="true" />
+
+            {/* Bottom Bar */}
             <div
-              className="flex flex-row md:flex-col mt-3 md:space-y-3 space-x-4 md:space-x-0"
-              role="list"
-              aria-label="Redes sociales de Servineo"
+              className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-sm pt-8"
+              aria-label="Créditos y derechos de autor"
             >
-              {/* Facebook */}
-              <a
-                href="https://facebook.com/DptoInformaticaSistemas/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
-                aria-label="Visitar Facebook de Servineo"
-              >
-                <Facebook className="h-6 w-6" aria-hidden="true" />
-              </a>
-
-              {/* Instagram */}
-              <a
-                href="https://instagram.com/dpto_informatica.sistemas.umss/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
-                aria-label="Visitar Instagram de Servineo"
-              >
-                <Instagram className="h-6 w-6" aria-hidden="true" />
-              </a>
-
-              {/* TikTok (ícono SVG personalizado) 
-              <a
-                href="https://www.tiktok.com/@servineo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
-                aria-label="Visitar TikTok de Servineo"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-6 w-6"
-                  aria-hidden="true"
-                >
-                  <path d="M12 2c.47 0 .93.06 1.38.18a4.9 4.9 0 003.2 3.17 5.42 5.42 0 002.09.41v2.39a7.82 7.82 0 01-2.52-.43 7.25 7.25 0 01-1.2-.57v6.8a6.81 6.81 0 11-6.81-6.8c.24 0 .48.01.72.04v2.47a3.89 3.89 0 00-.72-.07 3.86 3.86 0 103.86 3.86V2h1z" />
-                </svg>
-              </a>                    */}
-
-              {/* Twitter (opcional) */}
-              <a
-                href="https://x.com/umssboloficial?lang=es"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
-                aria-label="Visitar X (antes Twitter) de Servineo"
-              >
-                <Twitter className="h-6 w-6" aria-hidden="true" />
-              </a>
+              <div>© 2024 Servineo. Todos los derechos reservados.</div>
+              <div className="flex items-center space-x-4">
+                <span>Hecho con ❤️ en Cochabamba</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2.5 h-2.5 bg-green-500 rounded-full" aria-hidden="true" />
+                  <span>Sistema operativo</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Línea divisora */}
-        <div className="border-t border-gray-700" role="separator" aria-hidden="true" />
-
-        {/* Bottom Bar */}
-        <div
-          className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-sm pt-8"
-          aria-label="Créditos y derechos de autor"
-        >
-          <div>© 2024 Servineo. Todos los derechos reservados.</div>
-          <div className="flex items-center space-x-4">
-            <span>Hecho con ❤️ en Cochabamba</span>
-            <div className="flex items-center space-x-2">
-              <div className="w-2.5 h-2.5 bg-green-500 rounded-full" aria-hidden="true" />
-              <span>Sistema operativo</span>
-            </div>
-          </div>
-        </div>
-      </div>
     </footer>
   );
 }
