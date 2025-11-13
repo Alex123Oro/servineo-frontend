@@ -7,7 +7,7 @@ const consejos = [
     {
         title:"Filtros",
         imageUrl:"/images/comoUsarSImages/consejoFiltros.png",
-        descripcion:"Aplica los filtros de busqueda, palabras claves o consulta nuestro mapa si hay fixers cercanos a tu ubucacion."
+        descripcion:"Aplica los filtros de búsqueda, palabras claves o consulta nuestro mapa si hay fixers cercanos a tu ubicación."
     },
     { 
         title:"Calificaciones y reseñas",
@@ -17,7 +17,7 @@ const consejos = [
     {
         title:"Comunicación",
         imageUrl:"/images/comoUsarSImages/comunicacion.png",
-        descripcion:"Comunicate con el fixer para tener mas a detalle el servicio y aclarar las dudas que tengas."
+        descripcion:"Comunícate con el fixer para tener mas detalles del servicio y aclarar las dudas que tengas."
     }
 ]
 

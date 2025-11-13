@@ -75,7 +75,19 @@ export default function WhyServineoPage() {
       icon: <ShieldCheck className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" />,
     },
   ];
+  useEffect(() => {
+    const savedScroll = sessionStorage.getItem('whyServineoScroll');
+    if (savedScroll) {
+      window.scrollTo(0, parseInt(savedScroll, 10));
+    }
 
+    const handleScroll = () => {
+      sessionStorage.setItem('whyServineoScroll', String(window.scrollY));
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   // Hook para animación
   const { refs, inViewStates } = useInViewMultiple(banners.length);
 
@@ -102,8 +114,7 @@ export default function WhyServineoPage() {
             refs.current[index] = el;
           }}
           className={`py-12 lg:py-20 relative flex flex-col-reverse md:flex-row items-start max-w-6xl mx-auto px-4 sm:px-6 md:px-8 gap-12 sm:gap-8 transition-all duration-700 ease-out
-            ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}
-            ${inViewStates[index] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 sm:translate-y-8'}`}
+      ${inViewStates[index] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 sm:translate-y-8'}`}
         >
           {/* Texto */}
           <div className="md:w-1/2 text-center md:text-left z-20">
@@ -127,24 +138,20 @@ export default function WhyServineoPage() {
           {/* Imagen */}
           <div className="md:w-1/2 relative z-10 flex justify-center md:justify-end">
             <div
-              className={`hidden xl:block absolute rounded-3xl shadow-lg
-                ${
-                  index % 2 === 0
-                    ? 'top-0 right-0 w-5/6 sm:w-4/5 h-5/6 sm:h-4/5 translate-x-6 sm:translate-x-14 -translate-y-4 sm:-translate-y-6'
-                    : 'top-0 left-0 w-5/6 sm:w-4/5 h-5/6 sm:h-4/5 -translate-x-6 sm:-translate-x-1 -translate-y-4 sm:-translate-y-6'
-                }
-                ${index % 2 === 0 ? 'bg-[var(--secondary)]' : 'bg-[var(--light-blue)]'} z-0
-              `}
+              className="hidden xl:block absolute rounded-3xl shadow-lg
+        top-0 right-0 w-5/6 sm:w-4/5 h-5/6 sm:h-4/5 translate-x-6 sm:translate-x-14 -translate-y-4 sm:-translate-y-6
+        bg-[var(--secondary)] z-0"
               aria-hidden="true"
             />
-            <div className="relative rounded-3xl shadow-lg overflow-hidden w-full md:w-[90%] z-10">
+            <div className="relative rounded-3xl shadow-lg overflow-hidden w-full md:w-[90%] z-10 group bg-gray-100">
+              {' '}
               <Image
                 src={banner.image}
                 alt={banner.title}
                 width={800}
                 height={520}
-                className="w-full h-auto object-cover block"
-              />
+                className="w-full h-auto object-cover block transition duration-500 group-hover:scale-105 group-hover:shadow-2xl group-hover:brightness-95"
+              />{' '}
             </div>
           </div>
         </section>
@@ -168,8 +175,26 @@ export default function WhyServineoPage() {
               <tr>
                 <th className="p-4 text-center text-xl">Criterio</th>
                 <th className="p-4 text-center text-xl">Servineo</th>
-                <th className="p-4 text-center text-xl">Facebook Marketplace</th>
-                <th className="p-4 text-center text-xl">Foreign apps</th>
+                <th className="p-4 text-center text-xl">
+                  <a
+                    href="https://www.facebook.com/marketplace"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative inline-block text-white after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white hover:after:w-full after:transition-all after:duration-300"
+                  >
+                    Facebook Marketplace
+                  </a>
+                </th>
+                <th className="p-4 text-center text-xl">
+                  <a
+                    href="https://bookaapp.com/services"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative inline-block text-white after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white hover:after:w-full after:transition-all after:duration-300"
+                  >
+                    Foreign apps
+                  </a>
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white">
