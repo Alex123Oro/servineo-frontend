@@ -3,6 +3,7 @@ import { Roboto } from 'next/font/google';
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import Header from './Home/Header/header';
+import Footer from './Home/Footer/Footer';
 
 const roboto = Roboto({
   variable: '--font-roboto',
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body className={`${roboto.variable} antialiased`}>
         <Header />
         <main className="pb-20 lg:pb-0">{children}</main>
+        <Footer />
       </body>
     </html>
   );

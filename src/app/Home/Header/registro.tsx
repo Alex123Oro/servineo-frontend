@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { mockUser } from '@/app/Home/UserProfile/UI/mockUser'; // asegúrate de tener este archivo
+import { mockUser } from '@/app/Home/UserProfile/UI/mockUser'; 
 
 interface RegistroProps {
   isOpen: boolean;
@@ -11,38 +11,50 @@ const Registro: React.FC<RegistroProps> = ({ isOpen, onClose }) => {
   const [user, setUser] = React.useState(mockUser);
 
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Si existe un usuario en memoria, úsalo; si no, usa el mock
-      const profile = window.userProfile || mockUser;
-      setUser(profile);
+    if (isOpen && typeof window !== 'undefined') {
+      try {
+        const saved =
+          JSON.parse(localStorage.getItem('booka_user') || 'null') ||
+          (window as any)?.userProfile ||
+          mockUser;
+        setUser(saved);
+      } catch (e) {
+        console.error('Error al cargar userProfile:', e);
+        setUser(mockUser);
+      }
     }
-  }, []);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleContinuar = () => {
-    // Guardar sesión simulada
-    const u = { ...user, loggedIn: true };
+ const handleContinuar = () => {
+    try {
+      const u = { ...user, loggedIn: true };
+      const deviceId =
+        localStorage.getItem('booka_device_id') ||
+        (window as any)?.deviceId ||
+        'dev-default';
 
-    const deviceId = (window as any).deviceId || 'dev-default';
-    const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}') || {
-      sessions: {},
-      lastUpdated: Date.now(),
-    };
+      const usersStoreRaw = localStorage.getItem('booka_users') || null;
+      const usersStore = usersStoreRaw ? JSON.parse(usersStoreRaw) : { sessions: {} };
 
-    usersStore.sessions[deviceId] = u;
-    usersStore.lastUpdated = Date.now();
-    localStorage.setItem('booka_users', JSON.stringify(usersStore));
+      usersStore.sessions = usersStore.sessions || {};
+      usersStore.sessions[deviceId] = u;
+      usersStore.lastUpdated = Date.now();
 
-    // Actualizar variables globales
-    window.userProfile = u;
-    window.isAuthenticated = true;
+      localStorage.setItem('booka_users', JSON.stringify(usersStore));
+      localStorage.setItem('booka_user', JSON.stringify(u));
 
-    // Notificar a Header que hay sesión activa
-    window.dispatchEvent(new Event('storage'));
+      (window as any).userProfile = u;
+      (window as any).isAuthenticated = true;
 
-    // Cerrar modal
-    onClose();
+      window.dispatchEvent(new CustomEvent('booka-auth-updated', { detail: u }));
+      window.dispatchEvent(new CustomEvent('booka-profile-updated', { detail: u }));
+
+      onClose();
+    } catch (err) {
+      console.error('Error al continuar sesión:', err);
+    }
   };
 
   return (

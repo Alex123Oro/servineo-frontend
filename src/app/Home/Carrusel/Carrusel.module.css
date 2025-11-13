@@ -115,6 +115,11 @@
   color: #333;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
+   
+.disabledArrow {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
 
 .arrow:hover {
   background-color: rgba(255, 255, 255, 1);

@@ -1,3 +1,7 @@
+
+
+
+
 "use client";
 
 import { Marker, Popup, Tooltip } from "react-leaflet";
@@ -20,7 +24,7 @@ const palette = {
   iconBorderBusy: "#ff4444",
   textColor: "#2B6AE0",        // Azul cielo brillante para textos
 };
-
+  
 export default function FixerMarker({ fixer }: FixerMarkerProps) {
   const style = getServiceStyle(fixer.servicio);
 

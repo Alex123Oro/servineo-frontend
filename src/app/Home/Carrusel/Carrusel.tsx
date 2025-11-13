@@ -70,7 +70,15 @@ const Carrusel = () => {
   // Prefetch con verificación por timeout
   useEffect(() => {
     if (typeof window === "undefined") return;
-    slides.forEach((slide, index) => {
+    
+    // Optimización: solo precargamos la imagen actual y las adyacentes
+    const preloadIndexes = [
+      currentIndex, 
+      (currentIndex + 1) % slides.length,
+      (currentIndex - 1 + slides.length) % slides.length
+    ];
+    
+    preloadIndexes.forEach((index) => {
       try {
         const img = new window.Image();
         let settled = false;
@@ -90,12 +98,12 @@ const Carrusel = () => {
           window.clearTimeout(timer);
           setFailedMap(prev => ({ ...prev, [index]: true }));
         };
-        img.src = slide.image;
+        img.src = slides[index].image;
       } catch (e) {
         setFailedMap(prev => ({ ...prev, [index]: true }));
       }
     });
-  }, []);
+  }, [currentIndex, slides.length]);
 
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -115,16 +123,27 @@ const Carrusel = () => {
     }
   };
 
+  const isFirstSlide = currentIndex === 0;
+  const isLastSlide = currentIndex === slides.length - 1;
+
   const prevSlide = () => {
-    const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? slides.length - 1 : currentIndex - 1;
-    setCurrentIndex(newIndex);
+    if (isFirstSlide) {
+      // Si estamos en la primera diapositiva, ir a la última
+      setCurrentIndex(slides.length - 1);
+    } else {
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(newIndex);
+    }
   };
 
   const nextSlide = () => {
-    const isLastSlide = currentIndex === slides.length - 1;
-    const newIndex = isLastSlide ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
+    if (isLastSlide) {
+      // Si estamos en la última diapositiva, volver a la primera
+      setCurrentIndex(0);
+    } else {
+      const newIndex = currentIndex + 1;
+      setCurrentIndex(newIndex);
+    }
   };
 
   useEffect(() => {
@@ -141,14 +160,14 @@ const Carrusel = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [currentIndex]);
+  }, [nextSlide,prevSlide]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
     }, 8000); // Change slide every 8 seconds
     return () => clearInterval(interval);
-  }, [currentIndex]);
+  }, [nextSlide]);
 
   return (
     <div 
@@ -191,10 +210,18 @@ const Carrusel = () => {
         </div>
       ))}
 
-      <button onClick={prevSlide} className={`${styles.arrow} ${styles.leftArrow}`}>
+      <button 
+        onClick={prevSlide} 
+        className={`${styles.arrow} ${styles.leftArrow}`}
+        aria-label="Diapositiva anterior"
+      >
         &#10094;
       </button>
-      <button onClick={nextSlide} className={`${styles.arrow} ${styles.rightArrow}`}>
+      <button 
+        onClick={nextSlide} 
+        className={`${styles.arrow} ${styles.rightArrow}`}
+        aria-label="Diapositiva siguiente"
+      >
         &#10095;
       </button>
 

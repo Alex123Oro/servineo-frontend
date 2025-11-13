@@ -2,8 +2,13 @@ import { services } from '../data';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function ServicioDetalle({ params }: { params: { slug: string } }) {
-  const service = services.find((s) => s.slug === params.slug);
+export default async function ServicioDetalle({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}) {
+  const { slug } = await params;
+  const service = services.find((s) => s.slug === slug);
 
   if (!service) {
     return (

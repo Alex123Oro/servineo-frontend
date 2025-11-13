@@ -164,7 +164,7 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
 
             <div className='flex flex-row justify-between items-center'>
                 <button 
-                    className='flex flex-row items-center justify-center cursor-pointer gap-[3px] bg-[#759AE0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px]'
+                    className='flex flex-row items-center justify-center cursor-pointer gap-[3px] bg-[#2B6AE0] hover:bg-[#1AA7ED] duration-150 text-white h-9 w-40 rounded-[8px]'
                     onClick={handleClick}
                 >
                     <FaWhatsapp />
