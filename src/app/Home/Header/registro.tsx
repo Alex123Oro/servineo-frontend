@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { mockUser } from '@/app/Home/UserProfile/UI/mockUser'; 
+import { mockUser } from '@/app/Home/UserProfile/UI/mockUser';
 
 interface RegistroProps {
   isOpen: boolean;
@@ -27,13 +27,11 @@ const Registro: React.FC<RegistroProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
- const handleContinuar = () => {
+  const handleContinuar = () => {
     try {
       const u = { ...user, loggedIn: true };
       const deviceId =
-        localStorage.getItem('booka_device_id') ||
-        (window as any)?.deviceId ||
-        'dev-default';
+        localStorage.getItem('booka_device_id') || (window as any)?.deviceId || 'dev-default';
 
       const usersStoreRaw = localStorage.getItem('booka_users') || null;
       const usersStore = usersStoreRaw ? JSON.parse(usersStoreRaw) : { sessions: {} };

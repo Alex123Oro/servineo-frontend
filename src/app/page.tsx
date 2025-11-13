@@ -180,7 +180,6 @@ export default function Home() {
   }, [isOpen]);
   // --- FIN HOOKS DE LA GUÍA ---
 
-
   // --- LÓGICA DE TU COLABORADOR (SCROLL AL #) ---
   useEffect(() => {
     if (typeof window !== 'undefined') {

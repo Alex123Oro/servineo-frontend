@@ -19,7 +19,7 @@ declare global {
     toggleMenu?: (e?: any) => void;
     closeMenu?: () => void;
     deviceId?: string;
-    // userProfile ya está declarado en userProfileLogic.ts, por eso lo quitamos de aquí
+    // SE ELIMINÓ 'userProfile?: any;' PARA CORREGIR EL ERROR DE CONFLICTO DE TIPOS
   }
 }
 
@@ -28,8 +28,10 @@ const Header = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const [user, setUser] = useState(mockUser);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const iconRef = useRef<HTMLButtonElement | null>(null);
@@ -38,6 +40,7 @@ const Header = () => {
 
   useEffect(() => setIsClient(true), []);
 
+  // Lógica modal registro: escucha cambios en localStorage para auth
   useEffect(() => {
     const checkAuth = () => {
       const usersStore = JSON.parse(localStorage.getItem('booka_users') || '{}');
@@ -46,11 +49,14 @@ const Header = () => {
       setIsAuthenticated(!!session?.loggedIn);
       setIsLoggedIn(!!session?.loggedIn);
     };
+
     window.addEventListener('storage', checkAuth);
     checkAuth();
+
     return () => window.removeEventListener('storage', checkAuth);
   }, []);
 
+  // ========= LÓGICA DE PERFIL (inicialización y listeners) =========
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const win = window as any;
@@ -60,6 +66,7 @@ const Header = () => {
       }
       win.__booka_userProfileInitialized = true;
     }
+
     const deviceId = localStorage.getItem('booka_device_id') || win.deviceId || 'dev-default';
     let currentUser: any = mockUser;
     try {
@@ -74,10 +81,12 @@ const Header = () => {
     } catch (e) {
       currentUser = win.userProfile || mockUser;
     }
+
     const loggedIn = !!currentUser?.loggedIn;
     setUser(currentUser);
     setIsAuthenticated(loggedIn);
     setIsLoggedIn(loggedIn);
+
     const handleProfileUpdated = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (detail) {
@@ -90,6 +99,7 @@ const Header = () => {
       setIsAuthenticated(false);
       setIsLoggedIn(false);
     };
+
     window.addEventListener('booka-profile-updated', handleProfileUpdated);
     window.addEventListener('booka-logout', handleLogout);
     return () => {
@@ -98,22 +108,45 @@ const Header = () => {
     };
   }, []);
 
+  // Abrir el card de Editar perfil al llegar al Home si HU5 lo solicitó
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    const path = pathname || '';
+    const isHome = path === '/' || path === '/Home';
+    try {
+      const flag = localStorage.getItem('booka_open_edit_on_home');
+      if (flag === '1' && isHome) {
+        localStorage.removeItem('booka_open_edit_on_home');
+        try {
+          window.openEdit?.();
+        } catch {}
+      }
+    } catch {}
+  }, [pathname]);
+
+  // Exponer funciones globales para togglear menú (usadas en otros scripts)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const win = window as any;
+
     win.toggleMenu = (e?: any) => {
       e?.stopPropagation?.();
       setIsMenuOpen((prev) => !prev);
     };
     win.closeMenu = () => setIsMenuOpen(false);
+    win.openProfileMenu = () => setIsMenuOpen(true);
+
     return () => {
       try {
         delete window.toggleMenu;
         delete window.closeMenu;
+        delete (window as any).openProfileMenu;
       } catch {}
     };
   }, [pathname]);
 
+  // Cerrar menú al hacer clic fuera
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (isMenuOpen && menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -124,10 +157,12 @@ const Header = () => {
     return () => document.removeEventListener('click', handleClick);
   }, [isMenuOpen]);
 
+  // ========= Funciones de perfil =========
   const onLogout = () => {
+    console.log('👋 Clic en cerrar sesión');
     window.closeMenu?.();
     setTimeout(() => {
-      window.logout?.();
+      window.logout?.(); // ya actualizará localStorage + emitirá eventos
       router.push('/');
     }, 150);
   };
@@ -151,6 +186,7 @@ const Header = () => {
     }
   };
 
+  // Escucha actualizaciones de login/logout globales
   useEffect(() => {
     const handleAuthUpdate = (e: Event) => {
       const detail = (e as CustomEvent).detail;
@@ -171,10 +207,12 @@ const Header = () => {
         window.isAuthenticated = !!session?.loggedIn;
       }
     };
+
     window.addEventListener('booka-auth-updated', handleAuthUpdate);
     return () => window.removeEventListener('booka-auth-updated', handleAuthUpdate);
   }, []);
 
+  // Implementar navegación con teclas de flecha
   useEffect(() => {
     const handleKeyNavigation = (e: KeyboardEvent) => {
       const active = document.activeElement as HTMLElement | null;
@@ -200,18 +238,21 @@ const Header = () => {
         navItems[prev].focus();
       }
     };
+
     window.addEventListener('keydown', handleKeyNavigation);
     return () => window.removeEventListener('keydown', handleKeyNavigation);
   }, []);
 
   if (!isClient) return null;
 
+  // ========= Render =========
   return (
     <>
       <header
         className="fixed top-0 left-0 right-0 z-50 bg-white bg-opacity-95 shadow-lg backdrop-blur-md transition-all duration-300 border-b border-gray-100"
         role="banner"
       >
+        {/* Header Desktop */}
         <div className="hidden lg:flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
           <div className="flex items-center">
             <button
@@ -233,16 +274,17 @@ const Header = () => {
               </span>
             </button>
           </div>
+
           <nav className="hidden lg:flex gap-6" role="navigation" aria-label="Menú principal">
             <Link
               href="/servicios"
               className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600 after:transition-all
-      ${
-        pathname === '/servicios'
-          ? 'text-blue-600 after:w-full'
-          : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
-      }
-    `}
+              ${
+                pathname === '/servicios'
+                  ? 'text-blue-600 after:w-full'
+                  : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
+              }
+              `}
               aria-label="Ver todos los servicios disponibles"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -257,12 +299,12 @@ const Header = () => {
             <Link
               href="/ofertas"
               className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600 after:transition-all
-      ${
-        pathname === '/ofertas'
-          ? 'text-blue-600 after:w-full'
-          : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
-      }
-    `}
+              ${
+                pathname === '/ofertas'
+                  ? 'text-blue-600 after:w-full'
+                  : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
+              }
+              `}
               aria-label="Ver ofertas de trabajo disponibles"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -278,12 +320,12 @@ const Header = () => {
               href="/ayuda"
               onClick={handleAyudaClick}
               className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600 after:transition-all
-      ${
-        pathname === '/ayuda'
-          ? 'text-blue-600 after:w-full'
-          : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
-      }
-    `}
+              ${
+                pathname === '/ayuda'
+                  ? 'text-blue-600 after:w-full'
+                  : 'text-gray-700 hover:text-blue-600 after:w-0 hover:after:w-full'
+              }
+              `}
               aria-label="Abrir ayuda"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -298,48 +340,36 @@ const Header = () => {
 
           <div id="header-auth" className="flex items-center gap-4">
             {!isLoggedIn ? (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
-                aria-label="Acceder"
-              >
-                Acceder
-              </button>
+              <>
+                <button
+                  onClick={() => router.push('/Login/HU4/login')}
+                  className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium transform hover:-translate-y-0.5"
+                  aria-label="Acceder"
+                >
+                  Acceder
+                </button>
+              </>
             ) : (
               <div className="relative">
                 <button
                   onClick={(e) => (window as any).toggleMenu?.(e)}
                   className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition"
                   aria-label="Abrir menú de perfil"
-                  ref={iconRef}
+                  ref={iconRef as any}
                 >
                   {user.photo?.startsWith('data:') ? (
-                    <img
-                      src={user.photo}
-                      alt="Avatar"
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
+                    <img src={user.photo} alt="Avatar" width={32} height={32} className="rounded-full" />
                   ) : (
-                    <Image
-                      src={user.photo?.trim() !== '' ? user.photo : '/avatar.png'}
-                      alt="Avatar"
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
+                    <Image src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"} alt="Avatar" width={32} height={32} className="rounded-full" />
                   )}
-                  <span className="font-medium text-gray-800">
-                    {(user.name || '').split(' ')[0]}
-                  </span>
+                  <span className="font-medium text-gray-800">{user.name.split(' ')[0]}</span>
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Mobile header */}
+        {/* Header Mobile */}
         <div className="lg:hidden flex flex-col justify-between h-[60px]">
           <div className="flex items-center justify-between px-4 py-2">
             <button
@@ -360,15 +390,18 @@ const Header = () => {
                 Servineo
               </span>
             </button>
+
             <div id="header-auth-mobile" className="flex items-center gap-2">
               {!isAuthenticated ? (
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm font-medium"
-                  aria-label="Registrarse"
-                >
-                  Acceder
-                </button>
+                <>
+                  <button
+                    onClick={() => router.push('/Login/HU4/login')}
+                    className="px-3 py-1.5 rounded-md text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm font-medium"
+                    aria-label="Registrarse"
+                  >
+                    Acceder
+                  </button>
+                </>
               ) : (
                 <div className="relative">
                   <button
@@ -377,13 +410,13 @@ const Header = () => {
                     aria-label="Abrir menú de perfil"
                   >
                     <Image
-                      src={user.photo?.trim() !== '' ? user.photo : '/avatar.png'}
+                      src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"}
                       alt="Avatar"
                       width={24}
                       height={24}
                       className="rounded-full"
                     />
-                    <span>{user.name.split(' ')[0]}</span>
+                    <span>{user?.name?.split(' ')[0]}</span>
                   </button>
                 </div>
               )}
@@ -392,7 +425,7 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Bottom navigation */}
+      {/* Barra inferior de iconos */}
       <div
         className="lg:hidden fixed bottom-0 left-0 right-0 h-20 border-t border-gray-200 bg-white flex justify-around items-center z-50"
         role="navigation"
@@ -432,7 +465,7 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Profile menu */}
+      {/* Menú de perfil */}
       <div
         id="profileMenu"
         ref={menuRef}
@@ -447,12 +480,13 @@ const Header = () => {
         </div>
         <img
           className="profile-preview"
-          src={user.photo && user.photo.trim() !== "" ? user.photo : "/avatar.png"}
+          src={user.photo && user.photo.trim() !== '' ? user.photo : '/avatar.png'}
           alt="Foto"
         />
         <p className="font-medium">{user.name || ''}</p>
         <p className="text-gray-500 text-sm mb-2">{user.email || ''}</p>
         <p className="text-gray-500 text-sm mb-2">{user.phone || 'Sin número registrado'}</p>
+
         <div className="menu-item" onClick={onOpenEdit}>
           Editar perfil
         </div>

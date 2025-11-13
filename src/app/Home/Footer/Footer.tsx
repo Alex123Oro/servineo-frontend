@@ -36,7 +36,7 @@ export default function Footer({ onRestartTour }: FooterProps) {
     { name: 'Servicios', path: '/servicios' },
     { name: 'Ofrece tus servicios', path: '/info/reparador' },
     { name: 'Ofertas de trabajo', path: 'ofertas' }, // o la ruta donde se publiquen los empleos
-  ];  
+  ];  
 
   return (
     <footer
