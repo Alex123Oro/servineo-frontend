@@ -19,7 +19,6 @@ declare global {
     toggleMenu?: (e?: any) => void;
     closeMenu?: () => void;
     deviceId?: string;
-    userProfile?: any;
   }
 }
 
