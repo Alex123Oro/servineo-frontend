@@ -116,7 +116,7 @@ export default function EditProfilePage() {
       {/* 🔹 Contenido principal */}
       <main className="flex-grow p-5 max-w-4xl mx-auto w-full flex flex-col items-center justify-center">
         <h1 className="text-2xl font-bold mb-6" style={{ color: '#1A223F' }}>
-          Editar Perfil
+          Editar Mapa
         </h1>
 
         <div className="bg-white rounded-2xl shadow-lg p-6 border border-[#E5F4FB] w-full">

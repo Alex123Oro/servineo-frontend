@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Eye, EyeOff, Pencil, Loader2, Crosshair } from 'lucide-react'
+import { Loader2, Crosshair } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import {
@@ -41,9 +41,7 @@ export default function RequesterEditForm() {
   const [latLng, setLatLng] = useState<LatLng | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [errorTelefono, setErrorTelefono] = useState<string | null>(null)
-  const [showTelefono, setShowTelefono] = useState(false)
-  const [isEditingTelefono, setIsEditingTelefono] = useState(false)
+  // Teléfono ya no se edita en esta vista; se conserva internamente
   const [mapReady, setMapReady] = useState(false)
 
   // 🟦 Cargar datos del usuario
@@ -83,30 +81,15 @@ export default function RequesterEditForm() {
         delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: string })
           ._getIconUrl
         L.Icon.Default.mergeOptions({
-          iconRetinaUrl: '/marker-icon-2x.png',
-          iconUrl: '/marker-icon.png',
-          shadowUrl: '/marker-shadow.png',
+          iconRetinaUrl: '/Public Login/marker-icon-2x.png',
+          iconUrl: '/Public Login/marker-icon.png',
+          shadowUrl: '/Public Login/marker-shadow.png',
         })
       })
     }
   }, [])
 
-  // 🟦 Validar teléfono
-  function validarTelefono(valor: string): boolean {
-    if (valor.length < 8 || valor.length > 15) return false
-    if (valor.startsWith('+')) return /^[+][0-9]{7,14}$/.test(valor)
-    return /^[0-9]{8,15}$/.test(valor)
-  }
-
-  // 🟦 Manejar cambios en teléfono
-  function handleTelefonoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    let valor = e.target.value
-    if (valor.startsWith('+')) valor = '+' + valor.slice(1).replace(/[^0-9]/g, '')
-    else valor = valor.replace(/[^0-9]/g, '')
-    setTelefono(valor)
-    setErrorTelefono(null)
-    setError(null)
-  }
+  // Teléfono no se edita en HU5; solo se envía el valor existente.
 
   // 🟦 Obtener dirección desde coordenadas
   async function fetchAddress(lat: number, lng: number): Promise<void> {
@@ -194,27 +177,20 @@ export default function RequesterEditForm() {
     if (loading) return
     setError(null)
 
-    if (!validarTelefono(telefono)) {
-      setError('Ingrese un número de teléfono válido')
-      return
-    }
-
     setLoading(true)
     try {
       const result = await actualizarDatosUsuario({ telefono, ubicacion })
 
       if (!result.success) {
-        if (result.code === 'PHONE_TAKEN') {
-          setErrorTelefono('Este número ya está registrado')
-          setError(null)
-          setLoading(false)
-          return
-        }
         throw new Error(result.message)
       }
 
       alert('Perfil actualizado correctamente')
-      setIsEditingTelefono(false)
+      // Redirigir al Home con el modal de editar perfil abierto
+      try {
+        localStorage.setItem('booka_open_edit_on_home', '1')
+      } catch {}
+      router.push('/')
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
       else setError('Error al actualizar perfil')
@@ -229,53 +205,7 @@ export default function RequesterEditForm() {
       className="space-y-6 max-w-2xl mx-auto bg-white rounded-2xl p-8"
       aria-busy={loading}
     >
-      {/* Teléfono */}
-      <div>
-        <label className="block text-sm font-semibold mb-1 text-[#1A223F]">
-          Número de teléfono:
-        </label>
-        <div className="flex items-center gap-2">
-          <input
-            type={showTelefono ? 'text' : 'password'}
-            value={telefono}
-            disabled={!isEditingTelefono}
-            onChange={handleTelefonoChange}
-            placeholder="+591 7xxxxxxx"
-            autoComplete="tel"
-            className={`flex-1 rounded-md border px-3 py-2 focus:outline-none focus:ring-2 transition text-black ${
-              isEditingTelefono
-                ? 'bg-white border-[#759AE0] focus:ring-[#1AA7ED]'
-                : 'bg-[#F5FAFE] border-[#E5F4FB] cursor-not-allowed'
-            }`}
-          />
-          <button
-            type="button"
-            onClick={() => setShowTelefono((p) => !p)}
-            className="p-2 rounded-md border border-[#E5F4FB] bg-[#F5FAFE] hover:bg-[#E5F4FB] transition"
-          >
-            {showTelefono ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsEditingTelefono((p) => !p)
-              setErrorTelefono(null)
-            }}
-            className={`p-2 rounded-md border transition ${
-              isEditingTelefono
-                ? 'border-[#1A223F] bg-[#E5F4FB]'
-                : 'border-[#E5F4FB] bg-[#F5FAFE] hover:bg-[#E5F4FB]'
-            }`}
-          >
-            <Pencil size={18} />
-          </button>
-        </div>
-        {errorTelefono && (
-          <p className="text-sm text-red-600 mt-1" role="alert">
-            {errorTelefono}
-          </p>
-        )}
-      </div>
+      {/* Teléfono removido: esta vista se centra en la ubicación y el mapa */}
 
       {/* Ubicación */}
       <div>
@@ -349,6 +279,7 @@ export default function RequesterEditForm() {
           type="submit"
           disabled={loading}
           className="flex items-center gap-2 rounded-md bg-[#1A223F] px-4 py-2 text-white font-semibold hover:bg-[#2B31E0] disabled:bg-[#759AE0]"
+          translate="no"
         >
           {loading ? (
             <>
@@ -360,7 +291,10 @@ export default function RequesterEditForm() {
         </button>
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => {
+            try { localStorage.setItem('booka_open_edit_on_home', '1') } catch {}
+            router.push('/')
+          }}
           className="rounded-md bg-[#E5F4FB] px-4 py-2 text-[#1A223F] font-semibold hover:bg-[#2BDDE0]/20"
         >
           Cancelar

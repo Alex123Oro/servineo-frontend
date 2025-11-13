@@ -67,9 +67,11 @@ function injectUserProfileHTMLIfNeeded(): void {
       <input id="emailInput" type="email" placeholder="correo@ejemplo.com" aria-required="true" />
       <small id="emailErr" class="error" style="display:none"></small>
 
-      <label for="phoneInput">Teléfono</label>
-      <input id="phoneInput" type="tel" placeholder="71234567" aria-required="false" />
+      <label for="phoneInput" style="margin-top:8px">Teléfono</label>
+      <input id="phoneInput" type="text" placeholder="Ej: +591 7xxxxxxx" />
       <small id="phoneErr" class="error" style="display:none"></small>
+
+      <button type="button" class="btn" id="changeLocationBtn" style="margin-top:8px">Cambiar ubicación</button>
 
       <label class="toggle" style="margin-top:8px">
         <input type="checkbox" id="notifToggle" /> Notificaciones
@@ -291,6 +293,7 @@ export function initUserProfileLogic(): void {
   const newPassword = document.getElementById("newPassword") as HTMLInputElement | null;
   const pwBar = document.getElementById("pwBar") as HTMLElement | null;
   const notifToggle = document.getElementById("notifToggle") as HTMLInputElement | null;
+  const changeLocationBtn = document.getElementById("changeLocationBtn") as HTMLButtonElement | null;
 
   const saveProfileBtn = document.getElementById("saveProfileBtn") as HTMLButtonElement | null;
   const cancelEditBtn = document.getElementById("cancelEditBtn") as HTMLButtonElement | null;
@@ -354,13 +357,12 @@ export function initUserProfileLogic(): void {
     const devId = localStorage.getItem("booka_device_id");
     const existing = devId && storeObj.sessions ? storeObj.sessions[devId] : null;
 
-    const hasRealData =
-      existing &&
-      (existing.name || existing.email || existing.phone || existing.photo);
+    // Preferir el último usuario guardado en 'booka_user' para mantener todos los cambios.
+    const savedUserRaw = localStorage.getItem("booka_user");
+    const savedUser = savedUserRaw ? JSON.parse(savedUserRaw) : null;
 
-    const user: User = hasRealData
-      ? { ...existing, loggedIn: true }
-      : { ...mockUser, loggedIn: true };
+    const base = savedUser || existing || { ...mockUser };
+    const user: User = { ...base, loggedIn: true };
 
     setUserForDevice(user);
     window.userProfile = user;
@@ -706,7 +708,7 @@ const onPointerUp = (ev: PointerEvent) => {
 // --- saveProfile: validación y guardado ---
 async function saveProfile(): Promise<void> {
   const u = getUser();
-  if (!nameInput || !emailInput || !phoneInput) {
+  if (!nameInput || !emailInput) {
     console.warn("Campos de edición no encontrados");
     return;
   }
@@ -734,7 +736,7 @@ async function saveProfile(): Promise<void> {
   const updated: User = Object.assign({}, u);
   updated.name = nameInput.value.trim();
   updated.email = emailInput.value.trim();
-  updated.phone = phoneInput.value.trim();
+  updated.phone = phoneInput ? phoneInput.value.trim() : (u?.phone || "");
   updated.notif = !!(notifToggle && notifToggle.checked);
 
   const file = photoInput && photoInput.files && photoInput.files[0];
@@ -794,6 +796,7 @@ async function saveProfile(): Promise<void> {
   }
 
   alert("Perfil guardado correctamente.");
+  try { (window as any).openProfileMenu?.(); } catch {}
 }
 
 // --- password change ---
@@ -900,13 +903,27 @@ function openEdit(): void {
     } catch (err) {
       console.warn("[openEdit] Error leyendo usuarios del almacenamiento:", err);
     }
+    // Fallback al último usuario guardado
+    try {
+      const savedUserRaw = localStorage.getItem("booka_user");
+      const saved = savedUserRaw ? JSON.parse(savedUserRaw) : null;
+      if (saved) return saved as User;
+    } catch {}
     return (window.userProfile as User) || mockUser;
   })();
 
-  if (nameInput) nameInput.value = u.name || "";
-  if (emailInput) emailInput.value = u.email || "";
-  if (phoneInput) phoneInput.value = u.phone || "";
-  if (notifToggle) notifToggle.checked = !!u.notif;
+  // Aplicar borrador si existe para preservar cambios no guardados
+  let merged = u;
+  try {
+    const raw = localStorage.getItem("booka_profile_draft");
+    const draft = raw ? (JSON.parse(raw) as Partial<User>) : null;
+    if (draft) merged = { ...u, ...draft };
+  } catch {}
+
+  if (nameInput) nameInput.value = merged.name || "";
+  if (emailInput) emailInput.value = merged.email || "";
+  if (phoneInput) phoneInput.value = merged.phone || "";
+  if (notifToggle) notifToggle.checked = !!merged.notif;
 
   _originalPhotoBeforeEdit = u.photo || "/avatar.png";
 
@@ -1125,8 +1142,25 @@ window.isAuthenticated = !!(session && session.loggedIn);
 renderUI();
 updateMaskedPassword();
 
+// Si HU5 pidió volver al Home con el modal abierto, solo abrir en Home
+try {
+  const shouldOpen = localStorage.getItem("booka_open_edit_on_home");
+  const path = typeof window !== "undefined" ? window.location.pathname : "";
+  const isHome = path === "/" || path === "/Home";
+  if (shouldOpen === "1" && isHome) {
+    localStorage.removeItem("booka_open_edit_on_home");
+    setTimeout(() => {
+      try { openEdit(); } catch {}
+    }, 0);
+  }
+} catch {}
+
 if (saveProfileBtn) saveProfileBtn.addEventListener("click", saveProfile);
-if (cancelEditBtn) cancelEditBtn.addEventListener("click", closeEdit);
+if (cancelEditBtn) cancelEditBtn.addEventListener("click", () => {
+  try { localStorage.removeItem("booka_profile_draft"); } catch {}
+  closeEdit();
+  try { (window as any).openProfileMenu?.(); } catch {}
+});
 if (saveNewPwBtn) saveNewPwBtn.addEventListener("click", savePasswordChange);
 if (cancelNewPwBtn) cancelNewPwBtn.addEventListener("click", cancelPasswordChange);
 if (changePasswordBtn) changePasswordBtn.addEventListener("click", togglePasswordChange);
@@ -1147,6 +1181,28 @@ if (closeProfileViewBtn)
     }
   });
 
+// botón para cambiar ubicación → navegar a /Login/HU5
+if (changeLocationBtn) {
+  changeLocationBtn.addEventListener("click", () => {
+    // Guardar borrador y marcar para abrir al volver
+    try {
+      const draft: Partial<User> = {};
+      const nameInput = document.getElementById("nameInput") as HTMLInputElement | null;
+      const emailInput = document.getElementById("emailInput") as HTMLInputElement | null;
+      const phoneInput = document.getElementById("phoneInput") as HTMLInputElement | null;
+      const notifToggle = document.getElementById("notifToggle") as HTMLInputElement | null;
+      if (nameInput) draft.name = nameInput.value;
+      if (emailInput) draft.email = emailInput.value;
+      if (phoneInput) draft.phone = phoneInput.value;
+      if (notifToggle) draft.notif = !!notifToggle.checked;
+      localStorage.setItem("booka_profile_draft", JSON.stringify(draft));
+      localStorage.setItem("booka_open_edit_on_home", "1");
+    } catch {}
+    try { window.closeEdit?.(); } catch {}
+    window.location.href = "/Login/HU5";
+  });
+}
+
 // profile updated event handler
 const handleProfileUpdated = (e: Event) => {
   try {
@@ -1154,6 +1210,7 @@ const handleProfileUpdated = (e: Event) => {
     if (updated) {
       setUserForDevice(updated);
       window.userProfile = updated;
+      try { localStorage.removeItem("booka_profile_draft"); } catch {}
       renderUI();
     } else {
       renderUI();
@@ -1177,4 +1234,4 @@ window.togglePasswordVisibility = togglePasswordVisibility;
 window.cancelPasswordChange = cancelPasswordChange;
 window.togglePasswordChange = togglePasswordChange;
 window.closeProfileModal = closeEdit;
-} 
+}

@@ -68,6 +68,7 @@ export default function RegistroForm() {
     success: boolean;
     token?: string;
     message?: string;
+    user?: { id?: string | number; _id?: string | number; name?: string; email: string; picture?: string };
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -83,13 +84,28 @@ export default function RegistroForm() {
         if (data.success) {
           setMensaje("Registro exitoso");
           if (data.token) localStorage.setItem("servineo_token", data.token);
-          // Persistir sesión mínima para que el Header muestre datos inmediatamente
-          persistSession({ name: nombreCompleto, email });
+          // Persistir sesión con mayor información si el backend la envía
+          if (data.user) {
+            try {
+              localStorage.setItem("servineo_user", JSON.stringify(data.user));
+            } catch {}
+            persistSession({ name: data.user.name || nombreCompleto, email: data.user.email || email, photo: data.user.picture });
+          } else {
+            // Persistir sesión mínima para que el Header muestre datos inmediatamente
+            persistSession({ name: nombreCompleto, email });
+          }
           // Guardar credenciales para disparar el cuadro "Guardar contraseña" en la siguiente pantalla
           sessionStorage.setItem(
             "signup_credentials",
             JSON.stringify({ email, password, name: nombreCompleto })
           );
+          // Mensaje para Home, por si el flujo regresa directo o más tarde
+          try {
+            localStorage.setItem(
+              "signup_success_toast",
+              `¡Cuenta Creada Exitosamente! ¡Bienvenido, ${nombreCompleto}!`
+            );
+          } catch {}
           sessionStorage.setItem(
             "toastMessage",
             `¡Cuenta Creada Exitosamente! ¡Bienvenido, ${nombreCompleto}!`
@@ -134,6 +150,7 @@ export default function RegistroForm() {
                 : "border-gray-300 focus:ring-servineo-400"
             }`}
             placeholder="Ingresa tu nombre"
+            autoComplete="given-name"
             required
           />
           {errorNombre && (
@@ -166,6 +183,7 @@ export default function RegistroForm() {
                 : "border-gray-300 focus:ring-servineo-400"
             }`}
             placeholder="Ingresa tu apellido"
+            autoComplete="family-name"
             required
           />
           {errorApellido && (
@@ -189,6 +207,8 @@ export default function RegistroForm() {
               ? "border-red-500 focus:ring-red-400"
               : "border-gray-300 focus:ring-servineo-400"
           }`}
+          name="username"
+          autoComplete="email"
           required
         />
 
@@ -217,6 +237,8 @@ export default function RegistroForm() {
           ? "border-red-500 focus:ring-red-400"
           : "border-gray-300 focus:ring-servineo-400"
       }`}
+      name="password"
+      autoComplete="new-password"
       required
     />
     <button
@@ -265,6 +287,7 @@ export default function RegistroForm() {
           ? "border-red-500 focus:ring-red-400"
           : "border-gray-300 focus:ring-servineo-400"
       }`}
+      autoComplete="new-password"
       required
     />
     <button

@@ -107,6 +107,20 @@ const Header = () => {
     };
   }, []);
 
+  // Abrir el card de Editar perfil al llegar al Home si HU5 lo solicitó
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const path = pathname || '';
+    const isHome = path === '/' || path === '/Home';
+    try {
+      const flag = localStorage.getItem('booka_open_edit_on_home');
+      if (flag === '1' && isHome) {
+        localStorage.removeItem('booka_open_edit_on_home');
+        try { window.openEdit?.(); } catch {}
+      }
+    } catch {}
+  }, [pathname]);
+
   // Exponer funciones globales para togglear menú (usadas en otros scripts)
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -118,11 +132,13 @@ const Header = () => {
       setIsMenuOpen((prev) => !prev);
     };
     win.closeMenu = () => setIsMenuOpen(false);
+    win.openProfileMenu = () => setIsMenuOpen(true);
 
     return () => {
       try {
         delete window.toggleMenu;
         delete window.closeMenu;
+        delete (window as any).openProfileMenu;
       } catch {}
     };
   }, [pathname]);

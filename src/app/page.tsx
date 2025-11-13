@@ -45,10 +45,12 @@ export default function Home() {
   useEffect(() => {
     // Mostrar mensaje verde de "Cuenta creada" si viene del flujo de registro
     try {
-      const msg = localStorage.getItem('signup_success_toast');
+      let msg = localStorage.getItem('signup_success_toast');
+      if (!msg) msg = sessionStorage.getItem('toastMessage') || '';
       if (msg) {
         toast.success(msg, { position: 'bottom-right' });
         localStorage.removeItem('signup_success_toast');
+        sessionStorage.removeItem('toastMessage');
       }
     } catch {}
   }, []);

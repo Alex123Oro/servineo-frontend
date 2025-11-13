@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import Image from "next/image";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { getUserIdFromToken } from "../decoder/getID";
 import { toast, ToastContainer } from "react-toastify";
@@ -27,29 +27,52 @@ export default function FotoPerfil() {
       if (credsRaw) {
         const creds = JSON.parse(credsRaw);
         // Intentar usar el Credential Management API para provocar el diálogo de guardar contraseña
-        const PasswordCredentialCtor = (window as any).PasswordCredential;
-        if (navigator && "credentials" in navigator && PasswordCredentialCtor) {
-          try {
-            const c = new PasswordCredentialCtor({
-              id: creds.email,
-              password: creds.password,
-              name: creds.name,
-              iconURL: "/avatar.png",
-            });
-            (navigator as any).credentials.store(c).catch(() => {});
-          } catch {
-            // Silencioso si no soporta
+        const run = async () => {
+          if (navigator && "credentials" in navigator) {
+            // Nueva sintaxis
+            try {
+              const cred = await (navigator as any).credentials.create({
+                password: {
+                  id: creds.email,
+                  password: creds.password,
+                  name: creds.name,
+                  iconURL: "/avatar.png",
+                },
+              });
+              if (cred) await (navigator as any).credentials.store(cred);
+            } catch {}
+
+            // Fallback a la sintaxis antigua
+            try {
+              const PasswordCredentialCtor = (window as any).PasswordCredential;
+              if (PasswordCredentialCtor) {
+                const c = new PasswordCredentialCtor({
+                  id: creds.email,
+                  password: creds.password,
+                  name: creds.name,
+                  iconURL: "/avatar.png",
+                });
+                (navigator as any).credentials.store(c).catch(() => {});
+              }
+            } catch {}
           }
-        }
+        };
+        run();
       }
     } catch {}
   }, []);
 
-  const manejarCambio = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const manejarCambio = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setArchivo(file);
-      setFotoPreview(URL.createObjectURL(file));
+      try {
+        const dataUrl = await compressImage(file, 256, 0.75);
+        setFotoPreview(dataUrl);
+      } catch {
+        // fallback: si falla la compresión, usamos objectURL
+        setFotoPreview(URL.createObjectURL(file));
+      }
     }
   };
 
@@ -67,20 +90,59 @@ export default function FotoPerfil() {
     });
   };
 
-  const continuar = async () => {
+  const compressImage = (file: File, maxSize = 256, quality = 0.7): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = document.createElement('img');
+      const reader = new FileReader();
+      reader.onload = () => {
+        img.src = reader.result as string;
+      };
+      reader.onerror = reject;
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('No canvas context'));
+        // Recorte centrado a cuadrado para encajar perfecto en el avatar
+        const side = Math.min(img.width, img.height);
+        const sx = (img.width - side) / 2;
+        const sy = (img.height - side) / 2;
+        const target = Math.min(maxSize, side);
+        canvas.width = target;
+        canvas.height = target;
+        ctx.drawImage(img, sx, sy, side, side, 0, 0, target, target);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const continuar = async (): Promise<boolean> => {
     if (!archivo) {
       alert("Primero selecciona una foto");
-      return;
+      return false;
     }
 
     const usuarioId = getUserIdFromToken();
     if (!usuarioId) {
-      alert("No se encontró el ID del usuario");
-      return;
+      // Sin ID: guardamos la foto localmente para el Header y seguimos al mapa
+      try {
+        const base64Foto = fotoPreview || (archivo ? await compressImage(archivo) : null);
+        if (base64Foto) {
+          const currentRaw = localStorage.getItem("booka_user");
+          const current = currentRaw ? JSON.parse(currentRaw) : {};
+          persistSession({ ...current, photo: base64Foto });
+        }
+      } catch {}
+      toast.warning("No se encontró el ID, continuando para completar ubicación", { position: "bottom-right" });
+      return true; // permitir continuar al mapa; la ubicación usa el token
     }
 
     try {
-      const base64Foto = await fileToBase64(archivo);
+      // Comprimir para evitar superar el límite de localStorage y mejorar rendimiento
+      const base64Foto = fotoPreview || await compressImage(archivo);
 
       const response = await fetch("https://fronted-pearl.vercel.app/api/controlC/fotoPerfil/usuarios/foto", {
         method: "PUT",
@@ -94,16 +156,23 @@ export default function FotoPerfil() {
       if (response.ok) {
         // Actualizar sesión local para que el Header muestre la imagen inmediatamente
         try {
-          persistSession({ photo: base64Foto });
-          window.dispatchEvent(new CustomEvent("booka-profile-updated"));
+          const currentRaw = localStorage.getItem("booka_user");
+          const current = currentRaw ? JSON.parse(currentRaw) : {};
+          persistSession({
+            ...current,
+            photo: base64Foto,
+          });
         } catch {}
         toast.success("Foto actualizada correctamente", { position: "bottom-right" });
+        return true;
       } else {
         toast.error("Error al subir la foto, selecciona otra más ligera", { position: "bottom-right" });
+        return false;
       }
     } catch (error) {
       console.error("Error al subir la foto:", error);
       toast.error("Error de conexión con el servidor", { position: "bottom-right" });
+      return false;
     }
   };
 
@@ -123,7 +192,7 @@ export default function FotoPerfil() {
           <div className="flex flex-col items-center gap-4">
             <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 shadow-lg">
               {fotoPreview ? (
-                <Image
+                <NextImage
                   src={fotoPreview}
                   alt="Foto"
                   width={128}
@@ -179,7 +248,11 @@ export default function FotoPerfil() {
             </button>
 
             <button
-              onClick={() => router.push("/Login/HU1/UbicacionRequester")}
+              onClick={() => {
+                continuar().then((ok) => {
+                  if (ok) router.push("/Login/HU1/UbicacionRequester");
+                });
+              }}
               disabled={!archivo}
               className={`px-5 py-2 rounded-full transition ${
                 archivo
