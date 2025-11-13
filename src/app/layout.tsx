@@ -3,7 +3,8 @@ import { Roboto } from 'next/font/google';
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import Header from './Home/Header/header';
-import { Providers } from './providers'; // Importamos
+import { Providers } from './providers';
+import AuthProviderClient from './components/AuthProviderClient';
 
 const roboto = Roboto({
   variable: '--font-roboto',
@@ -24,10 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${roboto.variable} antialiased`}>
-        <Providers> {/* Envolvemos la app con los Providers */}
-          <Header />
-          <main className="pb-20 lg:pb-0">{children}</main>
-        </Providers>
+        <AuthProviderClient>
+          <Providers>
+            <Header />
+            <main className="pb-20 lg:pb-0">{children}</main>
+          </Providers>
+        </AuthProviderClient>
       </body>
     </html>
   );
