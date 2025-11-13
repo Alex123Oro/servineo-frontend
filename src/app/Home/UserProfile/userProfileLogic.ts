@@ -1,4 +1,7 @@
 // /app/Home/UserProfile/userProfileLogic.ts
+import { EDIT } from "./components/Edit";
+import { PROFILE_MAIN_WRAPPER_START, PROFILE, PROFILE_MAIN_WRAPPER_END } from "./components/Profile";
+import { CROP} from "./components/Crop";
 import { mockUser } from "@/app/Home/UserProfile/UI/mockUser";
 
 type User = {
@@ -39,138 +42,15 @@ declare global {
 
 function injectUserProfileHTMLIfNeeded(): void {
   if (typeof document === "undefined") return;
-  if (document.getElementById("userProfileRoot")) return; // ya inyectado
+  if (document.getElementById("userProfileRoot")) return;
 
   const container = document.createElement("div");
   container.id = "userProfileRoot";
-  container.innerHTML = `
-  <main aria-hidden="true" style="display:none">
-    <div id="editModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="editTitle" aria-hidden="true" style="display:none">
-      <h2 id="editTitle">Editar perfil</h2>
-
-      <div class="photo-container">
-        <input id="photoInput" type="file" accept="image/*" aria-label="Cambiar foto de perfil" />
-        <div class="photo-preview" id="photoPreviewContainer">
-          <img id="photoPreviewImg" src="/avatar.png" alt="Foto de perfil" />
-          <div class="photo-overlay">
-            <span class="camera-icon">📷</span>
-            <p>Cambiar foto</p>
-          </div>
-        </div>
-      </div>
-
-      <label for="nameInput">Nombre completo</label>
-      <input id="nameInput" type="text" placeholder="Nombre y apellidos" aria-required="true" />
-      <small id="nameErr" class="error" style="display:none"></small>
-
-      <label for="emailInput">Correo electrónico</label>
-      <input id="emailInput" type="email" placeholder="correo@ejemplo.com" aria-required="true" />
-      <small id="emailErr" class="error" style="display:none"></small>
-
-      <label for="phoneInput">Teléfono</label>
-      <input id="phoneInput" type="tel" placeholder="71234567" aria-required="false" />
-      <small id="phoneErr" class="error" style="display:none"></small>
-
-      <label class="toggle" style="margin-top:8px">
-        <input type="checkbox" id="notifToggle" /> Notificaciones
-      </label>
-
-      <div id="passwordSection">
-        <label>Contraseña</label>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span id="maskedPassword">••••••••</span>
-          <button type="button" class="btn" id="changePasswordBtn" style="padding:6px 10px;font-size:13px">Cambiar contraseña</button>
-        </div>
-      </div>
-
-      <div id="passwordChangeFields" style="display:none;flex-direction:column;gap:12px;margin-top:10px">
-        <label for="currentPassword">Contraseña actual</label>
-          <div style="position:relative">
-    <input type="password" id="currentPassword" style="width:100%;padding-right:35px" />
-    <button type="button" class="togglePw" id="toggleCurrentPwd"
-      style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">
-      <!-- ICONO OJO NORMAL -->
-      <svg width="20" height="20" viewBox="0 0 24 24">
-        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-        <circle cx="12" cy="12" r="3" fill="black"/>
-      </svg>
-    </button>
-  </div>
-
-  <label for="newPassword">Nueva contraseña</label>
-
-  <div style="position:relative">
-    <input type="password" id="newPassword" style="width:100%;padding-right:35px" />
-    <button type="button" class="togglePw" id="toggleNewPwd"
-      style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer">
-      <!-- ICONO OJO NORMAL -->
-      <svg width="20" height="20" viewBox="0 0 24 24">
-        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-        <circle cx="12" cy="12" r="3" fill="black"/>
-      </svg>
-    </button>
-  </div>
-        <div id="pwBar" class="password-strength"><i></i></div>
-        <small id="pwErr" class="error" style="display:none"></small>
-
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button type="button" class="btn" id="saveNewPwBtn">Guardar nueva contraseña</button>
-          <button type="button" class="btn" id="cancelNewPwBtn" style="background:#ccc;color:#000">Cancelar</button>
-        </div>
-      </div>
-
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:15px">
-        <button type="button" class="btn" id="saveProfileBtn">Guardar</button>
-        <button type="button" class="btn" id="cancelEditBtn" style="background:#ccc;color:#000">Cancelar</button>
-      </div>
-    </div>
-
-    <div id="profileModal" class="modal" aria-hidden="true" style="display:none">
-      <h2>Mi perfil</h2>
-      <img id="profileViewPhoto" src="https://i.pravatar.cc/100?u=default" alt="Foto de perfil" style="width:120px;height:120px;border-radius:50%;margin:auto;object-fit:cover;border:3px solid #2B6AF0" />
-      <p><strong>Nombre:</strong> <span id="profileViewName"></span></p>
-      <p><strong>Correo:</strong> <span id="profileViewEmail"></span></p>
-      <p><strong>Teléfono:</strong> <span id="profileViewPhone"></span></p>
-      <button class="btn" id="closeProfileViewBtn">Cerrar</button>
-    </div>
-  </main>
-  `;
+  container.innerHTML = PROFILE_MAIN_WRAPPER_START + "\n" + EDIT + "\n" + PROFILE + "\n" + PROFILE_MAIN_WRAPPER_END;
   document.body.appendChild(container);
-
-  // cropModal separado para que no se cierre con closeEdit()
   if (!document.getElementById("cropModal")) {
-    const cropHtml = `
-    <div id="cropModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); width: min(520px, 92%); max-width: 520px;">
-      <h3 id="cropTitle">Recortar foto</h3>
-      <div style="display:flex;gap:12px;flex-direction:column;align-items:center">
-        <div id="cropArea" style="position:relative; width:420px; height:420px; max-width:90vw; background:transparent; border-radius:8px; overflow:hidden; touch-action:none;">
-          <canvas id="cropCanvas" width="420" height="420" style="width:100%;height:100%;display:block;"></canvas>
-          <div id="cropOverlay" aria-hidden="true" style="position:absolute; inset:0; pointer-events:none;">
-            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style="display:block;">
-              <rect x="0" y="0" width="100" height="100" fill="rgba(0,0,0,0.45)"></rect>
-              <mask id="hole">
-                <rect x="0" y="0" width="100" height="100" fill="white" />
-                <circle cx="50" cy="50" r="49" fill="black" />
-              </mask>
-              <rect x="0" y="0" width="100" height="100" fill="rgba(0,0,0,0.45)" mask="url(#hole)"></rect>
-              <circle cx="50" cy="50" r="49" fill="none" stroke="#fff" stroke-width="1.2" />
-            </svg>
-          </div>
-        </div>
-
-        <div style="display:flex;width:100%;justify-content:center;align-items:center;margin-top:8px">
-          <input id="zoomRange" type="range" min="0.5" max="3" step="0.01" value="1" style="width:90%" aria-label="Zoom"/>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;width:100%">
-          <button id="cancelCropBtn" type="button" class="btn" style="background:#ccc;color:#000">Cancelar</button>
-          <button id="saveCropBtn" type="button" class="btn">Guardar</button>
-        </div>
-      </div>
-    </div>
-    `;
     const wrapper = document.createElement("div");
-    wrapper.innerHTML = cropHtml;
+    wrapper.innerHTML = CROP;
     document.body.appendChild(wrapper.firstElementChild as HTMLElement);
   }
 }
@@ -189,7 +69,7 @@ export function initUserProfileLogic(): void {
   window.deviceId = deviceId;
 
   // -------------------- users store helpers --------------------
-  let usersStore: UsersStore = { sessions: {}, lastUpdated: Date.now() };
+let usersStore: UsersStore = { sessions: {}, lastUpdated: Date.now() };
 
   function loadUsersStore(): UsersStore {
     try {
@@ -346,7 +226,6 @@ export function initUserProfileLogic(): void {
     if (profileViewEmail) profileViewEmail.textContent = user?.email || "";
     if (profileViewPhone) profileViewPhone.textContent = user?.phone || "";
   }
-
   // -------------------- login / logout --------------------
   function login() {
     const usersStoreRaw = localStorage.getItem("booka_users");
@@ -406,25 +285,17 @@ export function initUserProfileLogic(): void {
     localStorage.setItem("booka_user", JSON.stringify(updated));
     window.userProfile = updated;
     window.isAuthenticated = false;
-    
- // intenta usar la función global si existe para cerrar el menú
  try { (window as any).closeMenu?.(); } catch {}
-
- // resetear el estado del menú sin "ocultarlo permanentemente" vía style.display
  const profileMenu = document.getElementById("profileMenu");
  if (profileMenu) {
    profileMenu.classList.remove("show");
    profileMenu.setAttribute("aria-hidden", "true");
-   // eliminar estilos inline que podrían impedir que otros toggles lo muestren
-   profileMenu.style.display = ""; // limpiar inline style en vez de forzar 'none'
+   profileMenu.style.display = "";
  }
-
     renderUI();
-
     window.dispatchEvent(new CustomEvent("booka-auth-updated", { detail: updated }));
     window.dispatchEvent(new Event("booka-logout"));
   }
-
   // -------------------- utilidades --------------------
   function passwordStrength(pw: string | undefined): number {
     let score = 0;
@@ -608,7 +479,6 @@ const onPointerDown = (ev: PointerEvent) => {
 
   drawCropCanvas();
 };
-
 const onPointerUp = (ev: PointerEvent) => {
   _isDragging = false;
 
@@ -620,18 +490,13 @@ const onPointerUp = (ev: PointerEvent) => {
 
   try { (ev.target as Element).releasePointerCapture?.((ev as any).pointerId); } catch {}
 };
-
   cropCanvas.addEventListener("pointerdown", onPointerDown);
   window.addEventListener("pointermove", onPointerMove);
   window.addEventListener("pointerup", onPointerUp);
-
-  // zoom buttons (si existieran) y slider ya manejados arriba
   const zoomInBtn = document.getElementById("zoomInBtn") as HTMLButtonElement | null;
   const zoomOutBtn = document.getElementById("zoomOutBtn") as HTMLButtonElement | null;
   if (zoomInBtn) zoomInBtn.onclick = () => { _cropScale = Math.min(3, _cropScale + 0.05); if (zoomRange) zoomRange.value = String(_cropScale.toFixed(2)); drawCropCanvas(); };
   if (zoomOutBtn) zoomOutBtn.onclick = () => { _cropScale = Math.max(0.6, _cropScale - 0.05); if (zoomRange) zoomRange.value = String(_cropScale.toFixed(2)); drawCropCanvas(); };
-
-  // guardar / cancelar
   const saveBtn = document.getElementById("saveCropBtn") as HTMLButtonElement | null;
   const cancelBtn = document.getElementById("cancelCropBtn") as HTMLButtonElement | null;
 
@@ -664,7 +529,6 @@ const onPointerUp = (ev: PointerEvent) => {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, w, h);
     ctx.restore();
-
     const drawW = _naturalSize.w * _cropScale;
     const drawH = _naturalSize.h * _cropScale;
     const dx = -_cropOffset.x * _cropScale + (w - drawW) / 2;
@@ -681,9 +545,7 @@ const onPointerUp = (ev: PointerEvent) => {
     tmp.height = size;
     const tctx = tmp.getContext("2d");
     if (!tctx) throw new Error("No canvas context");
-    // dibuja la vista actual en tmp
     tctx.drawImage(canvasEl, 0, 0, size, size);
-    // crea máscara circular en output
     const out = document.createElement("canvas");
     out.width = size;
     out.height = size;
@@ -716,8 +578,9 @@ const onPointerUp = (ev: PointerEvent) => {
   }
 }
 
-// --- saveProfile: validación y guardado ---
-async function saveProfile(): Promise<void> {
+
+  // --- saveProfile: validación y guardado ---
+ async function saveProfile(): Promise<void> {
   const u = getUser();
   if (!nameInput || !emailInput || !phoneInput) {
     console.warn("Campos de edición no encontrados");
@@ -733,23 +596,89 @@ async function saveProfile(): Promise<void> {
     if (nameErr) { nameErr.textContent = "El nombre es obligatorio."; nameErr.style.display = "block"; }
     valid = false;
   }
-  if (!/\S+@\S+\.\S+/.test(emailInput.value)) {
-    if (emailErr) { emailErr.textContent = "Correo inválido."; emailErr.style.display = "block"; }
-    valid = false;
+
+// --- Validación avanzada de correo electrónico ---
+const email = emailInput.value.trim();
+const emailPattern = /^[a-zA-Z0-9](?:[a-zA-Z0-9._%+-]{0,63})@[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+$/;
+if (!emailPattern.test(email)) {
+  if (emailErr) {
+    emailErr.textContent = "correo inválido.";
+    emailErr.style.display = "block";
   }
+  valid = false;
+} else {
+  const domain = email.split("@")[1].toLowerCase();
+  const [provider, ...rest] = domain.split(".");
+  const tld = rest.join(".");
+  const strictDomains: Record<string, string[]> = {
+    gmail: ["com"],
+    outlook: ["com", "es"],
+    hotmail: ["com", "es"],
+    yahoo: ["com", "es"],
+    icloud: ["com"],
+    protonmail: ["com"],
+  };
+
+  const similarToKnown = Object.keys(strictDomains).find(d =>
+    provider.length >= 3 &&
+    (
+      provider.includes(d.slice(0, 3)) ||
+      d.includes(provider) ||
+      Math.abs(provider.length - d.length) <= 1
+    )
+  );
+
+  if (similarToKnown && !strictDomains[provider]) {
+    if (emailErr) {
+      emailErr.textContent = `correo inválido.`;
+      emailErr.style.display = "block";
+    }
+    valid = false;
+    return;
+  }
+
+  if (strictDomains[provider]) {
+    const validEndings = strictDomains[provider];
+    const validMatch = validEndings.some(end => tld === end);
+
+    if (!validMatch) {
+      if (emailErr) {
+        emailErr.textContent = "correo inválido.";
+        emailErr.style.display = "block";
+      }
+      valid = false;
+      return;
+    }
+  }
+  if (domain.includes(".edu.com")) {
+    if (emailErr) {
+      emailErr.textContent = "correo inválido.";
+      emailErr.style.display = "block";
+    }
+    valid = false;
+    return;
+  }
+  if (domain.includes("..") || domain.endsWith(".")) {
+    if (emailErr) {
+      emailErr.textContent = "correo inválido.";
+      emailErr.style.display = "block";
+    }
+    valid = false;
+    return;
+  }
+}
+
   if (phoneInput && !/^[0-9+\s()-]{6,20}$/.test(phoneInput.value) && phoneInput.value.trim() !== "") {
     if (phoneErr) { phoneErr.textContent = "Teléfono inválido."; phoneErr.style.display = "block"; }
     valid = false;
   }
 
   if (!valid) return;
-
   const updated: User = Object.assign({}, u);
   updated.name = nameInput.value.trim();
   updated.email = emailInput.value.trim();
   updated.phone = phoneInput.value.trim();
   updated.notif = !!(notifToggle && notifToggle.checked);
-
   const file = photoInput && photoInput.files && photoInput.files[0];
 
   if (_pendingCroppedDataUrl) {
@@ -805,12 +734,11 @@ async function saveProfile(): Promise<void> {
     editModal.removeAttribute("aria-hidden");
     editModal.style.display = "none";
   }
-
   alert("Perfil guardado correctamente.");
 }
 
-// --- password change ---
-function savePasswordChange(): void {
+  // --- password change ---
+ function savePasswordChange(): void {
   if (!currentPassword || !newPassword || !pwErr) return;
 
   const u = getUser();
@@ -867,7 +795,8 @@ function savePasswordChange(): void {
     console.warn("[savePasswordChange] error sincronizando:", err);
   }
 
-  alert("Contraseña cambiada correctamente.");
+  alert("Contraseña cambiada correctamente.\n\nTu sesión se cerrará por seguridad.");
+
   if (currentPassword) currentPassword.value = "";
   if (newPassword) newPassword.value = "";
 
@@ -883,9 +812,13 @@ function savePasswordChange(): void {
     }
   }
   if (pwErr) pwErr.style.display = "none";
+
+  logout();
+  setTimeout(() => {
+    window.location.href = "/";
+  }, 400);
 }
 
-// --- update masked pw display ---
 function updateMaskedPassword(): void {
   try {
     const masked = document.getElementById("maskedPassword") as HTMLElement | null;
@@ -900,105 +833,104 @@ function updateMaskedPassword(): void {
     console.warn("[userProfileLogic] updateMaskedPassword error:", err);
   }
 }
-
-// --- open / close edit modal ---
-function openEdit(): void {
-  const u = (() => {
-    try {
-      const usersStore = JSON.parse(localStorage.getItem("booka_users") || "{}");
-      const dId = localStorage.getItem("booka_device_id");
-      if (usersStore?.sessions && dId && usersStore.sessions[dId]) {
-        return usersStore.sessions[dId];
+  // --- open / close edit modal ---
+  function openEdit(): void {
+    const u = (() => {
+      try {
+        const usersStore = JSON.parse(localStorage.getItem("booka_users") || "{}");
+        const dId = localStorage.getItem("booka_device_id");
+        if (usersStore?.sessions && dId && usersStore.sessions[dId]) {
+          return usersStore.sessions[dId];
+        }
+      } catch (err) {
+        console.warn("[openEdit] Error leyendo usuarios del almacenamiento:", err);
       }
-    } catch (err) {
-      console.warn("[openEdit] Error leyendo usuarios del almacenamiento:", err);
+      return (window.userProfile as User) || mockUser;
+    })();
+
+    if (nameInput) nameInput.value = u.name || "";
+    if (emailInput) emailInput.value = u.email || "";
+    if (phoneInput) phoneInput.value = u.phone || "";
+    if (notifToggle) notifToggle.checked = !!u.notif;
+
+    _originalPhotoBeforeEdit = u.photo || "/avatar.png";
+
+    if (pwBar) {
+      const barInner = pwBar.querySelector("i") as HTMLElement | null;
+      if (barInner) { barInner.style.width = "0%"; barInner.className = ""; }
     }
-    return (window.userProfile as User) || mockUser;
-  })();
+    updateMaskedPassword();
 
-  if (nameInput) nameInput.value = u.name || "";
-  if (emailInput) emailInput.value = u.email || "";
-  if (phoneInput) phoneInput.value = u.phone || "";
-  if (notifToggle) notifToggle.checked = !!u.notif;
+    if (editModal) {
+      const mainContainer = editModal.closest("main") as HTMLElement | null;
+      if (mainContainer) {
+        mainContainer.style.display = "flex";
+        mainContainer.style.position = "fixed";
+        mainContainer.style.inset = "0";
+        mainContainer.style.width = "100%";
+        mainContainer.style.height = "100vh";
+        mainContainer.style.justifyContent = "center";
+        mainContainer.style.alignItems = "center";
+        mainContainer.style.background = "rgba(0,0,0,0.35)";
+        mainContainer.style.zIndex = "300";
+        mainContainer.style.overflow = "auto";
+        mainContainer.style.paddingTop = "0";
+      }
 
-  _originalPhotoBeforeEdit = u.photo || "/avatar.png";
+      editModal.classList.add("show");
+      editModal.setAttribute("aria-hidden", "false");
+      editModal.style.display = "flex";
+      try { editModal.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
+    } else {
+      console.error("[userProfileLogic] No se encontró el #editModal en el DOM.");
+    }
 
-  if (pwBar) {
-    const barInner = pwBar.querySelector("i") as HTMLElement | null;
-    if (barInner) { barInner.style.width = "0%"; barInner.className = ""; }
+    if (nameErr) nameErr.style.display = "none";
+    if (emailErr) emailErr.style.display = "none";
+    if (phoneErr) phoneErr.style.display = "none";
+    if (pwErr) pwErr.style.display = "none";
   }
-  updateMaskedPassword();
+  
+  function closeEdit(): void {
+    const root = document.getElementById("userProfileRoot") as HTMLElement | null;
+    const mainContainer = root?.querySelector("main") as HTMLElement | null;
+    const editModalEl = document.getElementById("editModal") as HTMLElement | null;
+    resetPasswordChangeUI();
+    if (photoPreviewImg && _originalPhotoBeforeEdit) {
+      photoPreviewImg.src = _originalPhotoBeforeEdit;
+    }
 
-  if (editModal) {
-    const mainContainer = editModal.closest("main") as HTMLElement | null;
     if (mainContainer) {
-      mainContainer.style.display = "flex";
-      mainContainer.style.position = "fixed";
-      mainContainer.style.inset = "0";
-      mainContainer.style.width = "100%";
-      mainContainer.style.height = "100vh";
-      mainContainer.style.justifyContent = "center";
-      mainContainer.style.alignItems = "center";
-      mainContainer.style.background = "rgba(0,0,0,0.35)";
-      mainContainer.style.zIndex = "300";
-      mainContainer.style.overflow = "auto";
-      mainContainer.style.paddingTop = "0";
+      mainContainer.style.display = "none";
+      mainContainer.style.position = "";
+      mainContainer.style.inset = "";
+      mainContainer.style.width = "";
+      mainContainer.style.height = "";
+      mainContainer.style.justifyContent = "";
+      mainContainer.style.alignItems = "";
+      mainContainer.style.background = "";
+      mainContainer.style.zIndex = "";
+      mainContainer.style.overflow = "";
+      mainContainer.style.paddingTop = "";
     }
 
-    editModal.classList.add("show");
-    editModal.setAttribute("aria-hidden", "false");
-    editModal.style.display = "flex";
-    try { editModal.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
-  } else {
-    console.error("[userProfileLogic] No se encontró el #editModal en el DOM.");
+    if (editModalEl) {
+      editModalEl.classList.remove("show");
+      editModalEl.removeAttribute("aria-hidden");
+      editModalEl.style.display = "none";
+    }
   }
 
-  if (nameErr) nameErr.style.display = "none";
-  if (emailErr) emailErr.style.display = "none";
-  if (phoneErr) phoneErr.style.display = "none";
-  if (pwErr) pwErr.style.display = "none";
-}
-
-function closeEdit(): void {
-  const root = document.getElementById("userProfileRoot") as HTMLElement | null;
-  const mainContainer = root?.querySelector("main") as HTMLElement | null;
-  const editModalEl = document.getElementById("editModal") as HTMLElement | null;
-
-  if (photoPreviewImg && _originalPhotoBeforeEdit) {
-    photoPreviewImg.src = _originalPhotoBeforeEdit;
+  // --- convert fixer ---
+  function convertFixer(): void {
+    const u = (window.userProfile as User) || getUser() || mockUser;
+    if (confirm(`¿Deseas convertirte en Fixer, ${u.name || "usuario"}?`)) {
+      window.location.href = "registroFixer.html";
+    }
   }
 
-  if (mainContainer) {
-    mainContainer.style.display = "none";
-    mainContainer.style.position = "";
-    mainContainer.style.inset = "";
-    mainContainer.style.width = "";
-    mainContainer.style.height = "";
-    mainContainer.style.justifyContent = "";
-    mainContainer.style.alignItems = "";
-    mainContainer.style.background = "";
-    mainContainer.style.zIndex = "";
-    mainContainer.style.overflow = "";
-    mainContainer.style.paddingTop = "";
-  }
-
-  if (editModalEl) {
-    editModalEl.classList.remove("show");
-    editModalEl.removeAttribute("aria-hidden");
-    editModalEl.style.display = "none";
-  }
-}
-
-// --- convert fixer ---
-function convertFixer(): void {
-  const u = (window.userProfile as User) || getUser() || mockUser;
-  if (confirm(`¿Deseas convertirte en Fixer, ${u.name || "usuario"}?`)) {
-    window.location.href = "registroFixer.html";
-  }
-}
-
-// --- toggle password UI ---
-function togglePasswordChange(): void {
+  // --- toggle password UI ---
+ function togglePasswordChange(): void {
   const pwSection = document.getElementById("passwordSection");
   const pwFields = document.getElementById("passwordChangeFields");
   if (pwSection) (pwSection as HTMLElement).style.display = "none";
@@ -1010,23 +942,21 @@ function cancelPasswordChange(): void {
 
   if (pwSection) pwSection.style.display = "block";
   if (pwFields) pwFields.style.display = "none";
-
-  // limpiar valores
   if (currentPassword) currentPassword.value = "";
   if (newPassword) newPassword.value = "";
-
-  // reiniciar tipo y icono (seguridad)
   const inputs = [
     { id: "currentPassword", btnId: "toggleCurrentPwd" },
     { id: "newPassword", btnId: "toggleNewPwd" },
   ];
 
-  const eyeOpen = `
-    <svg width="20" height="20" viewBox="0 0 24 24">
-      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-      <circle cx="12" cy="12" r="3" fill="black"/>
-    </svg>
-  `;
+const eyeOpen = `
+  <svg width="20" height="20" viewBox="0 0 24 24">
+    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" 
+          stroke="currentColor" stroke-width="2" fill="none"/>
+    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+  </svg>
+`;
+
 
   inputs.forEach(({ id, btnId }) => {
     const input = document.getElementById(id) as HTMLInputElement | null;
@@ -1035,8 +965,6 @@ function cancelPasswordChange(): void {
     if (input) input.type = "password";
     if (btn) btn.innerHTML = eyeOpen;
   });
-
-  // reset barra de fuerza
   if (pwBar) {
     const barInner = pwBar.querySelector("i") as HTMLElement | null;
     if (barInner) { barInner.style.width = "0%"; barInner.className = ""; }
@@ -1045,22 +973,68 @@ function cancelPasswordChange(): void {
   if (pwErr) pwErr.style.display = "none";
 }
 
+function resetPasswordChangeUI(): void {
+  const pwSection = document.getElementById("passwordSection");
+  const pwFields = document.getElementById("passwordChangeFields");
+  const currentPassword = document.getElementById("currentPassword") as HTMLInputElement | null;
+  const newPassword = document.getElementById("newPassword") as HTMLInputElement | null;
+  const pwBar = document.getElementById("pwBar");
+  const pwErr = document.getElementById("pwErr");
+
+  // Mostrar sección normal, ocultar campos de cambio
+  if (pwSection) pwSection.style.display = "block";
+  if (pwFields) pwFields.style.display = "none";
+
+  // Limpiar valores
+  if (currentPassword) currentPassword.value = "";
+  if (newPassword) newPassword.value = "";
+
+  // Restaurar tipo de input y los íconos de ojos
+  const eyeOpen = `
+    <svg width="20" height="20" viewBox="0 0 24 24">
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+            stroke="currentColor" stroke-width="2" fill="none"/>
+      <circle cx="12" cy="12" r="3" fill="currentColor"/>
+    </svg>
+  `;
+
+  const toggleCurrentPwd = document.getElementById("toggleCurrentPwd");
+  const toggleNewPwd = document.getElementById("toggleNewPwd");
+  if (toggleCurrentPwd) toggleCurrentPwd.innerHTML = eyeOpen;
+  if (toggleNewPwd) toggleNewPwd.innerHTML = eyeOpen;
+
+  if (currentPassword) currentPassword.type = "password";
+  if (newPassword) newPassword.type = "password";
+
+  // Reiniciar barra de fuerza y error
+  if (pwBar) {
+    const barInner = pwBar.querySelector("i") as HTMLElement | null;
+    if (barInner) {
+      barInner.style.width = "0%";
+      barInner.className = "";
+    }
+  }
+  if (pwErr) (pwErr as HTMLElement).style.display = "none";
+}
+
+
 function togglePasswordVisibility(inputId: string, btn?: HTMLElement): void {
   const input = document.getElementById(inputId) as HTMLInputElement | null;
   if (!input || !btn) return;
 
-  const eyeOpen = `
-    <svg width="20" height="20" viewBox="0 0 24 24">
-      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-      <circle cx="12" cy="12" r="3" fill="black"/>
-    </svg>
-  `;
+const eyeOpen = `
+  <svg width="20" height="20" viewBox="0 0 24 24">
+    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" 
+          stroke="currentColor" stroke-width="2" fill="none"/>
+    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+  </svg>
+`;
 
   const eyeClosed = `
     <svg width="20" height="20" viewBox="0 0 24 24">
-      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="black" stroke-width="2" fill="none"/>
-      <circle cx="12" cy="12" r="3" fill="black"/>
-      <line x1="3" y1="3" x2="21" y2="21" stroke="black" stroke-width="2"/>
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="currentColor" stroke-width="2" fill="none"/>
+      <circle cx="12" cy="12" r="3" fill="currentColor"/>
+      <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2"/>
     </svg>
   `;
 
@@ -1072,122 +1046,121 @@ function togglePasswordVisibility(inputId: string, btn?: HTMLElement): void {
     btn.innerHTML = eyeOpen;
   }
 }
+  // --- eventos y bindings finales (listeners) ---
+  if (photoInput && photoPreviewImg && photoPreviewContainer) {
+    const openFilePicker = () => photoInput.click();
+    photoPreviewImg.addEventListener("click", openFilePicker);
+    photoPreviewContainer.addEventListener("click", openFilePicker);
 
+    const u = JSON.parse(localStorage.getItem("booka_user") || "null");
+    if (u && u.photo) photoPreviewImg.src = u.photo;
+    else photoPreviewImg.src = "/avatar.png";
 
-// --- eventos y bindings finales (listeners) ---
-if (photoInput && photoPreviewImg && photoPreviewContainer) {
-  const openFilePicker = () => photoInput.click();
-  photoPreviewImg.addEventListener("click", openFilePicker);
-  photoPreviewContainer.addEventListener("click", openFilePicker);
-
-  const u = JSON.parse(localStorage.getItem("booka_user") || "null");
-  if (u && u.photo) photoPreviewImg.src = u.photo;
-  else photoPreviewImg.src = "/avatar.png";
-
-  photoInput.addEventListener("change", (e: any) => {
-    const file = e.target.files?.[0];
-    if (file) openCropModal(file);
-    e.target.value = "";
-  });
-}
-
-// password strength visual
-if (newPassword && pwBar && pwErr) {
-  newPassword.addEventListener("input", () => {
-    const value = newPassword.value;
-    const s = passwordStrength(value);
-    const percent = (s / 4) * 100;
-    const barInner = pwBar.querySelector("i") as HTMLElement | null;
-
-    if (barInner) {
-      barInner.style.width = percent + "%";
-      barInner.className =
-        s <= 1 ? "strength-weak" : s <= 2 ? "strength-medium" : "strength-strong";
-    }
-
-    if (value.trim() === "") {
-      pwErr.style.display = "none";
-      if (pwHint) pwHint.style.color = "#666";
-    } else if (s < 4) {
-      pwErr.textContent = "Contraseña muy débil. Usa mayúsculas, números y símbolos.";
-      pwErr.style.display = "block";
-      if (pwHint) pwHint.style.color = "red";
-    } else {
-      pwErr.style.display = "none";
-      if (pwHint) pwHint.style.color = "green";
-    }
-  });
-}
-
-// tecla ESC para cerrar edit
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeEdit();
-});
-
-// storage event para sincronizar UI entre pestañas
-window.addEventListener("storage", (e: StorageEvent) => {
-  if (e.key === "booka_users" || e.key === "booka_broadcast" || e.key === "booka_user") {
-    renderUI();
+    photoInput.addEventListener("change", (e: any) => {
+      const file = e.target.files?.[0];
+      if (file) openCropModal(file);
+      e.target.value = "";
+    });
   }
-});
 
-// inicializar estado y listeners de botones
-const session = usersStore.sessions[deviceId!] || null;
-window.userProfile = session;
-window.isAuthenticated = !!(session && session.loggedIn);
-renderUI();
-updateMaskedPassword();
+  // password strength visual
+  if (newPassword && pwBar && pwErr) {
+    newPassword.addEventListener("input", () => {
+      const value = newPassword.value;
+      const s = passwordStrength(value);
+      const percent = (s / 4) * 100;
+      const barInner = pwBar.querySelector("i") as HTMLElement | null;
 
-if (saveProfileBtn) saveProfileBtn.addEventListener("click", saveProfile);
-if (cancelEditBtn) cancelEditBtn.addEventListener("click", closeEdit);
-if (saveNewPwBtn) saveNewPwBtn.addEventListener("click", savePasswordChange);
-if (cancelNewPwBtn) cancelNewPwBtn.addEventListener("click", cancelPasswordChange);
-if (changePasswordBtn) changePasswordBtn.addEventListener("click", togglePasswordChange);
-if (toggleCurrentPwd)
-toggleCurrentPwd.addEventListener("click", (e) =>
-  togglePasswordVisibility("currentPassword", e.currentTarget as HTMLElement)
-);
+      if (barInner) {
+        barInner.style.width = percent + "%";
+        barInner.className =
+          s <= 1 ? "strength-weak" : s <= 2 ? "strength-medium" : "strength-strong";
+      }
 
-toggleNewPwd.addEventListener("click", (e) =>
-  togglePasswordVisibility("newPassword", e.currentTarget as HTMLElement)
-);
+      if (value.trim() === "") {
+        pwErr.style.display = "none";
+        if (pwHint) pwHint.style.color = "#666";
+      } else if (s < 4) {
+        pwErr.textContent = "Contraseña muy débil. Usa mayúsculas, números y símbolos.";
+        pwErr.style.display = "block";
+        if (pwHint) pwHint.style.color = "red";
+      } else {
+        pwErr.style.display = "none";
+        if (pwHint) pwHint.style.color = "green";
+      }
+    });
+  }
 
-if (closeProfileViewBtn)
-  closeProfileViewBtn.addEventListener("click", () => {
-    if (profileModal) {
-      profileModal.style.display = "none";
-      profileModal.setAttribute("aria-hidden", "true");
-    }
+  // tecla ESC para cerrar edit
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeEdit();
   });
 
-// profile updated event handler
-const handleProfileUpdated = (e: Event) => {
-  try {
-    const updated = (e as CustomEvent).detail;
-    if (updated) {
-      setUserForDevice(updated);
-      window.userProfile = updated;
-      renderUI();
-    } else {
+  // storage event para sincronizar UI entre pestañas
+  window.addEventListener("storage", (e: StorageEvent) => {
+    if (e.key === "booka_users" || e.key === "booka_broadcast" || e.key === "booka_user") {
       renderUI();
     }
-  } catch (err) {
-    console.warn("Error procesando booka-profile-updated", err);
-  }
-};
+  });
 
-window.addEventListener("booka-profile-updated", handleProfileUpdated);
+  // inicializar estado y listeners de botones
+  const session = usersStore.sessions[deviceId!] || null;
+  window.userProfile = session;
+  window.isAuthenticated = !!(session && session.loggedIn);
+  renderUI();
+  updateMaskedPassword();
 
-// exponer funciones en window (misma API pública)
-window.closeEdit = closeEdit;
-window.login = login;
-window.logout = logout;
-window.openEdit = openEdit;
-window.convertFixer = convertFixer;
-window.saveProfile = saveProfile;
-window.savePasswordChange = savePasswordChange;
-window.togglePasswordVisibility = togglePasswordVisibility;
-window.cancelPasswordChange = cancelPasswordChange;
-window.togglePasswordChange = togglePasswordChange;
-window.closeProfileModal = closeEdit;
-} 
+  if (saveProfileBtn) saveProfileBtn.addEventListener("click", saveProfile);
+  if (cancelEditBtn) cancelEditBtn.addEventListener("click", closeEdit);
+  if (saveNewPwBtn) saveNewPwBtn.addEventListener("click", savePasswordChange);
+  if (cancelNewPwBtn) cancelNewPwBtn.addEventListener("click", cancelPasswordChange);
+  if (changePasswordBtn) changePasswordBtn.addEventListener("click", togglePasswordChange);
+  if (toggleCurrentPwd)
+    toggleCurrentPwd.addEventListener("click", (e) =>
+      togglePasswordVisibility("currentPassword", e.currentTarget as HTMLElement)
+    );
+
+  if (toggleNewPwd)
+    toggleNewPwd.addEventListener("click", (e) =>
+      togglePasswordVisibility("newPassword", e.currentTarget as HTMLElement)
+    );
+
+  if (closeProfileViewBtn)
+    closeProfileViewBtn.addEventListener("click", () => {
+      if (profileModal) {
+        profileModal.style.display = "none";
+        profileModal.setAttribute("aria-hidden", "true");
+      }
+    });
+
+  // profile updated event handler
+  const handleProfileUpdated = (e: Event) => {
+    try {
+      const updated = (e as CustomEvent).detail;
+      if (updated) {
+        setUserForDevice(updated);
+        window.userProfile = updated;
+        renderUI();
+      } else {
+        renderUI();
+      }
+    } catch (err) {
+      console.warn("Error procesando booka-profile-updated", err);
+    }
+  };
+
+  window.addEventListener("booka-profile-updated", handleProfileUpdated);
+
+  // exponer funciones en window (misma API pública)
+  window.closeEdit = closeEdit;
+  window.login = login;
+  window.logout = logout;
+  window.openEdit = openEdit;
+  window.convertFixer = convertFixer;
+  window.saveProfile = saveProfile;
+  window.savePasswordChange = savePasswordChange;
+  window.togglePasswordVisibility = togglePasswordVisibility;
+  window.cancelPasswordChange = cancelPasswordChange;
+  window.togglePasswordChange = togglePasswordChange;
+  window.closeProfileModal = closeEdit;
+}
