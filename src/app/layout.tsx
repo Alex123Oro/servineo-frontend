@@ -4,6 +4,8 @@ import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import Header from './Home/Header/header';
 import AuthProviderClient from './components/AuthProviderClient';
+import Footer from './Home/Footer/Footer';
+
 
 const roboto = Roboto({
   variable: '--font-roboto',
@@ -31,6 +33,7 @@ export default function RootLayout({
           <Header />
           <main className="pb-20 lg:pb-0">{children}</main>
         </AuthProviderClient>
+        <Footer />
       </body>
     </html>
   );
