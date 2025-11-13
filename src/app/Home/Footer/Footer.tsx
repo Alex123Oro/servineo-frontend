@@ -6,7 +6,15 @@ import styles from './Footer.module.css';
 
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Globe } from 'lucide-react';
 
-export default function Footer() {
+// 1. DEFINE LA INTERFAZ DE PROPIEDADES (PROPS)
+interface FooterProps {
+  // onRestartTour es una función opcional ('?') que no recibe argumentos y no retorna nada (void).
+  onRestartTour?: () => void;
+}
+
+// 2. APLICA LA INTERFAZ AL COMPONENTE
+// Ahora el componente acepta la prop 'onRestartTour'
+export default function Footer({ onRestartTour }: FooterProps) { 
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const empresaLinks = [
@@ -28,7 +36,7 @@ export default function Footer() {
     { name: 'Servicios', path: '/servicios' },
     { name: 'Ofrece tus servicios', path: '/info/reparador' },
     { name: 'Ofertas de trabajo', path: 'ofertas' }, // o la ruta donde se publiquen los empleos
-  ];  
+  ];  
 
   return (
     <footer
@@ -151,15 +159,6 @@ export default function Footer() {
                 </a>
               </div>
 
-              {/* 
-              {/* Teléfono con enlace 
-             <div className="flex items-center">
-                <Phone className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true"/>
-                <a href="tel:+59163765632" className="hover:text-gray-200 transition-colors" aria-label="Enviar mensaje por WhatsApp al +591 63765632">
-                  +591 637-65632
-                </a>
-              </div> */}
-
               {/* Correo */}
               <div className="flex items-center" aria-label="Correo electrónico de contacto">
                 <Mail className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true" />
@@ -233,6 +232,17 @@ export default function Footer() {
               <option value="en">Inglés</option>
             </select>
           </div>
+          
+          {/* 3. OPCIÓN PARA REINICIAR LA GUÍA (Solo si la prop existe) */}
+          {onRestartTour && (
+            <button
+              onClick={onRestartTour}
+              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            >
+              Reiniciar Guía
+            </button>
+          )}
+
         </div>
         
         {/* Línea divisora */}
@@ -253,7 +263,7 @@ export default function Footer() {
           </div>
         </div>
         </div>
-  
+    
     </footer>
   );
 }
