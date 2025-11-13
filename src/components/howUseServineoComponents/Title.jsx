@@ -1,7 +1,7 @@
 'use client'
 
 import 'animate.css';
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import dynamic from "next/dynamic";
 import { FaArrowDown } from "react-icons/fa6"
 import { Play, Pause } from "lucide-react";
@@ -14,23 +14,37 @@ export const Title = () => {
 
     const [playing, setPlaying] = useState(false);
     const [audioAllowed, setAudioAllowed] = useState(false)
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     const [showPauseScreen, setShowPauseScreen] = useState(true)
+    
+    const [checkPause, setCheckPause] = useState(false)
 
-    const handleAllowAudio = () => { 
+    const handleAllowAudio = async () => { 
         setAudioAllowed(true);
-        setOpen(false);
-        setPlaying(true);
-        setShowPauseScreen(false);
+        setOpen(false); 
     }
 
-    const handlePlayPause= () => {
+    const handleNoAudio = () => {
+        setOpen(false)
+        setAudioAllowed(false)
+        setCheckPause(true)
+    }
+    
+    const handlePlayPause = () => {
         if(audioAllowed === false){
-            setOpen(true);
-            return;
+            if (checkPause === true){
+                setPlaying(!playing);
+                setShowPauseScreen(!showPauseScreen);
+            }else{ 
+                setOpen(true);
+            }
+            //return;
+        } else {
+            //setAudioAllowed(!audioAllowed);
+            setPlaying(!playing);
+            setShowPauseScreen(!showPauseScreen);
         }
-        //setAudioAllowed(!audioAllowed);
-        setPlaying(!playing);
+        
     }
 
   return (
@@ -66,7 +80,7 @@ export const Title = () => {
                         </button>
                         <button 
                             className='cursor-pointer gap-[3px] bg-[#2B6EA0] hover:bg-[#2B31E0] duration-150 text-white h-9 w-40 rounded-[8px]' 
-                            onClick={() => setOpen(false)}
+                            onClick={handleNoAudio}
                         >
                             No
                         </button>
@@ -77,28 +91,30 @@ export const Title = () => {
             {/* */}
             
             {/* contenedor del video */}
-            <div className="relative w-full max-w-3xl aspect-video cursor-pointer rounded-2xl overflow-hidden shadow-lg mb-[30px]">
+            <div className="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden shadow-lg mb-[30px]">
                 <ReactPlayer
                     src="/videos/SERVINEO TUTORIAL.mp4"
                     playing={playing}
                     muted={audioAllowed ? false : true}
                     controls
-                    width="100%"
-                    height="100%"
+                    height='100%'
+                    width='100%'
+                    style={{ position: 'absolute', top: 0, left: 0, objectFit: "cover"}}
                 />
                 
                 { showPauseScreen === true && (
                     <div
-                        onClick={handlePlayPause}
                         className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity duration-300"
                     >
-                        <Play size={64} color="white" />
+                        <button>
+                            <Play onClick={handlePlayPause} className='cursor-pointer text-white drop-shadow-lg transition-transform duration-300 hover:scale-130' size={64} color="white" />
+                        </button>
                     </div>
                 )}
             </div>
             {/* */}
             <div className='flex flex-col items-center mb-[30px] text-[25px] gap-[10px]'>
-                <span className='text-white'> Descubrelo </span>
+                <span className='text-white'> Descúbrelo </span>
                 <FaArrowDown className="animate__animated animate__shakeY animate__slower animate__infinite" color='white'/>
             </div>
         </div>
