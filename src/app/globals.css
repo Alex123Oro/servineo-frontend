@@ -1,135 +1,253 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@import "leaflet/dist/leaflet.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary: #2B6AE0;
-  --secondary: #1AA7ED;
-  --accent: #2BDDE0;
-  --light-gray: #F5F5F5;
-  --dark-purple: #5E2BE0;
-  --light-blue: #759AE0;
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  /* Updated primary colors to blue tones */
+  --primary: oklch(0.55 0.18 250);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.95 0.02 250);
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.96 0.01 250);
+  --muted-foreground: oklch(0.5 0.02 250);
+  --accent: oklch(0.92 0.03 250);
+  --accent-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.92 0.01 250);
+  --input: oklch(0.92 0.01 250);
+  --ring: oklch(0.55 0.18 250);
+  --chart-1: oklch(0.55 0.18 250);
+  --chart-2: oklch(0.6 0.15 220);
+  --chart-3: oklch(0.65 0.12 200);
+  --chart-4: oklch(0.5 0.2 270);
+  --chart-5: oklch(0.45 0.22 240);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.55 0.18 250);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.95 0.02 250);
+  --sidebar-accent-foreground: oklch(0.145 0 0);
+  --sidebar-border: oklch(0.92 0.01 250);
+  --sidebar-ring: oklch(0.55 0.18 250);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.18 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.18 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  
+  --primary: oklch(0.65 0.18 250);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.25 0.02 250);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.25 0.02 250);
+  --muted-foreground: oklch(0.65 0.05 250);
+  --accent: oklch(0.28 0.03 250);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.5 0.2 27.325);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.25 0.02 250);
+  --input: oklch(0.25 0.02 250);
+  --ring: oklch(0.65 0.18 250);
+  --chart-1: oklch(0.65 0.18 250);
+  --chart-2: oklch(0.7 0.15 220);
+  --chart-3: oklch(0.75 0.12 200);
+  --chart-4: oklch(0.6 0.2 270);
+  --chart-5: oklch(0.55 0.22 240);
+  --sidebar: oklch(0.18 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.65 0.18 250);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.25 0.02 250);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.25 0.02 250);
+  --sidebar-ring: oklch(0.65 0.18 250);
 }
 
 @theme inline {
+  
+  --font-sans: var(--font-roboto), "Roboto", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
+  --color-primary: #2b6ae0;
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-/* =====================
-   GUÍA INTERACTIVA (REACTOUR)
-   ===================== */
-
-/* CRÍTICO: Oscurecer la página completa */
-div[data-tour-elem="mask-wrapper"] {
-  z-index: 999998 !important;
-  background-color: rgba(0, 0, 0, 0.75) !important;
-}
-
-div[data-tour-elem="mask-wrapper"] svg {
-  pointer-events: none !important;
-}
-
-div[data-tour-elem="mask-area"] {
-  fill: white !important;
-  opacity: 1 !important;
-}
-
-div[data-tour-elem="popover"] {
-  z-index: 999999 !important;
-  pointer-events: auto !important;
-}
-
-div[data-tour-elem="controls"] {
-  pointer-events: auto !important;
-  z-index: 1000000 !important;
-}
-
-div[data-tour-elem="controls"] button {
-  pointer-events: auto !important;
-  cursor: pointer !important;
-  z-index: 1000001 !important;
-}
-
-div[data-tour-elem="content"] p {
-  line-height: 1.7 !important;
-  font-size: 15px !important;
-  color: #333 !important;
-  margin-bottom: 4px !important;
-}
-
-div[data-tour-elem="content"] h3,
-div[data-tour-elem="content"] h4 {
-  line-height: 1.4 !important;
-  margin-bottom: 10px !important;
-  color: #1a1a1a !important;
-}
-
-div[data-tour-elem="badge"] {
-  display: none !important;
-}
-
-button[data-tour-elem="close"] {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  z-index: 1000001 !important;
-  transition: all 0.2s ease !important;
-  opacity: 0.7 !important;
-}
-
-button[data-tour-elem="close"]:hover {
-  opacity: 1 !important;
-  color: var(--primary) !important;
-  transform: scale(1.1) !important;
-}
-
-div[data-tour-elem="beacon"] {
-  animation: tour-pulse 2s infinite !important;
-  background-color: var(--primary) !important;
-  border-radius: 50% !important;
-}
-
-div[data-tour-elem="dot"] {
-  background-color: #d1d5db !important;
-  transition: all 0.3s ease !important;
-}
-
-div[data-tour-elem="dot"][data-active="true"] {
-  background-color: var(--primary) !important;
-  transform: scale(1.3) !important;
-}
-
-@keyframes tour-pulse {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(43, 106, 224, 0.7);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-  70% {
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Map Styles */
+.map-tiles {
+  filter: saturate(1.05) contrast(1.05) brightness(1.02);
+}
+
+/* Map Marker Styles */
+.custom-offer-marker {
+  filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.1));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-offer-marker:hover {
+  filter: drop-shadow(0 8px 12px rgba(59, 130, 246, 0.15));
+  transform: translateY(-4px);
+}
+
+/* Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.custom-user-marker {
+  filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.7));
+}
+
+/* Leaflet Popup Styles */
+.leaflet-popup-content-wrapper {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.3), 0 0 60px rgba(96, 165, 250, 0.2);
+  color: white;
+}
+
+.leaflet-popup-tip {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  color: white;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 0 15px rgba(43, 106, 224, 0);
+    opacity: 1;
   }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(43, 106, 224, 0);
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  div[data-tour-elem="beacon"] {
-    animation: none !important;
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Glass Effect */
+.glass {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
 
