@@ -1,0 +1,444 @@
+#userProfileRoot main { display: none; }
+
+/* ===================== ESTILOS GENERALES ===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  background: #fff;
+  color: #000;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ===================== BOTONES GENERALES ===================== */
+.btn {
+  background: #2B6AF0;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.btn:hover {
+  background: #2BDDE0;
+  color: #000;
+}
+
+/* ===================== ICONO Y MENÚ DE PERFIL ===================== */
+.profile-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  object-fit: cover;
+  transition: transform .15s;
+}
+
+.profile-icon:hover {
+  transform: scale(1.03);
+}
+
+.profile-menu {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  background: #fff;
+  color: #000;
+  border-radius: 12px;
+  box-shadow: 0 2px 18px rgba(0, 0, 0, .15);
+  width: 280px;
+  padding: 12px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 99;
+  transition: top 0.1s ease;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.profile-menu.show {
+  display: flex;
+  animation: fadeIn .18s ease;
+}
+
+/* === ITEMS DEL MENÚ PERFIL === */
+.menu-item {
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  border: 1px solid #d0d4e6;
+  background: #f8f9ff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.menu-item:hover {
+  background: #2B6AF0;
+  color: #fff;
+  border-color: #2B6AF0;
+  box-shadow: 0 2px 6px rgba(43,106,240,0.25);
+}
+
+/* === Botones especiales del menú === */
+#logoutBtn.menu-item:hover {
+  background: #2B31E0;
+}
+
+#convertFixer.menu-item:hover {
+  background: #1AA7ED;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-header .close-btn {
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.profile-preview {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: auto;
+  border: 3px solid #fff;
+  background: #f0f0f0;
+}
+
+/* ===================== MODALES ===================== */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, .2);
+  z-index: 200;
+  width: 360px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal.show {
+  display: flex;
+  animation: fadeIn .2s ease;
+}
+
+.modal input,
+.modal select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.modal label {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.modal small.error {
+  color: #E23D3D;
+  font-size: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.row .col {
+  flex: 1;
+}
+
+/* ===================== ANIMACIONES ===================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===================== TOGGLE (notificaciones) ===================== */
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: #f8f8f8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+}
+
+.toggle:hover {
+  background: #eef3ff;
+  border-color: #2B6AF0;
+}
+
+.toggle input[type="checkbox"] {
+  accent-color: #2B6AF0;
+  width: 18px;
+  height: 18px;
+}
+
+/* ===================== PHOTO PREVIEW ===================== */
+.photo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.photo-container input[type="file"] {
+  display: none;
+}
+
+.photo-preview {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 3px solid #2B6AF0;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: #fff;
+  font-size: 13px;
+}
+
+.photo-overlay .camera-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.photo-preview:hover .photo-overlay {
+  opacity: 1;
+}
+
+/* ===================== CONTRASEÑA Y FORTALEZA ===================== */
+.password-strength {
+  height: 8px;
+  border-radius: 6px;
+  background: #eee;
+  overflow: hidden;
+}
+
+.password-strength > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  transition: width .2s;
+}
+
+.strength-weak { background: #5E2BE0; }
+.strength-medium { background: #2B6AF0; }
+.strength-strong { background: #1AA7ED; }
+
+/* ===================== ACCESIBILIDAD Y CONTRASTE ALTO ===================== */
+@media (forced-colors: active), (prefers-contrast: more) {
+  /* Base accesible */
+  body, header, .modal, .profile-menu {
+    background: Canvas !important;
+    color: CanvasText !important;
+  }
+
+  .btn, .menu-item {
+    background: ButtonFace !important;
+    color: ButtonText !important;
+    border: 2px solid ButtonText !important;
+  }
+
+  .btn:hover, .btn:focus-visible,
+  .menu-item:hover, .menu-item:focus-visible {
+    /* Fondo semitransparente estilo “Google hover” */
+    background-color: rgba(255, 255, 255, 0.25) !important; /* blanco translúcido */
+    color: ButtonText !important;
+    border-color: Highlight !important;
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) inset !important;
+  }
+
+  /* Si por alguna razón los colores del sistema siguen produciendo conflicto,
+     forzamos un fallback de alto contraste (negro sobre blanco) */
+  .btn:hover.fallback, .btn:focus-visible.fallback,
+  .menu-item:hover.fallback, .menu-item:focus-visible.fallback {
+    background: #000 !important;
+    color: #fff !important;
+    border-color: #fff !important;
+    outline: 3px solid #fff !important;
+  }
+
+  .profile-icon {
+    border: 2px solid ButtonText !important;
+  }
+
+  .modal input,
+  .modal select,
+  .modal label {
+    border: 1px solid ButtonText !important;
+    color: CanvasText !important;
+    background: Canvas !important;
+  }
+
+  /* === CORRECCIÓN ICONOS DE VER/NO VER CONTRASEÑA === */
+  .togglePw {
+    color: CanvasText !important; /* permite que los SVG usen currentColor */
+  }
+
+  .togglePw svg {
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
+  
+
+  .togglePw:focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+}
+@media (forced-colors: active), (prefers-contrast: more) {
+  .togglePw {
+    forced-color-adjust: none !important;
+    color: CanvasText !important;
+  }
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 480px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  nav {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .profile-menu {
+    width: 94%;
+    right: 3%;
+    top: 88px;
+    max-height: calc(100vh - 90px);
+  }
+
+  .modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .modal input {
+    font-size: 16px;
+  }
+}
+
+/* ===================== MODAL RECORTE DE IMAGEN ===================== */
+#cropModal {
+  z-index: 9999 !important;
+  width: min(520px, 92%) !important;
+  max-width: 520px;
+  padding: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+  border-radius: 12px;
+  background: #fff;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+#cropModal .btn { 
+  padding: 8px 12px; 
+  border-radius: 8px; 
+}
+
+#cropModal h3 { 
+  margin-bottom: 8px; 
+  font-size: 16px; 
+}
+
+#cropArea { 
+  width: 420px; 
+  height: 420px; 
+  max-width: 90vw; 
+  max-height: 90vw; 
+  touch-action: none; 
+  -webkit-user-drag: none; 
+  -webkit-tap-highlight-color: transparent; 
+}
+
+#cropOverlay svg circle { 
+  vector-effect: non-scaling-stroke; 
+}
+/* En escritorio, alinear modal con el menú */
+#editModal.modal {
+  top: 70px;
+  right: 20px;
+  left: auto;
+  transform: none;
+  width: 360px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  position: fixed;
+}
+#editModal.modal {
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+}
+#saveNewPwBtn {
+  min-width: 180px;
+  white-space: nowrap;
+  padding: 10px 16px;
+}
+
+
+
