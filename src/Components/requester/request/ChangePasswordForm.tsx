@@ -67,6 +67,11 @@ export default function ChangePasswordForm({ onCancel, onSaved }: Props) {
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [ultimaModificacion, setUltimaModificacion] = useState<string>('');
   const [cargandoFecha, setCargandoFecha] = useState(true);
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    // Opcional: mostrar mensaje al usuario
+    setApiError('Por seguridad, no se permite pegar en los campos de contraseña');
+  };
 
   // Resto de useEffect igual...
   useEffect(() => {
@@ -111,9 +116,9 @@ export default function ChangePasswordForm({ onCancel, onSaved }: Props) {
       if (result.success) {
         setSuccess('Contraseña actualizada exitosamente');
         reset(); // Limpiar formulario
-        onSaved?.();
+        //onSaved?.();
         await actualizarFecha();
-        setTimeout(() => setShowSuggestionModal(true), 2000);
+        setTimeout(() => setShowSuggestionModal(true), 500);
       } else {
         setApiError(result.message || 'El cambio no se completó, error inesperado.');
 
@@ -164,6 +169,7 @@ export default function ChangePasswordForm({ onCancel, onSaved }: Props) {
                   : 'border-[#E5F4FB] bg-[#F5FAFE] focus:border-[#2BDDE0] focus:ring-[#2BDDE0]'
                 }`}
               disabled={isSubmitting}
+              onPaste={handlePaste}
               onChange={() => {
                 clearErrors();
                 setApiError(null);
@@ -198,6 +204,7 @@ export default function ChangePasswordForm({ onCancel, onSaved }: Props) {
                   : 'border-[#E5F4FB] bg-[#F5FAFE] focus:border-[#2BDDE0] focus:ring-[#2BDDE0]'
                 }`}
               disabled={isSubmitting}
+              onPaste={handlePaste}
               onChange={() => {
                 clearErrors();
                 setApiError(null);
@@ -232,6 +239,7 @@ export default function ChangePasswordForm({ onCancel, onSaved }: Props) {
                   : 'border-[#E5F4FB] bg-[#F5FAFE] focus:border-[#2BDDE0] focus:ring-[#2BDDE0]'
                 }`}
               disabled={isSubmitting}
+              onPaste={handlePaste}
               onChange={() => {
                 clearErrors();
                 setApiError(null);
