@@ -9,7 +9,7 @@ export default function RecentOffersSection() {
   const [recentOffers, setRecentOffers] = useState<JobOffer[]>([]);
 
   useEffect(() => {
-    // Get the 4 most recent offers
+    // Get the 4 most recent
     const sortedOffers = [...mockJobOffers]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 4);
