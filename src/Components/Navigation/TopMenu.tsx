@@ -16,7 +16,11 @@ export default function TopMenu() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  const scrollToTop = () =>
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
 
   const navItemsDesktop = [
     { name: 'Inicio', href: '/' },
@@ -28,18 +32,19 @@ export default function TopMenu() {
   ];
 
   const navItemsMobile = [
-    { icon: <Home size={22} />, href: '/', label: 'Inicio' },
-    { icon: <Tag size={22} />, href: '/job-offer-list', label: 'Ofertas' },
-    { icon: <Wrench size={22} />, href: '/become-fixer', label: 'Fixer' },
-    { icon: <Briefcase size={22} />, href: '/fixer/my-offers', label: 'Mis trabajos' },
-    { icon: <User size={22} />, href: '/fixer/profile', label: 'Perfil' },
-    { icon: <HelpCircle size={22} />, href: '/ayuda', label: 'Ayuda' },
+    { icon: <Home size={20} />, href: '/', label: 'Inicio' },
+    { icon: <Tag size={20} />, href: '/job-offer-list', label: 'Ofertas' },
+    { icon: <Wrench size={20} />, href: '/become-fixer', label: 'Fixer' },
+    { icon: <Briefcase size={20} />, href: '/fixer/my-offers', label: 'Mis trabajos' },
+    { icon: <User size={20} />, href: '/fixer/profile', label: 'Perfil' },
+    { icon: <HelpCircle size={20} />, href: '/ayuda', label: 'Ayuda' },
   ];
 
   return (
     <>
+      {/* HEADER DESKTOP */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`hidden lg:block fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled ? 'bg-white shadow-md' : 'bg-white'
         } border-b border-gray-100`}
         role="banner"
@@ -73,12 +78,12 @@ export default function TopMenu() {
                 key={item.name}
                 href={item.href}
                 className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-[var(--color-primary)] after:transition-all
-                ${
-                  pathname === item.href
-                    ? `text-[var(--color-primary)] after:w-full`
-                    : 'text-gray-700 hover:text-[var(--color-primary)] after:w-0 hover:after:w-full'
-                }
-              `}
+                  ${
+                    pathname === item.href
+                      ? 'text-[var(--color-primary)] after:w-full'
+                      : 'text-gray-700 hover:text-[var(--color-primary)] after:w-0 hover:after:w-full'
+                  }
+                `}
               >
                 {item.name}
               </Link>
@@ -102,53 +107,61 @@ export default function TopMenu() {
         </div>
       </header>
 
+      {/* HEADER + NAV MOBILE */}
       <div className="lg:hidden">
-        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-white/95 backdrop-blur-sm z-50 fixed top-0 left-0 right-0">
+        {/* Barra superior mobile */}
+        <div className="flex items-center justify-between px-3 py-3 border-b border-gray-200 bg-white/95 backdrop-blur-sm z-50 fixed top-0 left-0 right-0">
           <button
             onClick={() => (pathname === '/' ? scrollToTop() : router.push('/'))}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 min-w-0"
           >
-            <div className="relative overflow-hidden rounded-full shadow-md">
-              <Image src="/icon.png" alt="Servineo" width={36} height={36} />
+            <div className="relative overflow-hidden rounded-full shadow-md shrink-0">
+              <Image src="/icon.png" alt="Servineo" width={30} height={30} />
             </div>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary)]">
+            <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary)] truncate max-w-[110px]">
               Servineo
             </span>
           </button>
-          <div className="flex items-center gap-2" id="tour-auth-buttons-mobile">
+
+          <div className="flex items-center gap-1 flex-nowrap" id="tour-auth-buttons-mobile">
             <Link
               href="/login"
-              className="px-3 py-1.5 rounded-md text-[var(--color-primary)] font-medium hover:opacity-90 transition-opacity"
+              className="px-2.5 py-1.5 rounded-md text-[var(--color-primary)] font-medium text-[11px] sm:text-xs hover:opacity-90 transition-opacity"
             >
-              Iniciar Sesión
+              Iniciar sesión
             </Link>
             <Link
               href="/signUp"
-              className="px-3 py-1.5 rounded-md bg-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity"
+              className="px-2.5 py-1.5 rounded-md bg-[var(--color-primary)] text-white font-medium text-[11px] sm:text-xs hover:opacity-90 transition-opacity whitespace-nowrap"
             >
               Registrarse
             </Link>
           </div>
         </div>
-        
+        {/* Barra inferior mobile */}
         <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-gray-200 bg-white/95 backdrop-blur-sm flex justify-around items-center z-50">
           {navItemsMobile.map((item) => (
             <button
               key={item.label}
               onClick={() => router.push(item.href)}
-              className="flex flex-col items-center text-gray-700 hover:text-[var(--color-primary)] px-2 py-1"
+              className={`flex flex-col items-center text-[10px] px-1 py-1 ${
+                pathname === item.href
+                  ? 'text-[var(--color-primary)]'
+                  : 'text-gray-700 hover:text-[var(--color-primary)]'
+              }`}
             >
               {item.icon}
-              <span className="text-xs mt-1">{item.label}</span>
+              <span className="mt-1">{item.label}</span>
             </button>
           ))}
         </nav>
-        
-        <div className="h-16"></div>
-        <div className="h-16"></div>
+        {/* Espaciadores para que el contenido no quede debajo de las barras */}
+        <div className="h-14" /> {/* espacio para la barra superior */}
+        <div className="h-16" /> {/* espacio para la barra inferior */}
       </div>
 
-      <div className="h-16 lg:hidden"></div>
+      {/* Espaciador para desktop (header fijo) */}
+      <div className="hidden lg:block h-20" />
     </>
   );
 }

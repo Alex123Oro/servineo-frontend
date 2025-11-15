@@ -628,4 +628,10 @@ tbody tr:hover {
   background-color: #f3f4f6; /* gris plomo suave */
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 /* FooterNeon.css */
