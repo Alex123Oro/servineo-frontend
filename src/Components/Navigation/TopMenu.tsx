@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 export default function TopMenu() {
-  const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -23,88 +22,116 @@ export default function TopMenu() {
     { name: 'mis ofertas', href: '/fixer/my-offers' },
     { name: 'perfil', href: '/fixer/profile' },
   ]
+  const pathname = usePathname()
+
+  const baseLink =
+    'px-3 py-2 rounded-md text-sm font-medium transition-all duration-200'
+  const hoverLink =
+    'hover:text-primary hover:bg-primary/10'
+  const activeLink =
+    'text-primary bg-primary/15 ring-1 ring-primary/20'
 
   return (
     <>
-      <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/10 backdrop-blur-sm bg-white shadow-md' : 'bg-white/10 backdrop-blur-sm'} border-t-[1.5px] border-b-[1.5px] border-primary`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-primary font-bold text-xl">
-                LOGO
-              </Link>
-            </div>
+      <header
+        className={`fixed w-full z-50 transition-all duration-300
+          ${scrolled ? 'bg-white backdrop-blur-sm shadow-md' : 'bg-white/90 backdrop-blur-sm'}
+          border-t-[1.5px] border-b-[1.5px] border-primary
+          md:top-0 md:bottom-auto bottom-0
+        `}
+      >
+        {/* Barra superior SOLO escritorio */}
+        <div className="hidden md:block">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16">
+              <div className="flex-shrink-0 flex items-center">
+                <Link href="/" className="text-primary font-bold text-xl">
+                  LOGO
+                </Link>
+              </div>
 
-            <nav className="hidden md:flex items-center space-x-4">
-              {navItems.map((item) => (
-                <Link 
+              <nav className="flex items-center space-x-4">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={`${baseLink} ${hoverLink} ${
+                        isActive ? activeLink : 'text-gray-700'
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
+                  )
+                })}
+              </nav>
+
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="../login"
+                  className={`${baseLink} ${hoverLink} ${
+                    pathname?.startsWith('/login') ? activeLink : 'text-gray-700'
+                  }`}
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  href="/signUp"
+                  className={`bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors ${
+                    pathname?.startsWith('/signUp') ? 'ring-2 ring-primary/30' : ''
+                  }`}
+                >
+                  Regístrate
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Barra inferior SOLO móvil (fija, sin desplegable, con links directos) */}
+        <nav
+          className="md:hidden fixed bottom-0 left-0 right-0 h-16 px-2 flex items-center bg-white/95 backdrop-blur-sm border-t-[1.5px] border-primary z-50"
+          aria-label="Mobile bottom navigation"
+        >
+          <div className="flex w-full items-center justify-between overflow-x-auto whitespace-nowrap">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
                   key={item.name}
-                  href={item.href} 
-                  className="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  href={item.href}
+                  className={`mx-1 ${baseLink} ${hoverLink} ${
+                    isActive ? activeLink : 'text-gray-700'
+                  } transition-all duration-200`}
                 >
                   {item.name}
                 </Link>
-              ))}
-            </nav>
-
-            <div className="hidden md:flex items-center space-x-4">
-              <Link 
-                href="../login" 
-                className="text-gray-700 hover:text-primary px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Iniciar Sesión
-              </Link>
-              <Link
-                href="/signUp"
-                className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
-              >
-                Regístrate
-              </Link>
-            </div>
-
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-primary hover:bg-gray-100 focus:outline-none transition-colors"
-              >
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
+              )
+            })}
+            <Link
+              href="../login"
+              className={`mx-1 ${baseLink} ${hoverLink} ${
+                pathname?.startsWith('/login') ? activeLink : 'text-gray-700'
+              } transition-all duration-200`}
+            >
+              Iniciar
+            </Link>
+            <Link
+              href="/signUp"
+              className={`mx-1 px-3 py-2 rounded-md text-sm font-semibold transition-all duration-200
+                bg-primary text-white hover:bg-primary/90
+                ${pathname?.startsWith('/signUp') ? 'ring-2 ring-primary/30' : ''}
+              `}
+            >
+              Registro
+            </Link>
           </div>
-        </div>
-
-        <div className={`md:hidden ${isOpen ? 'block' : 'hidden'} bg-white/95 backdrop-blur-sm border-t border-gray-200`}>
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-gray-700 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-            <div className="pt-4 pb-2 border-t border-gray-200 px-2">
-              <Link
-                href="../login"
-                className="block w-full text-center text-primary px-4 py-2 rounded-md text-base font-medium hover:bg-gray-50"
-                onClick={() => setIsOpen(false)}
-              >
-                Iniciar Sesión
-              </Link>
-              <Link
-                href="/registro"
-                className="block w-full text-center text-white bg-primary mt-2 px-4 py-2 rounded-md text-base font-medium hover:bg-primary/90"
-                onClick={() => setIsOpen(false)}
-              >
-                Regístrate
-              </Link>
-            </div>
-          </div>
-        </div>
+        </nav>
       </header>
-      <div className="h-16" />
+
+      {/* Separador para que el contenido no quede debajo de la barra inferior */}
+      <div className="h-16 md:h-0" />
     </>
   )
 }
