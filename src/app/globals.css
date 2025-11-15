@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import '../Components/Tour/TourStyles.css';
+@import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
