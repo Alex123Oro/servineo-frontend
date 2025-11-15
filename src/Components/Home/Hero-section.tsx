@@ -1,6 +1,5 @@
 "use client";
 import { Search } from "lucide-react";
-
 import { useState } from "react";
 import StatCard from "../Common/StatCard";
 
@@ -28,7 +27,7 @@ export default function HeroSection() {
           Conectamos tu hogar con expertos verificados en tu ciudad
         </p>
 
-        <form onSubmit={handleSearch} className="mb-10 max-w-2xl mx-auto">
+        <form onSubmit={handleSearch} className="mb-10 max-w-2xl mx-auto" id="tour-search-bar">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
@@ -70,7 +69,7 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
           <StatCard number="1,000+" text="Profesionales" />
           <StatCard number="5,000+" text="Trabajos realizados" />
-          <StatCard number="4.8★" text="Calificación promedio" />
+          <StatCard number="4.8 ★ " text="Calificación promedio" />
         </div>
       </div>
     </section>

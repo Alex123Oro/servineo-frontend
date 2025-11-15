@@ -1,0 +1,83 @@
+div[data-tour-elem="mask-wrapper"] {
+  z-index: 999998 !important;
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+div[data-tour-elem="mask-wrapper"] svg {
+  pointer-events: none !important;
+}
+div[data-tour-elem="mask-area"] {
+  fill: white !important;
+  opacity: 1 !important;
+}
+div[data-tour-elem="popover"] {
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+}
+div[data-tour-elem="controls"] {
+  pointer-events: auto !important;
+  z-index: 1000000 !important;
+}
+div[data-tour-elem="controls"] button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 1000001 !important;
+}
+div[data-tour-elem="content"] p {
+  line-height: 1.7 !important;
+  font-size: 15px !important;
+  color: #333 !important;
+  margin-bottom: 4px !important;
+}
+div[data-tour-elem="content"] h3,
+div[data-tour-elem="content"] h4 {
+  line-height: 1.4 !important;
+  margin-bottom: 10px !important;
+  color: #1a1a1a !important;
+}
+div[data-tour-elem="badge"] {
+  display: none !important;
+}
+button[data-tour-elem="close"] {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  z-index: 1000001 !important;
+  transition: all 0.2s ease !important;
+  opacity: 0.7 !important;
+}
+button[data-tour-elem="close"]:hover {
+  opacity: 1 !important;
+  color: var(--primary) !important;
+  transform: scale(1.1) !important;
+}
+div[data-tour-elem="beacon"] {
+  animation: tour-pulse 2s infinite !important;
+  background-color: var(--primary) !important;
+  border-radius: 50% !important;
+}
+div[data-tour-elem="dot"] {
+  background-color: #d1d5db !important;
+  transition: all 0.3s ease !important;
+}
+div[data-tour-elem="dot"][data-active="true"] {
+  background-color: var(--primary) !important;
+  transform: scale(1.3) !important;
+}
+@keyframes tour-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(43, 106, 224, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 15px rgba(43, 106, 224, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(43, 106, 224, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  div[data-tour-elem="beacon"] {
+    animation: none !important;
+  }
+}

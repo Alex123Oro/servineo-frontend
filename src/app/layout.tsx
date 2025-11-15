@@ -3,11 +3,11 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import "./globals.css";
 import { roboto } from './fonts';
 import 'leaflet/dist/leaflet.css'
-import { Providers } from './providers'; // Importamos nuestros providers fusionados
+import { Providers } from './providers';
 import { AuthProvider } from './lib/hooks/usoAutentificacion'; 
 import TopMenu from '@/Components/Navigation/TopMenu';
 import FooterSection from "@/Components/Home/Footer-section";
-
+import { TourLogic } from '@/Components/Tour/TourLogic';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,14 +31,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${roboto.className} `}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers> {/* Usamos el Provider fusionado */}
+        <Providers>
           <AuthProvider>
+            <TourLogic />
             <div className="">
               <TopMenu/>
             </div>
             {children}
-              <FooterSection />
-            </AuthProvider>
+            <FooterSection />
+          </AuthProvider>
         </Providers>
       </body>
     </html>

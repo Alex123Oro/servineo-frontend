@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -39,7 +38,6 @@ export default function TopMenu() {
 
   return (
     <>
-      {/* ---------------- DESKTOP ---------------- */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled ? 'bg-white shadow-md' : 'bg-white'
@@ -47,7 +45,6 @@ export default function TopMenu() {
         role="banner"
       >
         <div className="w-full max-w-8xl mx-auto px-4 flex justify-between items-center h-20">
-          {/* Logo */}
           <button
             onClick={() => (pathname === '/' ? scrollToTop() : router.push('/'))}
             className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-primary)]"
@@ -70,7 +67,6 @@ export default function TopMenu() {
             </span>
           </button>
 
-          {/* Desktop Menu */}
           <nav className="flex gap-6" role="navigation" aria-label="Menú principal">
             {navItemsDesktop.map((item) => (
               <Link
@@ -89,8 +85,7 @@ export default function TopMenu() {
             ))}
           </nav>
 
-          {/* Auth buttons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4" id="tour-auth-buttons-desktop">
             <Link
               href="/login"
               className="px-4 py-2 rounded-md bg-[var(--color-primary)] text-white font-medium transition-opacity duration-300 hover:opacity-90"
@@ -107,9 +102,7 @@ export default function TopMenu() {
         </div>
       </header>
 
-      {/* ---------------- MOBILE + TABLET ---------------- */}
       <div className="lg:hidden">
-        {/* Arriba: Logo + Auth */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-white/95 backdrop-blur-sm z-50 fixed top-0 left-0 right-0">
           <button
             onClick={() => (pathname === '/' ? scrollToTop() : router.push('/'))}
@@ -122,7 +115,7 @@ export default function TopMenu() {
               Servineo
             </span>
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" id="tour-auth-buttons-mobile">
             <Link
               href="/login"
               className="px-3 py-1.5 rounded-md text-[var(--color-primary)] font-medium hover:opacity-90 transition-opacity"
@@ -137,7 +130,7 @@ export default function TopMenu() {
             </Link>
           </div>
         </div>
-        {/* Barra inferior de iconos */}
+        
         <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-gray-200 bg-white/95 backdrop-blur-sm flex justify-around items-center z-50">
           {navItemsMobile.map((item) => (
             <button
@@ -150,12 +143,11 @@ export default function TopMenu() {
             </button>
           ))}
         </nav>
-        {/* Spacers para que el contenido no quede debajo del top o bottom */}
-        <div className="h-16"></div> {/* altura top */}
-        <div className="h-16"></div> {/* altura bottom */}
+        
+        <div className="h-16"></div>
+        <div className="h-16"></div>
       </div>
 
-      {/* Spacer general para Desktop */}
       <div className="h-16 lg:hidden"></div>
     </>
   );
