@@ -161,7 +161,7 @@ export default function WhyServineoPage() {
             <div
               className="hidden xl:block absolute rounded-3xl shadow-lg
         top-0 right-0 w-5/6 sm:w-4/5 h-5/6 sm:h-4/5 translate-x-6 sm:translate-x-14 -translate-y-4 sm:-translate-y-6
-        bg-[var(--secondary)] z-0"
+        bg-[var(--primary)] z-0"
               aria-hidden="true"
             />
             <div className="relative rounded-3xl shadow-lg overflow-hidden w-full md:w-[90%] z-10 group bg-gray-100">

@@ -609,7 +609,7 @@ table {
 
 th,
 td {
-  padding: 8px 12px;
+  padding: 16px 12px;
   border: 1px solid var(--border);
   color: var(--foreground);
   background-color: var(--card); /* para que no herede transparencia */
@@ -617,13 +617,13 @@ td {
 
 th {
   font-weight: 600;
-  text-align: left;
-  background-color: var(--primary); /* fila de títulos */
-  color: var(--primary-foreground);
+  text-align: center; /* antes estaba centrado */
+  background-color: #2b6ae0; /* azul original */
+  color: white;
 }
 
-tbody tr:nth-child(even) {
-  background-color: var(--muted); /* filas pares para contraste */
+tbody tr:hover {
+  background-color: #f3f4f6; /* gris plomo suave */
 }
 
 /* FooterNeon.css */
