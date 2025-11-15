@@ -15,7 +15,7 @@ export default function Footer() {
     { name: 'Testimonios', path: '/info/testimonials' },
     { name: 'Apoyo', path: '/info/support' },
     { name: '¿Por qué Servineo?', path: '/whyServineo' },
-    { name: 'Cómo funciona Servineo', path: '/howUseServineo' },
+    { name: 'Cómo funciona Servineo', path: '/Home/comoUsarServineo' },
   ];
 
   const legalLinks = [
