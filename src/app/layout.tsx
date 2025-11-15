@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import "./globals.css";
+import './globals.css';
 import { roboto } from './fonts';
-import 'leaflet/dist/leaflet.css'
+import 'leaflet/dist/leaflet.css';
 import { Providers } from './providers';
-import { AuthProvider } from './lib/hooks/usoAutentificacion'; 
+import { AuthProvider } from './lib/hooks/usoAutentificacion';
 import TopMenu from '@/Components/Navigation/TopMenu';
-import FooterSection from "@/Components/Home/Footer-section";
+import FooterSection from '@/Components/Home/Footer-section';
 import { TourLogic } from '@/Components/Tour/TourLogic';
 
 const geistSans = Geist({
@@ -30,12 +30,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${roboto.className} `}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
         <Providers>
           <AuthProvider>
             <TourLogic />
             <div className="">
-              <TopMenu/>
+              <TopMenu />
             </div>
             {children}
             <FooterSection />
