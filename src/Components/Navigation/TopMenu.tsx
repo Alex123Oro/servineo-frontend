@@ -22,7 +22,7 @@ export default function TopMenu() {
   const navItemsDesktop = [
     { name: 'Inicio', href: '/' },
     { name: 'Ofertas de trabajo', href: '/job-offer-list' },
-    { name: 'Convertir-fixer', href: '/become-fixer' },
+    { name: 'Convertirse en fixer', href: '/become-fixer' },
     { name: 'Mis ofertas', href: '/fixer/my-offers' },
     { name: 'Perfil', href: '/fixer/profile' },
     { name: 'Ayuda', href: '/ayuda' },
@@ -46,7 +46,7 @@ export default function TopMenu() {
         } border-b border-gray-100`}
         role="banner"
       >
-        <div className="w-[95%] mx-auto px-6 flex justify-between items-center h-16">
+        <div className="w-full max-w-8xl mx-auto px-4 flex justify-between items-center h-20">
           {/* Logo */}
           <button
             onClick={() => (pathname === '/' ? scrollToTop() : router.push('/'))}
@@ -77,12 +77,12 @@ export default function TopMenu() {
                 key={item.name}
                 href={item.href}
                 className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-[var(--color-primary)] after:transition-all
-                  ${
-                    pathname === item.href
-                      ? `text-[var(--color-primary)] after:w-full`
-                      : 'text-gray-700 hover:text-[var(--color-primary)] after:w-0 hover:after:w-full'
-                  }
-                `}
+                ${
+                  pathname === item.href
+                    ? `text-[var(--color-primary)] after:w-full`
+                    : 'text-gray-700 hover:text-[var(--color-primary)] after:w-0 hover:after:w-full'
+                }
+              `}
               >
                 {item.name}
               </Link>
