@@ -6,6 +6,8 @@ import 'leaflet/dist/leaflet.css'
 import { Providers } from './providers'; // Importamos nuestros providers fusionados
 import { AuthProvider } from './lib/hooks/usoAutentificacion'; 
 import TopMenu from '@/Components/Navigation/TopMenu';
+import FooterSection from "@/Components/Home/Footer-section";
+
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -35,7 +37,8 @@ export default function RootLayout({
               <TopMenu/>
             </div>
             {children}
-          </AuthProvider>
+              <FooterSection />
+            </AuthProvider>
         </Providers>
       </body>
     </html>

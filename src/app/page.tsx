@@ -6,7 +6,6 @@ import CTASection from "@/Components/Home/CTA-section";
 import MapSection from "@/Components/Home/Map-section";
 import InspirationSection from "@/Components/Home/Inspiration-section";
 import RecentOffersSection from "@/Components/Home/RecentOffer-secction";
-import FooterSection from "@/Components/Home/Footer-section";
 
 export default function Home() {
   return (
@@ -28,7 +27,6 @@ export default function Home() {
       />
       <HowItWorksSection />
       <CTASection />
-      <FooterSection />
     </div>
   );
 }

@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import styles from './Footer.module.css';
+
+
+
 
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Globe } from 'lucide-react';
 
@@ -72,7 +74,7 @@ export default function Footer() {
             <ul className="space-y-1 mt-1">
               {exploreLinks.map((link, i) => (
                 <li key={i}>
-                  <Link href={link.path} className={styles.footerLink}>
+                  <Link href={link.path} className="footerLink">
                     {link.name}
                   </Link>
                 </li>
@@ -88,7 +90,7 @@ export default function Footer() {
             <ul className="space-y-1 mt-1" role="list">
               {empresaLinks.map((link, i) => (
                 <li key={i}>
-                  <Link href={link.path} className={styles.footerLink}>
+                  <Link href={link.path} className="footerLink">
                     {link.name}
                   </Link>
                 </li>
@@ -104,7 +106,7 @@ export default function Footer() {
             <ul className="space-y-1 mt-1" role="list">
               {legalLinks.map((link, i) => (
                 <li key={i} role="listitem">
-                  <Link href={link.path} className={styles.footerLink}>
+                  <Link href={link.path} className="footerLink">
                     {link.name}
                   </Link>
                 </li>
