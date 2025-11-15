@@ -41,8 +41,8 @@ export default function TopMenu() {
     <>
       {/* ---------------- DESKTOP ---------------- */}
       <header
-        className={`hidden lg:flex fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? 'bg-white/95 shadow-md backdrop-blur-md' : 'bg-white/90 backdrop-blur-sm'
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? 'bg-white shadow-md' : 'bg-white'
         } border-b border-gray-100`}
         role="banner"
       >
