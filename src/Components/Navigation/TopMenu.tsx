@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 export default function TopMenu() {
-  const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -91,9 +89,9 @@ export default function TopMenu() {
           </div>
         </div>
 
-        {/* Barra inferior SOLO móvil (sin desplegable) */}
+        {/* Barra inferior SOLO móvil (fija, sin desplegable, con links directos) */}
         <nav
-          className="md:hidden h-16 px-2 flex items-center bg-white/95 backdrop-blur-sm"
+          className="md:hidden fixed bottom-0 left-0 right-0 h-16 px-2 flex items-center bg-white/95 backdrop-blur-sm border-t-[1.5px] border-primary z-50"
           aria-label="Mobile bottom navigation"
         >
           <div className="flex w-full items-center justify-between overflow-x-auto whitespace-nowrap">
@@ -105,7 +103,7 @@ export default function TopMenu() {
                   href={item.href}
                   className={`mx-1 ${baseLink} ${hoverLink} ${
                     isActive ? activeLink : 'text-gray-700'
-                  }`}
+                  } transition-all duration-200`}
                 >
                   {item.name}
                 </Link>
@@ -115,7 +113,7 @@ export default function TopMenu() {
               href="../login"
               className={`mx-1 ${baseLink} ${hoverLink} ${
                 pathname?.startsWith('/login') ? activeLink : 'text-gray-700'
-              }`}
+              } transition-all duration-200`}
             >
               Iniciar
             </Link>
