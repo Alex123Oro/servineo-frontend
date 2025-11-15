@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-slot": "^1.2.4",
     "@react-oauth/google": "^0.12.2",
+    "@reactour/tour": "^3.8.0",
     "@reduxjs/toolkit": "^2.9.1",
     "@types/redux-logger": "^3.0.13",
     "autoprefixer": "^10.4.21",
