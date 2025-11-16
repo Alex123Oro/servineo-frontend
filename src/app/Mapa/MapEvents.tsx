@@ -20,7 +20,7 @@ export default function MapEvents({ onClick, onMove, onZoom }: MapEventsProps) {
     setTimeout(() => setShowMessage(false), 3000);
   };
 
-  // 🔹 Detectar cambios en la conexión
+  
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -34,7 +34,7 @@ export default function MapEvents({ onClick, onMove, onZoom }: MapEventsProps) {
     };
   }, []);
 
-  // 🔹 Bloquear arrastre y gestos
+  
   useEffect(() => {
     if (!map) return;
 

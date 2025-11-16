@@ -1,4 +1,3 @@
-// ResetMapButton.tsx
 "use client";
 import { useState } from "react";
 
@@ -12,13 +11,13 @@ export default function ResetMapButton({ onReset, isOnline = true }: ResetMapBut
 
   const handleClick = () => {
     if (!isOnline) {
-      // Mostrar mensaje y bloquear acción
+      
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 3000);
       return;
     }
 
-    // Ejecuta reset solo si hay internet
+    
     onReset();
   };
 

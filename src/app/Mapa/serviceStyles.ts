@@ -1,12 +1,10 @@
-// app/busqueda/config/serviceStyles.ts
+
 
 
 export interface ServiceStyle {
-  color: string;      // color del borde del marcador y del texto del popup
-  iconUrl: string;    // imagen del ícono
+  color: string;      
+  iconUrl: string;    
 }
-
-// Estilos para cada servicio
 export const serviceStyles: Record<string, ServiceStyle> = {
   "plomería":     { color: "#00C851", iconUrl: "/Plomeria.webp" },
   "electricidad": { color: "#ffbb33", iconUrl: "/Electricistas.webp" },
@@ -20,8 +18,6 @@ export const serviceStyles: Record<string, ServiceStyle> = {
   "otros":        { color: "#2B31E0", iconUrl: "/avatar.png" },
 };
 
-
-// Función para obtener estilo de un servicio
 export function getServiceStyle(service: string): ServiceStyle {
   return serviceStyles[service.toLowerCase()] || serviceStyles.otros;
 }
