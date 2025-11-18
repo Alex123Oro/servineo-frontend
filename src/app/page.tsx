@@ -1,10 +1,10 @@
 import Carrusel from "./Home/Carrusel/Carrusel";
-import { TrabajosRecientes } from '../components/TrabajosRecientes';
-import Footer from './Home/Footer/Footer';
+import { TrabajosRecientes } from "../components/TrabajosRecientes";
+import Footer from "./Home/Footer/Footer";
 import Mapa from "./Home/Mapa/Mapa";
-
-import Buscador from './Home/Buscador/Buscador';
+import Buscador from "./Home/Buscador/Buscador";
 import ServiciosPage from "./servicios/servicios";
+import {ComparisonTable }from "./components/hu9";
 
 export default function Home() {
   return (
@@ -14,7 +14,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        
+
         <div className="max-w-6xl mx-auto relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 bg-clip-text text-transparent drop-shadow-sm">
             Encuentra el profesional perfecto
@@ -23,19 +23,28 @@ export default function Home() {
             Conectamos tu hogar con expertos verificados en Cochabamba
           </p>
 
-          {/* Buscador Component */}
-        <div className="mb-10 shadow-xl rounded-xl bg-white p-2">
-          <Buscador />
-        </div>
+          <div className="mb-10 shadow-xl rounded-xl bg-white p-2">
+            <Buscador />
+          </div>
 
-          {/* Popular Searches */}
           <div className="mb-16">
             <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
-              <span className="font-semibold text-gray-700 text-lg">Búsquedas populares:</span>
+              <span className="font-semibold text-gray-700 text-lg">
+                Búsquedas populares:
+              </span>
               <div className="flex flex-wrap justify-center gap-2">
-                {['Plomero', 'Electricista', 'Pintor', 'Carpintero', 'Limpieza', 'Jardineria', 'Soldador', 'Albañil'].map((tag) => (
-                  <button 
-                    key={tag} 
+                {[
+                  "Plomero",
+                  "Electricista",
+                  "Pintor",
+                  "Carpintero",
+                  "Limpieza",
+                  "Jardineria",
+                  "Soldador",
+                  "Albañil",
+                ].map((tag) => (
+                  <button
+                    key={tag}
                     className="px-4 py-2 text-sm bg-white border border-gray-200 text-gray-800 rounded-full hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-all duration-300 shadow-sm hover:shadow"
                   >
                     {tag}
@@ -45,25 +54,30 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
-            <div className="text-center bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-6 shadow-md transform transition-all duration-500 hover:scale-105 hover:shadow-lg">
-              <p className="text-3xl md:text-5xl font-bold text-blue-600 mb-2">1,000+</p>
+            <div className="text-center bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-6 shadow-md hover:scale-105 transition-all">
+              <p className="text-3xl md:text-5xl font-bold text-blue-600 mb-2">
+                1,000+
+              </p>
               <p className="text-gray-700 text-lg font-medium">Profesionales</p>
             </div>
-            <div className="text-center bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-6 shadow-md transform transition-all duration-500 hover:scale-105 hover:shadow-lg">
-              <p className="text-3xl md:text-5xl font-bold text-blue-600 mb-2">5,000+</p>
+            <div className="text-center bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-6 shadow-md hover:scale-105 transition-all">
+              <p className="text-3xl md:text-5xl font-bold text-blue-600 mb-2">
+                5,000+
+              </p>
               <p className="text-gray-700 text-lg font-medium">Trabajos realizados</p>
             </div>
-            <div className="text-center bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-6 shadow-md transform transition-all duration-500 hover:scale-105 hover:shadow-lg">
-              <p className="text-3xl md:text-5xl font-bold text-blue-600 mb-2">4.8★</p>
+            <div className="text-center bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-6 shadow-md hover:scale-105 transition-all">
+              <p className="text-3xl md:text-5xl font-bold text-blue-600 mb-2">
+                4.8★
+              </p>
               <p className="text-gray-700 text-lg font-medium">Calificación promedio</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Carrusel Section */}
+      {/* Carrusel */}
       <section className="w-full py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -71,14 +85,14 @@ export default function Home() {
               Inspiración para tu hogar
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Descubre ideas y proyectos realizados por nuestros profesionales expertos
+              Descubre ideas y proyectos realizados por nuestros profesionales
             </p>
           </div>
           <Carrusel />
         </div>
       </section>
-      
-      {/* Mapa Section */}
+
+      {/* Mapa */}
       <section className="w-full py-16 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center">
@@ -87,21 +101,33 @@ export default function Home() {
           <Mapa />
         </div>
       </section>
-      
-      {/* Trabajos Recientes Section */}
+
+      {/* Trabajos recientes */}
       <section className="w-full max-w-7xl mx-auto">
         <TrabajosRecientes />
       </section>
 
-      {/* servicios Component */}
-      <ServiciosPage 
-        showHero={false} 
+      {/* Servicios */}
+      <ServiciosPage
+        showHero={false}
         showAllServices={false}
-        title="Servicios Disponibles" 
-        subtitle="Encuentra el profesional perfecto para cualquier trabajo en tu hogar" 
+        title="Servicios Disponibles"
+        subtitle="Encuentra el profesional perfecto para cualquier trabajo en tu hogar"
       />
-      
-      {/* Footer Component */}
+
+      {/* Why Servineo – Cuadro comparativo */}
+<section className="w-full py-16 px-4 bg-white">
+  <div className="max-w-7xl mx-auto">
+    <h2 className="text-3xl md:text-4xl font-bold text-blue-600 mb-6 text-center">
+      ¿Por qué elegir Servineo?
+    </h2>
+
+    {/* Cuadro comparativo HU9 */}
+    <ComparisonTable />
+  </div>
+</section>
+
+
       <Footer />
     </div>
   );

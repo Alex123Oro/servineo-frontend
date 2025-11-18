@@ -1,5 +1,4 @@
-export { default as ComparisonTable } from './ComparisonTable';
-export type { ComparisonTableProps, ComparisonRow } from './ComparisonTable';
-
+// src/app/components/hu9/index.ts
+export { default as ComparisonTable } from "./ComparisonTable";
 
 

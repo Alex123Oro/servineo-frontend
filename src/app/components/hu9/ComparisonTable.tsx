@@ -11,8 +11,6 @@ export type ComparisonRow = {
 };
 
 export type ComparisonTableProps = {
-  title?: string;
-  subtitle?: string;
   data?: ComparisonRow[];
 };
 
@@ -68,22 +66,11 @@ const DEFAULT_DATA: ComparisonRow[] = [
   },
 ];
 
-export default function ComparisonTable({
-  title = "¿Por qué elegir Servineo?",
-  subtitle = "Compara Servineo con otras plataformas y descubre las ventajas",
-  data = DEFAULT_DATA,
-}: ComparisonTableProps) {
+export default function ComparisonTable({ data = DEFAULT_DATA }: ComparisonTableProps) {
   const comparisonData = useMemo(() => data, [data]);
 
   return (
-    <section className={styles.container} aria-labelledby="comparison-title">
-      <div className={styles.header}>
-        <h2 id="comparison-title" className={styles.title}>
-          {title}
-        </h2>
-        {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
-      </div>
-
+    <section className={styles.container}>
       <div className={styles.tableWrapper}>
         <table className={styles.table} role="table">
           <thead>
@@ -91,7 +78,10 @@ export default function ComparisonTable({
               <th className={styles.criterionHeader} scope="col">
                 Criterio
               </th>
-              <th className={`${styles.columnHeader} ${styles.servineoHeader}`} scope="col">
+              <th
+                className={`${styles.columnHeader} ${styles.servineoHeader}`}
+                scope="col"
+              >
                 Servineo
               </th>
               <th className={styles.columnHeader} scope="col">
@@ -104,17 +94,23 @@ export default function ComparisonTable({
           </thead>
           <tbody>
             {comparisonData.map((row, index) => {
-              const renderCell = (value: string | { text: string; icon?: "check" | "cross" }) => {
+              const renderCell = (
+                value: string | { text: string; icon?: "check" | "cross" }
+              ) => {
                 if (typeof value === "string") {
                   return <span className={styles.cellContent}>{value}</span>;
                 }
                 return (
                   <div className={styles.cellWithIcon}>
                     {value.icon === "check" && (
-                      <span className={styles.checkIcon} aria-label="Sí">✓</span>
+                      <span className={styles.checkIcon} aria-label="Sí">
+                        ✓
+                      </span>
                     )}
                     {value.icon === "cross" && (
-                      <span className={styles.crossIcon} aria-label="No">✗</span>
+                      <span className={styles.crossIcon} aria-label="No">
+                        ✗
+                      </span>
                     )}
                     <span className={styles.cellContent}>{value.text}</span>
                   </div>
@@ -150,22 +146,28 @@ export default function ComparisonTable({
             <div className={styles.mobileColumns}>
               <div className={styles.mobileColumn}>
                 <div className={styles.mobileLabel}>Servineo</div>
-                <div className={`${styles.mobileValue} ${styles.servineoValue}`}>
-                  {typeof row.servineo === "string" ? row.servineo : row.servineo.text}
+                <div
+                  className={`${styles.mobileValue} ${styles.servineoValue}`}
+                >
+                  {typeof row.servineo === "string"
+                    ? row.servineo
+                    : row.servineo.text}
                 </div>
               </div>
               <div className={styles.mobileColumn}>
                 <div className={styles.mobileLabel}>Facebook Marketplace</div>
                 <div className={styles.mobileValue}>
-                  {typeof row.facebookMarketplace === "string" 
-                    ? row.facebookMarketplace 
+                  {typeof row.facebookMarketplace === "string"
+                    ? row.facebookMarketplace
                     : row.facebookMarketplace.text}
                 </div>
               </div>
               <div className={styles.mobileColumn}>
                 <div className={styles.mobileLabel}>Booka</div>
                 <div className={styles.mobileValue}>
-                  {typeof row.booka === "string" ? row.booka : row.booka.text}
+                  {typeof row.booka === "string"
+                    ? row.booka
+                    : row.booka.text}
                 </div>
               </div>
             </div>
@@ -175,4 +177,3 @@ export default function ComparisonTable({
     </section>
   );
 }
-
