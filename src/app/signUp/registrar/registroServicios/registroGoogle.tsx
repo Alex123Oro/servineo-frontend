@@ -60,6 +60,7 @@ export default function RegistroGoogle({ onSuccessClose, onNotify }: RegistroGoo
       if (data.token) localStorage.setItem("servineo_token", data.token);
       if (data.user) {
         localStorage.setItem("servineo_user", JSON.stringify(data.user));
+        window.dispatchEvent(new Event("servineo_user_updated"));
         setUser(data.user);
       }
 

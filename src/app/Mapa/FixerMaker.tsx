@@ -16,13 +16,13 @@ interface FixerMarkerProps {
 const palette = {
   popupBg: "#FFFFFF",
   popupShadow: "0 6px 18px rgba(0,0,0,0.2)",
-  whatsappBg: "#2B6AE0",       // Azul cielo brillante
-  whatsappHover: "#3B7BDD",    // Azul medio
-  profileBg: "#4B3FE8",        // Azul violeta/índigo
-  profileHover: "#6B3FE8",     // Morado intenso
+  whatsappBg: "#2B6AE0",       
+  whatsappHover: "#3B7BDD",    
+  profileBg: "#4B3FE8",        
+  profileHover: "#6B3FE8",     
   buttonText: "#FFFFFF",
   iconBorderBusy: "#ff4444",
-  textColor: "#2B6AE0",        // Azul cielo brillante para textos
+  textColor: "#2B6AE0",        
 };
   
 export default function FixerMarker({ fixer }: FixerMarkerProps) {

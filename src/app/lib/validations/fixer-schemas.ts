@@ -1,6 +1,5 @@
 import { z } from "zod"
 
-// Schema para el registro inicial
 const nameRegex = /^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/
 const phoneRegex = /^\+?[\d\s\-()]{8,}$/
 
@@ -19,14 +18,14 @@ export const initialRegistrationSchema = z.object({
     .string()
     .regex(phoneRegex, "Formato de teléfono inválido. Debe incluir al menos 8 dígitos")
     .refine((value) => {
-      // Contar solo los dígitos (excluyendo +, - y espacios)
+      
       const digitCount = value.replace(/\D/g, '').length
       return digitCount <= 12
     }, "El número de teléfono no puede tener más de 10 dígitos")
     .transform(value => value.trim()),
 })
 
-// ... el resto de tus schemas se mantiene igual
+
 export const ciSchema = z.object({
   ci: z
     .string()
@@ -34,13 +33,13 @@ export const ciSchema = z.object({
     .regex(/^[0-9-]+$/, "CI debe contener solo números y guiones"),
 })
 
-// Schema para ubicación
+
 export const locationSchema = z.object({
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
 })
 
-// Schema para servicios
+
 export const serviceSchema = z.object({
   id: z.string(),
   name: z.string().min(1, "El nombre del servicio es requerido"),
@@ -51,7 +50,7 @@ export const servicesStepSchema = z.object({
   selectedServiceIds: z.array(z.string()).min(1, "Seleccione al menos un servicio"),
 })
 
-// Schema para métodos de pago
+
 export const paymentMethodSchema = z.enum(["cash", "qr", "card"])
 
 export const paymentStepSchema = z.object({
@@ -59,7 +58,7 @@ export const paymentStepSchema = z.object({
   accountInfo: z.string().optional(),
 })
 
-// Schema para experiencias
+
 export const experienceSchema = z.object({
   id: z.string(),
   title: z.string().min(3, "El título debe tener al menos 3 caracteres").max(100, "Máximo 100 caracteres"),
@@ -68,23 +67,23 @@ export const experienceSchema = z.object({
   mediaType: z.enum(["image", "video"]),
 })
 
-// Schema para vehículo
+
 export const vehicleSchema = z.object({
   hasVehicle: z.boolean(),
   vehicleType: z.enum(["motorcycle", "car", "van", "truck"]).optional(),
 })
 
-// Schema para términos
+
 export const termsSchema = z.object({
   termsAccepted: z.boolean().refine((val) => val === true, "Debe aceptar los términos y condiciones"),
 })
 
-// Schema para foto de perfil
+
 export const profilePhotoSchema = z.object({
   photoUrl: z.string().url("URL de foto inválida").optional(),
 })
 
-// Schema completo del perfil de FIXER
+
 export const fixerProfileSchema = z
   .object({
     ci: z.string().regex(/^[0-9-]+$/, "CI debe contener solo números y guiones"),

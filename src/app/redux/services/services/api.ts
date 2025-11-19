@@ -2,7 +2,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const CLIENT_BASE = '/api/controlC/cliente';
 
 export interface AuthProvider {
-  provider: 'email' | 'google' | 'apple' | 'github';
+  provider: 'email' | 'google' | 'discord' | 'github';
   email?: string;
   token?: string;
 }
@@ -176,4 +176,55 @@ export async function vincularGoogle(tokenUsuario: string, tokenGoogle: string):
   return { success: false, message };
 }
 
+}
+
+
+export interface DiscordLinkResult {
+  success: boolean;
+  client?: Client;
+  message?: string;
+}
+
+export function vincularDiscord(
+  token: string,
+  onSuccess?: (client: Client) => void,
+  onError?: (msg: string) => void
+) {
+  const rawState = JSON.stringify({ mode: "link", token });
+  const state = btoa(rawState);
+
+  const baseUrl = BASE_URL;
+
+
+  const finalUrl = `${baseUrl}/auth/discord?state=${state}`;
+
+  const popup = window.open(
+    finalUrl,
+    "DiscordLink",
+    "width=600,height=700"
+  );
+
+  const allowedOrigin = BASE_URL;
+
+
+  console.log("allowedOrigin:", allowedOrigin);
+
+  const handleMessage = (event: MessageEvent) => {
+    if (event.origin !== allowedOrigin) {
+      console.warn("Mensaje rechazado por ORIGIN:", event.origin);
+      return;
+    }
+
+    if (event.data.type === "DISCORD_LINK_SUCCESS") {
+      onSuccess?.(event.data.client);
+      popup?.close();
+      window.removeEventListener("message", handleMessage);
+    } else if (event.data.type === "DISCORD_LINK_ERROR") {
+      onError?.(event.data.message);
+      popup?.close();
+      window.removeEventListener("message", handleMessage);
+    }
+  };
+
+  window.addEventListener("message", handleMessage);
 }

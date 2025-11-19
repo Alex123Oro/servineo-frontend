@@ -4,7 +4,7 @@ import { Popup, useMap } from "react-leaflet";
 
 interface NoResultsProps {
   show: boolean;
-  position: [number, number]; // posición para mostrar el popup
+  position: [number, number]; 
 }
 
 export default function NoResults({ show, position }: NoResultsProps) {
@@ -15,8 +15,8 @@ export default function NoResults({ show, position }: NoResultsProps) {
   return (
     <Popup
       position={position}
-      autoPan={true}        // centra el popup si está fuera de la vista
-      closeButton={false}   // sin botón de cerrar
+      autoPan={true}        
+      closeButton={false}   
       className="
         bg-white px-6 py-3 rounded-full shadow-2xl
         border border-gray-200 font-semibold text-gray-800 text-center

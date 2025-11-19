@@ -1,4 +1,4 @@
-// Predefined description templates by service type
+
 export const descriptionTemplates: Record<string, string[]> = {
   Plomería: [
     "Reparación e instalación de sistemas de agua. Presupuesto sin compromiso.",

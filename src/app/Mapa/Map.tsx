@@ -14,7 +14,7 @@ import LocationButton from "./LocationButton";
 import ResetMapButton from "./ResetMapButton";
 import { distanceKm } from "@/app/lib/utils/distance";
 
-// 📍 Plaza 14 de Septiembre (Cochabamba)
+
 const defaultPosition: [number, number] = [-17.39381, -66.15693];
 
 export default function Map() {
@@ -25,7 +25,7 @@ export default function Map() {
   const [loading, setLoading] = useState(true);
   const mapRef = useRef<any>(null);
 
-  // 🔹 Cargar fixers desde JSON local
+  
   useEffect(() => {
     import("@/jsons/fixers.json")
       .then((module) => setFixers(module.default))
@@ -33,7 +33,7 @@ export default function Map() {
       .finally(() => setLoading(false));
   }, []);
 
-  // 🔹 Restaurar vista y pin desde localStorage
+  
   useEffect(() => {
     const savedPin = localStorage.getItem("pinPosition");
     const savedCenter = localStorage.getItem("mapCenter");
@@ -44,7 +44,7 @@ export default function Map() {
     if (savedZoom) setZoom(Number(savedZoom));
   }, []);
 
-  // 🔹 Guardar pin y vista
+  
   const savePin = (pos: [number, number]) => {
     localStorage.setItem("pinPosition", JSON.stringify(pos));
   };
@@ -54,14 +54,14 @@ export default function Map() {
     localStorage.setItem("mapZoom", zoomLevel.toString());
   };
 
-  // 🔹 Click: mueve pin y guarda
+  
   const handleClick = (pos: LatLngExpression) => {
     const [lat, lng] = Array.isArray(pos) ? pos : [pos.lat, pos.lng];
     setPinPosition([lat, lng]);
     savePin([lat, lng]);
   };
 
-  // 🔹 Mover mapa o zoom: solo actualiza centro y zoom
+  
   const handleMove = (center: LatLngExpression) => {
     const [lat, lng] = Array.isArray(center) ? center : [center.lat, center.lng];
     setMapCenter([lat, lng]);
@@ -73,12 +73,12 @@ export default function Map() {
     saveView(mapCenter, newZoom);
   };
 
-  // 🔹 Filtrar fixers cercanos al pin
+  
   const nearbyFixers = fixers.filter(
     (f) => f.available && distanceKm(pinPosition, [f.lat, f.lng]) <= 5
   );
 
-  // 🔹 Vaciar el mapa (reiniciar vista y localStorage)
+  
   const handleReset = () => {
     const plaza: [number, number] = defaultPosition;
     setPinPosition(plaza);
@@ -96,7 +96,7 @@ export default function Map() {
       {/* 🔘 Botón para vaciar localStorage */}
       <ResetMapButton
   onReset={handleReset}
-  isOnline={navigator.onLine} // PASAR el estado de conexión
+  isOnline={navigator.onLine} 
 />
 
       <MapContainer

@@ -23,10 +23,8 @@ interface LoginFormData {
   password: string;
 }
 
-interface BackendUser {
-  // Ajusta si tu backend usa otras claves; solo usamos 'name' aquí
+interface BackendUser { 
   name: string;
-  // Opcionales por si los tienes
   id?: string;
   email?: string;
   [key: string]: unknown;
