@@ -21,9 +21,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("servineo_user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
+try {
+  if (storedUser && storedUser !== "undefined") {
+    setUser(JSON.parse(storedUser));
+  } else {
+    setUser(null);
+  }
+} catch {
+  console.error("Usuario malformado en localStorage, reseteando");
+  localStorage.removeItem("servineo_user");
+  setUser(null);
+}
+
     } catch (e) {
       console.error("Error leyendo usuario:", e);
       localStorage.removeItem("servineo_user");

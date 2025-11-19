@@ -100,7 +100,7 @@ export default function ConfiguracionPage() {
         return (
           <div className="max-w-4xl w-full">
             <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">
-              Editar Perfil
+              Configuraciones Avanzadas
             </h2>
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
               <RequesterEditForm />
@@ -222,7 +222,7 @@ export default function ConfiguracionPage() {
             </div>
 
             <nav className="space-y-2">
-              {/* Editar Perfil - Ahora interno */}
+              {/* Configuraciones Avanzadas - Ahora interno */}
               <button
                 onClick={() => setSeccionActiva('perfil')}
                 className={`cursor-pointer flex items-center gap-2 w-full px-3 py-2 rounded-lg text-left transition-all duration-300 ease-out ${
@@ -233,11 +233,11 @@ export default function ConfiguracionPage() {
               >
                 <Image 
                 src="/icons/edit-config.png" 
-                alt="Editar Perfil" 
+                alt="Configuraciones Avanzadas" 
                 width={24}
                 height={24}
                 className="w-6 h-6" />
-                Editar Perfil
+                Configuraciones Avanzadas
               </button>
 
               {/* Seguridad - Estado interno */}
