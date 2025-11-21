@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Popup } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 import { Fixer } from "@/Components/interface/Fixer_Interface";
+import { Map as LeafletMap } from "leaflet";
 
 import RecenterMap from "./RecenterMap";
 import UserMarker from "./UserMaker";
@@ -23,7 +24,8 @@ export default function Map() {
   const [mapCenter, setMapCenter] = useState<[number, number]>(defaultPosition);
   const [zoom, setZoom] = useState(14);
   const [loading, setLoading] = useState(true);
-  const mapRef = useRef<any>(null);
+ const mapRef = useRef<LeafletMap | null>(null);
+
 
   
   useEffect(() => {

@@ -1,15 +1,24 @@
 'use client';
 import React from 'react';
 
-export const NextBtn = ({ ...props }: any) => {
-  const isLastStep = props.currentStep === props.stepsLength - 1;
+interface TourBtnProps {
+  currentStep: number;
+  stepsLength?: number;
+  steps?: unknown[];
+  setCurrentStep?: (cb: (s: number) => number) => void;
+  setIsOpen?: (value: boolean) => void;
+}
+
+export const NextBtn = (props: TourBtnProps) => {
+  const isLastStep = props.currentStep === (props.stepsLength ?? 0) - 1;
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (props.setCurrentStep && props.steps) {
       if (isLastStep) {
-        props.setIsOpen(false);
+        props.setIsOpen?.(false);
         localStorage.setItem('servineoTourVisto', 'true');
       } else {
         props.setCurrentStep((s: number) => s + 1);
@@ -52,15 +61,13 @@ export const NextBtn = ({ ...props }: any) => {
   );
 };
 
-export const PrevBtn = ({ ...props }: any) => {
+export const PrevBtn = (props: TourBtnProps) => {
   if (props.currentStep === 0) return null;
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (props.setCurrentStep) {
-      props.setCurrentStep((s: number) => s - 1);
-    }
+    props.setCurrentStep?.((s: number) => s - 1);
   };
 
   return (

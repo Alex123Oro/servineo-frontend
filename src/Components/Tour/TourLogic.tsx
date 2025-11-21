@@ -4,7 +4,14 @@ import { useTour } from '@reactour/tour';
 import { tourSteps } from './TourSteps';
 
 export function TourLogic() {
-  const { setSteps, setIsOpen, setCurrentStep, isOpen } = useTour();
+  const { setSteps, setIsOpen, setCurrentStep, isOpen } = useTour() as {
+  setSteps: (steps: import("@reactour/tour").StepType[]) => void;
+  setIsOpen: (open: boolean) => void;
+  setCurrentStep: (index: number) => void;
+  isOpen: boolean;
+};
+
+
 
   const startTour = () => {
     const isMobile = window.innerWidth < 1024;

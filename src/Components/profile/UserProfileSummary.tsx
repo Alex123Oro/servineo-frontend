@@ -1,10 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { MapPin, Phone, Mail, Lock } from 'lucide-react';
-
+import { UserData } from '@/types/User';
 
 export default function UserProfileSummary() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserData | null>(null);
 
 useEffect(() => {
   const loadUser = () => {
@@ -112,6 +112,7 @@ const userPhoto =
     </div>
   );
 }
+
 
 
 

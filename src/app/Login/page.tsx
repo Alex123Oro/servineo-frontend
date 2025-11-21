@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { api, ApiResponse } from "../../app/redux/services/loginApi";
+import { api, ApiResponse } from "../redux/services/loginApi";
 import { Eye, EyeOff } from "lucide-react";
 import LoginGoogle from "../../Components/login/google/LoginGoogle";
 import { useRouter } from "next/navigation";
