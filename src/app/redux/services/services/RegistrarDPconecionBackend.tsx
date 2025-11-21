@@ -140,8 +140,6 @@ export async function enviarFotoPerfil(usuarioId: string, archivo: File): Promis
 
   if (data.user) {
     localStorage.setItem("servineo_user", JSON.stringify(data.user));
-    window.dispatchEvent(new Event("servineo_user_updated"));
-
   }
 
   return data;

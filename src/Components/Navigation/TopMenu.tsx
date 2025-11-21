@@ -5,14 +5,14 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, Tag, Wrench, Briefcase, User, HelpCircle } from 'lucide-react';
 import styles from '@/styles/userProfile.module.css';
+import { UserData } from '@/types/User';
 
 export default function TopMenu() {
   const [scrolled, setScrolled] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [authReady, setAuthReady] = useState(false);
-
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const profileButtonRef = useRef<HTMLButtonElement | null>(null);
   const router = useRouter();

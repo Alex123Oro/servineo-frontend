@@ -145,3 +145,5 @@ export async function enviarFotoPerfil(usuarioId: string, archivo: File): Promis
 
   return data;
 }
+
+

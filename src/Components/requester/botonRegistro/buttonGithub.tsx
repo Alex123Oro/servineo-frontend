@@ -65,7 +65,7 @@ export default function GithubButton({ onNotify }: GithubButtonProps) {
       router.push("/signUp/registrar/registroUbicacion");
     } else {
        setTimeout(() => {
-      router.push("/");
+      window.location.href = "/";
         }, 2000);
     }
   }, 2000);

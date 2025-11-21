@@ -56,3 +56,4 @@ export async function obtenerUltimoCambio(): Promise<LastPasswordChangeResponse>
     throw new Error('Ocurrió un error desconocido al obtener el último cambio.');
   }
 }
+

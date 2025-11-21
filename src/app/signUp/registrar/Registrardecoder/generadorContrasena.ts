@@ -46,3 +46,4 @@ export function generarContrasena(options: PasswordOptions = {}): string {
 
   return password;
 }
+
