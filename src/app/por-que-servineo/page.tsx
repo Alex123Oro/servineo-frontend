@@ -3,10 +3,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin, User, Calendar, ShieldCheck } from 'lucide-react';
-import { Check, X, CalendarCheck, Shield, Info, Headset, Layout, DollarSign } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Check, X } from 'lucide-react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-// Hook para manejar múltiples refs y animaciones
 function useInViewMultiple(count: number, options?: IntersectionObserverInit) {
   const refs = useRef<(HTMLDivElement | null)[]>(Array(count).fill(null));
   const [inViewStates, setInViewStates] = useState<boolean[]>(Array(count).fill(false));
@@ -39,6 +38,8 @@ function useInViewMultiple(count: number, options?: IntersectionObserverInit) {
 }
 
 export default function WhyServineoPage() {
+  const fallbackSrc = '/fallback-image.svg';
+
   const banners = [
     {
       id: 1,
@@ -46,7 +47,10 @@ export default function WhyServineoPage() {
       description:
         'Explora tu ciudad desde el mapa interactivo de Servineo y descubre a los fixers disponibles cerca de ti. Podrás ver fácilmente su ubicación y acceder a su información con un solo clic. Así, Servineo te conecta de forma rápida y sencilla con los profesionales que realmente están a tu alcance.',
       image: '/images/banner1.jpg',
-      icon: <MapPin className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" />,
+      alt: 'Mapa de la ciudad con marcadores que muestran fixers cerca del usuario',
+      icon: (
+        <MapPin className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" aria-hidden="true" />
+      ),
       button: { text: 'Explorar mapa', link: '/' },
     },
     {
@@ -55,7 +59,8 @@ export default function WhyServineoPage() {
       description:
         'En Servineo, cada fixer cuenta con un perfil completo que muestra su experiencia, especialidades y disponibilidad. Explora sus trayectorias, conoce sus habilidades y elige con confianza al profesional que mejor se adapte a tus necesidades. Todo lo que necesitas saber para encontrar al fixer ideal, en un solo lugar.',
       image: '/images/banner2.jpg',
-      icon: <User className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" />,
+      alt: 'Perfil de un profesional mostrando su información y experiencia',
+      icon: <User className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" aria-hidden="true" />,
     },
     {
       id: 3,
@@ -63,7 +68,10 @@ export default function WhyServineoPage() {
       description:
         'Con Servineo, agendar un servicio es rápido y sin complicaciones. Elige al profesional que necesites, coordina los detalles por WhatsApp y confirma tu cita en el horario que prefieras. Todo desde una plataforma práctica que conecta fácilmente a quienes ofrecen y quienes buscan un servicio.',
       image: '/images/banner3.jpg',
-      icon: <Calendar className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" />,
+      alt: 'Persona agendando una cita de servicio desde su dispositivo',
+      icon: (
+        <Calendar className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" aria-hidden="true" />
+      ),
       button: { text: 'Agendar ahora', link: '/' },
     },
     {
@@ -72,44 +80,67 @@ export default function WhyServineoPage() {
       description:
         'En Servineo, la confianza es lo primero. Por eso, cada fixer pasa por un proceso de registro que valida su compromiso, responsabilidad y cumplimiento de nuestras políticas. Así, garantizamos que cada servicio dentro de la plataforma sea seguro, transparente y de calidad, brindándote la tranquilidad de contratar a profesionales en los que realmente puedes confiar.',
       image: '/images/banner4.jpg',
-      icon: <ShieldCheck className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" />,
+      alt: 'Profesional estrechando la mano de un cliente en señal de confianza',
+      icon: (
+        <ShieldCheck
+          className="inline-block w-6 h-6 mr-2 text-[var(--primary)]"
+          aria-hidden="true"
+        />
+      ),
     },
   ];
+
+  // Mapa para saber qué imágenes fallaron y usar fallback
+  const [failedMap, setFailedMap] = useState<Record<number, boolean>>({});
+
+  const STORAGE_KEY = 'whyServineoScroll';
+
+  // Guardar scroll mientras el usuario navega
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const restoreScroll = () => {
-      const savedScroll = sessionStorage.getItem('whyServineoScroll');
-      if (savedScroll) {
-        setTimeout(() => {
-          window.scrollTo(0, parseInt(savedScroll, 10));
-        }, 50);
-      }
-    };
-
-    restoreScroll();
-
-    // Restaurar scroll si el usuario vuelve a la pestaña
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        restoreScroll();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    // Guardar scroll mientras el usuario navega
     const handleScroll = () => {
-      sessionStorage.setItem('whyServineoScroll', String(window.scrollY));
+      sessionStorage.setItem(STORAGE_KEY, String(window.scrollY));
     };
     window.addEventListener('scroll', handleScroll);
 
-    // Cleanup
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  // Hook para animación
+  // Restaurar scroll después de renderizar y cargar imágenes
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const restoreScroll = () => {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const y = parseInt(saved, 10);
+        if (!Number.isNaN(y)) {
+          window.scrollTo({ top: y, left: 0, behavior: 'auto' });
+        }
+      }
+    };
+
+    // Restaurar al montar
+    restoreScroll();
+
+    // Restaurar al volver con atrás/adelante
+    const handlePopState = () => {
+      const retry = () => {
+        restoreScroll();
+        if (window.scrollY < 1) setTimeout(retry, 50);
+      };
+      retry();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   const { refs, inViewStates } = useInViewMultiple(banners.length);
 
   return (
@@ -135,7 +166,7 @@ export default function WhyServineoPage() {
             refs.current[index] = el;
           }}
           className={`py-12 lg:py-20 relative flex flex-col-reverse md:flex-row items-start max-w-6xl mx-auto px-4 sm:px-6 md:px-8 gap-12 sm:gap-8 transition-all duration-700 ease-out
-      ${inViewStates[index] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 sm:translate-y-8'}`}
+            ${inViewStates[index] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 sm:translate-y-8'}`}
         >
           {/* Texto */}
           <div className="md:w-1/2 text-center md:text-left z-20">
@@ -160,24 +191,25 @@ export default function WhyServineoPage() {
           <div className="md:w-1/2 relative z-10 flex justify-center md:justify-end">
             <div
               className="hidden xl:block absolute rounded-3xl shadow-lg
-        top-0 right-0 w-5/6 sm:w-4/5 h-5/6 sm:h-4/5 translate-x-6 sm:translate-x-14 -translate-y-4 sm:-translate-y-6
-        bg-[var(--primary)] z-0"
+                top-0 right-0 w-5/6 sm:w-4/5 h-5/6 sm:h-4/5 translate-x-6 sm:translate-x-14 -translate-y-4 sm:-translate-y-6
+                bg-[var(--primary)] z-0"
               aria-hidden="true"
             />
             <div className="relative rounded-3xl shadow-lg overflow-hidden w-full md:w-[90%] z-10 group bg-gray-100">
-              {' '}
               <Image
-                src={banner.image}
-                alt={banner.title}
+                src={failedMap[index] ? fallbackSrc : banner.image}
+                alt={banner.alt}
                 width={800}
                 height={520}
                 className="w-full h-auto object-cover block transition duration-500 group-hover:scale-105 group-hover:shadow-2xl group-hover:brightness-95"
-              />{' '}
+                onError={() => {
+                  setFailedMap((prev) => ({ ...prev, [index]: true }));
+                }}
+              />
             </div>
           </div>
         </section>
       ))}
-
       {/* Tabla comparativa */}
       <section className="max-w-6xl mx-auto px-6 py-24 bg-[var(--background)] text-[var(--foreground)]">
         {/* Subtítulo */}

@@ -16,7 +16,7 @@ export default function FooterSection() {
     { name: 'Trabaja con nosotros', path: '/info/join' },
     { name: 'Testimonios', path: '/info/testimonials' },
     { name: 'Apoyo', path: '/info/support' },
-    { name: '¿Por qué Servineo?', path: '/whyServineo' },
+    { name: '¿Por qué Servineo?', path: '/por-que-servineo' },
     { name: 'Cómo funciona Servineo', path: '/howUseServineo' },
   ];
   const legalLinks = [
@@ -42,10 +42,7 @@ export default function FooterSection() {
           Saltar al contenido principal
         </a>
         <div className="text-center" aria-labelledby="footer-servineo-heading">
-          <h2
-            id="footer-servineo-heading"
-            className="text-4xl font-bold mb-4 text-[#1AA7ED]"
-          >
+          <h2 id="footer-servineo-heading" className="text-4xl font-bold mb-4 text-[#1AA7ED]">
             Servineo
           </h2>
           <p className="text-white max-w-3xl mx-auto leading-relaxed text-lg">
@@ -60,9 +57,7 @@ export default function FooterSection() {
           aria-label="Enlaces del pie de página"
         >
           <div>
-            <h3 className="text-xl font-semibold text-[#1AA7ED] mb-2">
-              Exploremos SERVINEO
-            </h3>
+            <h3 className="text-xl font-semibold text-[#1AA7ED] mb-2">Exploremos SERVINEO</h3>
             <ul className="space-y-1 mt-1">
               {exploreLinks.map((link, i) => (
                 <li key={i}>
@@ -110,10 +105,7 @@ export default function FooterSection() {
           </div>
 
           <div aria-labelledby="contacto-heading">
-            <h3
-              id="contacto-heading"
-              className="text-xl font-semibold text-[#1AA7ED] mb-2"
-            >
+            <h3 id="contacto-heading" className="text-xl font-semibold text-[#1AA7ED] mb-2">
               Contáctanos
             </h3>
             <div className="space-y-1 mt-1 text-white">
@@ -158,13 +150,9 @@ export default function FooterSection() {
           </div>
         </div>
 
-        <div
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-t border-gray-700 pt-6"
-        >
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-t border-gray-700 pt-6">
           <div className="flex items-center justify-center sm:justify-start gap-4">
-            <h3 className="text-xl font-semibold text-[#1AA7ED]">
-              Síguenos
-            </h3>
+            <h3 className="text-xl font-semibold text-[#1AA7ED]">Síguenos</h3>
             <div
               className="flex flex-row gap-6"
               role="list"
