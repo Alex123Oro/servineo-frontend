@@ -47,7 +47,7 @@ export default function SignUp() {
             Modo requester
           </p>
 
-          <RegistroForm />
+          <RegistroForm onNotify={handleNotify} />
 
           <div className="flex items-center my-6">
             <div className="flex-1 h-px bg-gray-300" />
@@ -58,7 +58,7 @@ export default function SignUp() {
           <div className="flex flex-col items-center space-y-3 mt-3">
             <RegistroGoogle onNotify={handleNotify} />
             <GithubButton onNotify={handleNotify} />
-            <DiscordButton />
+            <DiscordButton onNotify={handleNotify} />
           </div>
 
           <div className="flex items-start mt-5 text-sm text-gray-600">
@@ -92,3 +92,4 @@ export default function SignUp() {
     </>
   );
 }
+

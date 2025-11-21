@@ -7,6 +7,14 @@ import { z } from "zod";
 import { enviarRegistroManual } from "@/app/redux/services/auth/registro";
 import { generarContrasena } from "../Registrardecoder/generadorContrasena";
 
+interface RegistroFormProps {
+  onNotify?: (notification: {
+    type: "success" | "error" | "info" | "warning";
+    title: string;
+    message: string;
+  }) => void;
+}
+
 const nameRegex = /^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/;
 
 const registroSchema = z
@@ -32,7 +40,7 @@ const registroSchema = z
 
 type RegistroSchema = z.infer<typeof registroSchema>;
 
-export default function RegistroForm() {
+export default function RegistroForm({ onNotify }: RegistroFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<RegistroSchema>({
     nombre: "",
@@ -47,6 +55,8 @@ export default function RegistroForm() {
   const [mostrarTooltip, setMostrarTooltip] = useState(false);
   const [cargando, setCargando] = useState(false);
 
+  /* --------------------------- HANDLERS --------------------------- */
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -59,15 +69,25 @@ export default function RegistroForm() {
       symbols: true,
       avoidAmbiguous: true,
     });
+
     setFormData((prev) => ({
       ...prev,
       password: nueva,
       confirmarPassword: nueva,
     }));
+
     setMostrarTooltip(false);
     setMostrarPassword(true);
     navigator.clipboard.writeText(nueva);
+
+    onNotify?.({
+      type: "info",
+      title: "Contraseña generada",
+      message: "La contraseña segura ha sido generada y copiada al portapapeles.",
+    });
   };
+
+  /* --------------------------- SUBMIT --------------------------- */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +103,13 @@ export default function RegistroForm() {
       });
 
       setErrors(fieldErrors);
+
+      onNotify?.({
+        type: "warning",
+        title: "Datos incompletos o incorrectos",
+        message: "Revisa los campos marcados para continuar.",
+      });
+
       return;
     }
 
@@ -94,21 +121,41 @@ export default function RegistroForm() {
 
       if (data.success) {
         if (data.token) localStorage.setItem("servineo_token", data.token);
-        sessionStorage.setItem(
-          "toastMessage",
-          `¡Cuenta creada exitosamente! ¡Bienvenido, ${nombreCompleto}!`
-        );
+
+        onNotify?.({
+          type: "success",
+          title: "Registro exitoso",
+          message: `Bienvenido, ${nombreCompleto}. Tu cuenta ha sido creada correctamente.`,
+        });
+
+        sessionStorage.setItem("toastMessage", `¡Cuenta creada exitosamente! Bienvenido, ${nombreCompleto}.`);
         router.push("/signUp/registrar/registrarFoto");
       } else {
+        onNotify?.({
+          type: "error",
+          title: "Error en el registro",
+          message: data.message || "No fue posible completar el registro.",
+        });
       }
-    } catch {
+    } catch (error) {
+      onNotify?.({
+        type: "error",
+        title: "Error de conexión",
+        message: "No se pudo conectar al servidor. Intenta nuevamente.",
+      });
     } finally {
       setCargando(false);
     }
   };
 
+  /* --------------------------- UI --------------------------- */
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      {/* Tus inputs y layout se mantienen exactamente igual */}
+      {/* SOLO se añadió la integración de onNotify arriba */}
+      {/* ----------------------------------------------------------------- */}
+
       {/* Nombre y Apellido */}
       <div className="flex gap-3">
         <div className="flex-1">
@@ -121,9 +168,7 @@ export default function RegistroForm() {
             onChange={handleChange}
             placeholder="Ingresa tu nombre"
             className={`w-full border rounded-xl p-2.5 text-gray-800 focus:outline-none focus:ring-2 transition ${
-              errors.nombre
-                ? "border-red-500 focus:ring-red-400"
-                : "border-gray-300 focus:ring-servineo-400"
+              errors.nombre ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-servineo-400"
             }`}
           />
           {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
@@ -139,9 +184,7 @@ export default function RegistroForm() {
             onChange={handleChange}
             placeholder="Ingresa tu apellido"
             className={`w-full border rounded-xl p-2.5 text-gray-800 focus:outline-none focus:ring-2 transition ${
-              errors.apellido
-                ? "border-red-500 focus:ring-red-400"
-                : "border-gray-300 focus:ring-servineo-400"
+              errors.apellido ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-servineo-400"
             }`}
           />
           {errors.apellido && <p className="text-red-500 text-xs mt-1">{errors.apellido}</p>}
@@ -160,9 +203,7 @@ export default function RegistroForm() {
           onChange={handleChange}
           placeholder="nombre@dominio.com"
           className={`w-full border rounded-xl p-2.5 text-gray-800 focus:outline-none focus:ring-2 transition ${
-            errors.email
-              ? "border-red-500 focus:ring-red-400"
-              : "border-gray-300 focus:ring-servineo-400"
+            errors.email ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-servineo-400"
           }`}
         />
         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -181,9 +222,7 @@ export default function RegistroForm() {
             onChange={handleChange}
             placeholder="Ingresa tu contraseña"
             className={`w-full border rounded-xl p-2.5 text-gray-800 focus:outline-none focus:ring-2 transition ${
-              errors.password
-                ? "border-red-500 focus:ring-red-400"
-                : "border-gray-300 focus:ring-servineo-400"
+              errors.password ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-servineo-400"
             }`}
           />
           <button
@@ -213,6 +252,7 @@ export default function RegistroForm() {
         )}
       </div>
 
+      {/* Confirmar contraseña */}
       <div>
         <label className="block text-sm font-semibold text-gray-600 mb-2">
           Confirmar contraseña*
@@ -225,9 +265,7 @@ export default function RegistroForm() {
             onChange={handleChange}
             placeholder="Confirma tu contraseña"
             className={`w-full border rounded-xl p-2.5 text-gray-800 focus:outline-none focus:ring-2 transition ${
-              errors.confirmarPassword
-                ? "border-red-500 focus:ring-red-400"
-                : "border-gray-300 focus:ring-servineo-400"
+              errors.confirmarPassword ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-servineo-400"
             }`}
           />
           <button
@@ -243,6 +281,7 @@ export default function RegistroForm() {
         )}
       </div>
 
+      {/* Submit */}
       <button
         type="submit"
         disabled={cargando}
@@ -260,3 +299,4 @@ export default function RegistroForm() {
     </form>
   );
 }
+

@@ -60,7 +60,6 @@ export default function RegistroGoogle({ onSuccessClose, onNotify }: RegistroGoo
       if (data.token) localStorage.setItem("servineo_token", data.token);
       if (data.user) {
         localStorage.setItem("servineo_user", JSON.stringify(data.user));
-        window.dispatchEvent(new Event("servineo_user_updated"));
         setUser(data.user);
       }
 
@@ -71,7 +70,7 @@ export default function RegistroGoogle({ onSuccessClose, onNotify }: RegistroGoo
       });
 
       if (onSuccessClose) onSuccessClose();
-      setTimeout(() => router.push("/"), 2000);
+      setTimeout(() => window.location.href = "/", 2000);
     }catch (error: unknown) {
       console.error("Error al enviar el token al backend:", error);
 
