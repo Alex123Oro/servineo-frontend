@@ -99,7 +99,7 @@ export default function TopMenu() {
           const target = `/login?expired=1${email ? `&email=${encodeURIComponent(email)}` : ''}`;
           router.push(target);
         },
-        5 * 60 * 1000,
+      15 * 60 * 1000,
       );
     };
 
@@ -142,21 +142,31 @@ export default function TopMenu() {
   };
 
   /* -------- NAV ITEMS -------- */
-  const navItemsDesktop = [
-    { name: 'Inicio', href: '/' },
-    { name: 'Ofertas de trabajo', href: '/job-offer-list' },
-    { name: 'Convertirse en fixer', href: '/become-fixer' },
-    { name: 'Mis ofertas', href: '/fixer/my-offers' },
-    { name: 'Perfil', href: '/fixer/profile' },
-    { name: 'Ayuda', href: '/ayuda' },
-  ];
+const navItemsDesktop = [
+ // name: 'Inicio', href: '/' },
+  { name: "Ofertas de trabajo", href: "/job-offer-list" },
+  //{ name: 'Convertirse en fixer', href: '/become-fixer' },
+  ...(userData?.role === "fixer"
+    ? [
+        { name: "Mis ofertas", href: "/fixer/my-offers" },
+       // name: 'Perfil', href: '/fixer/profile' },
+      ]
+    : []),
+  { name: "Ayuda", href: "/ayuda" },
+];
+
 
   const navItemsMobile = [
-    { icon: <Home size={20} />, href: '/', label: 'Inicio' },
+   // icon: <Home size={20} />, href: '/', label: 'Inicio' },
     { icon: <Tag size={20} />, href: '/job-offer-list', label: 'Ofertas' },
-    { icon: <Wrench size={20} />, href: '/become-fixer', label: 'Fixer' },
-    { icon: <Briefcase size={20} />, href: '/fixer/my-offers', label: 'Mis trabajos' },
-    { icon: <User size={20} />, href: '/fixer/profile', label: 'Perfil' },
+   // { icon: <Wrench size={20} />, href: '/become-fixer', label: 'Fixer' },
+    ...(userData?.role === "fixer"
+  ? [
+      { icon: <Briefcase size={20} />, href: "/fixer/my-offers", label: "Mis trabajos" },
+     // icon: <User size={20} />, href: '/fixer/profile', label: 'Perfil' },
+    ]
+  : []),
+
     { icon: <HelpCircle size={20} />, href: '/ayuda', label: 'Ayuda' },
   ];
 
@@ -303,13 +313,26 @@ export default function TopMenu() {
 
           <hr style={{ margin: '8px 0', opacity: 0.3 }} />
 
-          <button onClick={() => router.push('/mi-perfil')} className={styles.menuItem}>
-            Editar perfil
-          </button>
+          {userData?.role !== "fixer" && (
+  <>
+    <button onClick={() => router.push('/mi-perfil')} className={styles.menuItem}>
+      Editar perfil
+    </button>
 
-          <button onClick={() => router.push('/become-fixer')} className={styles.menuItem}>
-            Convertirse en Fixer
-          </button>
+    <button onClick={() => router.push('/become-fixer')} className={styles.menuItem}>
+      Convertirse en Fixer
+    </button>
+  </>
+)}
+
+{userData?.role === "fixer" && (
+  <>
+    <button onClick={() => router.push('/fixer/profile')} className={styles.menuItem}>
+      Perfil
+    </button>
+  </>
+)}
+
 
           <button onClick={logout} className={`${styles.menuItem} ${styles.logoutBtn}`}>
             Cerrar sesión

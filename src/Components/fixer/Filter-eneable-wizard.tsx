@@ -143,13 +143,29 @@ export function FixerEnableWizard({ user }: FixerEnableWizardProps) {
     }))
   }
 
-  async function handleSubmit() {
-    if (!validateStep()) return
-    setSubmitting(true)
-    await new Promise((r) => setTimeout(r, 900))
-    setSubmitting(false)
-    setSuccess(true)
-  }
+async function handleSubmit() {
+  if (!validateStep()) return;
+
+  setSubmitting(true);
+  await new Promise((r) => setTimeout(r, 900));
+
+  // ⚡ Crear objeto fija real del usuario
+  const fixerUser = {
+    ...user,
+    role: "fixer",
+    fixerProfile: draft, // todo lo que llenó el wizard
+  };
+
+  // ⚡ Guardarlo en localStorage
+  localStorage.setItem("servineo_user", JSON.stringify(fixerUser));
+
+  // ⚡ Disparar evento global
+  window.dispatchEvent(new Event("servineo_user_updated"));
+
+  // ⚡Recargar página completa
+  window.location.href = "/fixer/profile"; 
+}
+
 
   function addExperience(experience: Omit<Experience, "id">) {
     const id = `exp-${Date.now()}`
