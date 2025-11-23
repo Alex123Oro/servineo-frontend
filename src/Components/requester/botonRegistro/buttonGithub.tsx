@@ -41,44 +41,36 @@ export default function GithubButton({ onNotify }: GithubButtonProps) {
       const data = event.data;
 
       if (data.type === "GITHUB_AUTH_SUCCESS") {
-        // Mensaje de inicio de sesión
-        onNotify?.({
-          type: "success",
-          title: "Inicio de sesión exitoso",
-          message: `Bienvenido ${data.user?.name || ""}`,
-        });
+  if (onNotify) {
+    onNotify({
+      type: "success",
+      title: "Inicio de sesión exitoso",
+      message: `Bienvenido ${data.user?.name || ""}`,
+    });
+  }
 
-        // Guardar token y usuario
-        localStorage.setItem("servineo_token", data.token);
-        if (data.user) {
-          localStorage.setItem("servineo_user", JSON.stringify(data.user));
-          setUser(data.user);
-        }
+  localStorage.setItem("servineo_token", data.token);
 
-        // Mensaje adicional si es primera vez
-        if (data.isFirstTime) {
-          onNotify?.({
-            type: "info",
-            title: "Bienvenido",
-            message: "Primera vez en Servineo. Completa tu perfil para continuar.",
-          });
-        }
+  if (data.user) {
+    localStorage.setItem("servineo_user", JSON.stringify(data.user));
+    setUser(data.user);
+  }
 
-        window.removeEventListener("message", handleMessage);
-        setLoading(false);
-        popup.close();
+  window.removeEventListener("message", handleMessage);
+  setLoading(false);
+  popup.close();
 
-        // Redirección
-        setTimeout(() => {
-          if (data.isFirstTime) {
-            router.push("/signUp/registrar/registroUbicacion");
-          } else {
-            setTimeout(() => {
-              window.location.href = "/";
-            }, 2000);
-          }
+ setTimeout(() => {
+    if (data.isFirstTime) {
+      router.push("/signUp/registrar/registroUbicacion");
+    } else {
+       setTimeout(() => {
+      window.location.href = "/";
         }, 2000);
-      }
+    }
+  }, 2000);
+}
+
 
       if (data.type === "GITHUB_AUTH_ERROR") {
         onNotify?.({
