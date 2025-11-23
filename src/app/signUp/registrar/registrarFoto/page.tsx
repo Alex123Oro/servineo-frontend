@@ -55,6 +55,13 @@ export default function FotoPerfil() {
 
       if (response.ok && data.success) {
         alert("Foto actualizada correctamente");
+        try {
+          const existing = localStorage.getItem("servineo_user");
+          const currentUser = existing ? JSON.parse(existing) : {};
+          const updatedUser = { ...currentUser, photo: fotoBase64 };
+          localStorage.setItem("servineo_user", JSON.stringify(updatedUser));
+          window.dispatchEvent(new Event("servineo_user_updated"));
+        } catch {}
         router.push("/signUp/registrar/registrarUbicacion");
       } else {
         alert(data.message || "Error al subir la foto");

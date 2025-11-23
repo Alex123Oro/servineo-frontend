@@ -192,10 +192,17 @@ return (
               {/* FOTO */}
               <div className="flex items-center gap-6 mb-8">
                 <div className="relative group">
-                  <img
-                    src={editPhotoFile ? URL.createObjectURL(editPhotoFile) : userData?.photo || '/no-photo.png'}
-                    className="w-28 h-28 rounded-full object-cover shadow-lg border-2 border-white"
-                  />
+                  {(() => {
+                    const existing = editPhotoFile
+                      ? URL.createObjectURL(editPhotoFile)
+                      : (userData?.photo?.trim() || userData?.picture?.trim() || userData?.url_photo?.trim() || '/no-photo.png');
+                    return (
+                      <img
+                        src={existing}
+                        className="w-28 h-28 rounded-full object-cover shadow-lg border-2 border-white"
+                      />
+                    );
+                  })()}
 
                   <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 cursor-pointer">
                     <span className="text-white text-xs font-medium tracking-wide">Cambiar foto</span>

@@ -121,6 +121,8 @@ export default function RegistroForm({ onNotify }: RegistroFormProps) {
 
       if (data.success) {
         if (data.token) localStorage.setItem("servineo_token", data.token);
+        if (data.user) localStorage.setItem("servineo_user", JSON.stringify(data.user));
+        window.dispatchEvent(new Event("servineo_user_updated"));
 
         onNotify?.({
           type: "success",
@@ -131,11 +133,24 @@ export default function RegistroForm({ onNotify }: RegistroFormProps) {
         sessionStorage.setItem("toastMessage", `¡Cuenta creada exitosamente! Bienvenido, ${nombreCompleto}.`);
         router.push("/signUp/registrar/registrarFoto");
       } else {
+        const rawMessage = data.message || "No fue posible completar el registro.";
+        const isDuplicate =
+          data.statusCode === 409 ||
+          /E11000|duplicate key|duplicado/i.test(rawMessage) ||
+          /(correo|email)\s*(ya|existe|registrad)/i.test(rawMessage) ||
+          /(usuario)\s*(ya|existe|registrad)/i.test(rawMessage) ||
+          /Error interno del servidor al registrar usuario/i.test(rawMessage);
+        const friendlyMessage = isDuplicate
+          ? "El correo ya está registrado. Inicia sesión o usa otro correo."
+          : rawMessage;
         onNotify?.({
           type: "error",
-          title: "Error en el registro",
-          message: data.message || "No fue posible completar el registro.",
+          title: isDuplicate ? "Usuario ya registrado" : "Error en el registro",
+          message: friendlyMessage,
         });
+        if (isDuplicate) {
+          setTimeout(() => router.push(`/login?email=${encodeURIComponent(formData.email)}`), 1000);
+        }
       }
     } catch (error) {
       onNotify?.({

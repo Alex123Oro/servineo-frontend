@@ -62,6 +62,7 @@ export default function RegistroGoogle({ onSuccessClose, onNotify }: RegistroGoo
         localStorage.setItem("servineo_user", JSON.stringify(data.user));
         setUser(data.user);
       }
+      window.dispatchEvent(new Event("servineo_user_updated"));
 
       onNotify?.({
         type: "success",

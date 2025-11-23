@@ -31,6 +31,14 @@ export default function TopMenu() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const tok = localStorage.getItem('servineo_token');
+    const usr = localStorage.getItem('servineo_user');
+    setIsLogged(!!tok);
+    setUserData(usr ? JSON.parse(usr) : null);
+    setProfileMenuOpen(false);
+  }, [pathname]);
+
   /* -------- CARGAR USUARIO -------- */
   useEffect(() => {
     const token = localStorage.getItem('servineo_token');
@@ -65,6 +73,7 @@ export default function TopMenu() {
     const syncUser = () => {
       const usr = localStorage.getItem('servineo_user');
       setUserData(usr ? JSON.parse(usr) : null);
+      setProfileMenuOpen(false);
     };
     window.addEventListener('servineo_user_updated', syncUser);
     return () => window.removeEventListener('servineo_user_updated', syncUser);
@@ -77,12 +86,20 @@ export default function TopMenu() {
       clearTimeout(timer);
       timer = setTimeout(
         () => {
+          const rawUser = localStorage.getItem('servineo_user');
+          let email = '';
+          try {
+            email = rawUser ? (JSON.parse(rawUser)?.email ?? '') : '';
+          } catch {}
           localStorage.removeItem('servineo_token');
           localStorage.removeItem('servineo_user');
+          sessionStorage.setItem('session_expired', '1');
+          if (email) sessionStorage.setItem('prefill_email', email);
           window.dispatchEvent(new Event('servineo_user_updated'));
-          router.push('/');
+          const target = `/login?expired=1${email ? `&email=${encodeURIComponent(email)}` : ''}`;
+          router.push(target);
         },
-        15 * 60 * 1000,
+        5 * 60 * 1000,
       );
     };
 
@@ -112,6 +129,11 @@ export default function TopMenu() {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const logout = () => {
+    try {
+      const raw = localStorage.getItem('servineo_user');
+      const email = raw ? (JSON.parse(raw)?.email ?? '') : '';
+      if (email) sessionStorage.setItem('prefill_email', email);
+    } catch {}
     localStorage.removeItem('servineo_token');
     localStorage.removeItem('servineo_user');
     setIsLogged(false);

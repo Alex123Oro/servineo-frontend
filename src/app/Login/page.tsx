@@ -1,12 +1,12 @@
 "use client";
-import { useState } from "react";
+ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api, ApiResponse } from "../../app/redux/services/loginApi";
 import { Eye, EyeOff } from "lucide-react";
 import LoginGoogle from "../../Components/login/google/LoginGoogle";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import NotificationModal from "../../Components/Modal-notifications";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -50,6 +50,9 @@ export default function LoginPage() {
   const [mostrarPass, setMostrarPass] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialEmail =
+    searchParams.get("email") ?? sessionStorage.getItem("prefill_email") ?? "";
 
   const [notification, setNotification] = useState<NotificationState>({
     isOpen: false,
@@ -58,12 +61,28 @@ export default function LoginPage() {
     message: "",
   });
 
+  // Mostrar mensaje de sesión expirada si viene el flag en la URL
+  const expiredFlag = searchParams.get("expired");
+  useEffect(() => {
+    if (expiredFlag) {
+      setNotification({
+        isOpen: true,
+        type: "info",
+        title: "Sesión caducada",
+        message:
+          "Por seguridad, tu sesión se cerró por inactividad. Inicia nuevamente.",
+      });
+      sessionStorage.removeItem("session_expired");
+    }
+  }, [expiredFlag]);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: { email: initialEmail, password: "" },
   });
 
   const manejarLogin = async (data: LoginFormData): Promise<void> => {
@@ -76,6 +95,19 @@ export default function LoginPage() {
 
         localStorage.setItem("servineo_token", datos.token);
         localStorage.setItem("servineo_user", JSON.stringify(datos.user));
+        try { sessionStorage.setItem("prefill_email", datos.user.email ?? data.email); } catch {}
+        try {
+          const extraRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/controlC/modificar-datos/requester/data`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${datos.token}` },
+          });
+          const extra = await extraRes.json().catch(() => ({}));
+          if (extra && (extra.telefono || extra.ubicacion)) {
+            const merged = { ...datos.user, telefono: extra.telefono, phone: extra.telefono, ubicacion: extra.ubicacion };
+            localStorage.setItem("servineo_user", JSON.stringify(merged));
+          }
+        } catch {}
+        window.dispatchEvent(new Event("servineo_user_updated"));
 
         const mensajeExito = datos.message || `¡Bienvenido, ${datos.user.name}!`;
 

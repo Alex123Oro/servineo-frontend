@@ -206,8 +206,22 @@ export default function RequesterEditForm() {
         throw new Error(result.message)
       }
 
+      try {
+        const raw = localStorage.getItem('servineo_user')
+        const current = raw ? JSON.parse(raw) : {}
+        const updated = {
+          ...current,
+          telefono,
+          phone: telefono,
+          ubicacion,
+        }
+        localStorage.setItem('servineo_user', JSON.stringify(updated))
+        window.dispatchEvent(new Event('servineo_user_updated'))
+      } catch {}
+
       alert('Perfil actualizado correctamente')
       setIsEditingTelefono(false)
+      router.push('/mi-perfil')
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
       else setError('Error al actualizar perfil')

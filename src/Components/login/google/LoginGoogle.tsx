@@ -38,6 +38,19 @@ export default function LoginGoogle({ onMensajeChange }: LoginGoogleProps) {
       if (res.success && res.data) {
         localStorage.setItem("servineo_token", res.data.token);
         localStorage.setItem("servineo_user", JSON.stringify(res.data.user));
+        try { sessionStorage.setItem("prefill_email", res.data.user.email); } catch {}
+        try {
+          const extraRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/controlC/modificar-datos/requester/data`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${res.data.token}` },
+          });
+          const extra = await extraRes.json().catch(() => ({}));
+          if (extra && (extra.telefono || extra.ubicacion)) {
+            const merged = { ...res.data.user, telefono: extra.telefono, phone: extra.telefono, ubicacion: extra.ubicacion };
+            localStorage.setItem("servineo_user", JSON.stringify(merged));
+          }
+        } catch {}
+        window.dispatchEvent(new Event("servineo_user_updated"));
         window.location.href = "/";
       } else {
         const mensajeError =

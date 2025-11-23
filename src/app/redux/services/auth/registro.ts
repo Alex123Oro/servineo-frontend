@@ -84,6 +84,7 @@ export interface RegistroResponse {
   message?: string;
   token?: string;
   user?: User;
+  statusCode?: number;
 }
 
 export async function enviarRegistroManual(name: string, email: string, password: string): Promise<RegistroResponse> {
@@ -94,14 +95,22 @@ export async function enviarRegistroManual(name: string, email: string, password
       body: JSON.stringify({ name, email, password }),
     });
 
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.message || `Error ${res.status}`);
+      return {
+        success: false,
+        message: (data as { message?: string }).message || `Error ${res.status}`,
+        statusCode: res.status,
+      };
     }
 
-    return await res.json();
+    return { ...(data as RegistroResponse), statusCode: res.status };
   } catch (error) {
     console.error("Error al registrar manualmente:", error);
-    throw error;
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Error de conexión",
+      statusCode: 0,
+    };
   }
 }

@@ -22,8 +22,9 @@ export default function ConfiguracionPage() {
 
   
 
-  type SafeUser = { name?: string; email?: string; url_photo?: string };
+  type SafeUser = { name?: string; email?: string; photo?: string; picture?: string; url_photo?: string };
   const safeUser = (user as SafeUser) ?? null;
+  const userPhoto = (safeUser?.photo?.trim() || safeUser?.picture?.trim() || safeUser?.url_photo?.trim() || "");
 
   function getInitials(name: string) {
     const clean = (name || '').trim();
@@ -176,16 +177,14 @@ export default function ConfiguracionPage() {
             {safeUser ? (
               <>
                 <div className="mb-4">
-                  {safeUser.url_photo ? (
-                    <Image 
-                    src={safeUser.url_photo} 
-                    alt="Foto de perfil" 
-                    width={112} 
-                    height={112} 
-                    className="w-28 h-28 rounded-full border-4 border-blue-100 object-cover mb-4 shadow-sm"/>
+                  {userPhoto ? (
+                    <img 
+                      src={userPhoto}
+                      alt="Foto de perfil" 
+                      className="w-28 h-28 rounded-full border-4 border-blue-100 object-cover mb-4 shadow-sm"/>
                   ) : (
                     <div className="w-28 h-28 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-semibold text-blue-700 mb-4 shadow-sm border-4 border-blue-200">
-                      {getInitials(safeUser.name ?? safeUser.email ?? '')}
+                      {getInitials(safeUser?.name ?? safeUser?.email ?? '')}
                     </div>
                   )}
                 </div>
