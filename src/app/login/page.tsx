@@ -51,8 +51,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialEmail =
-    searchParams.get("email") ?? sessionStorage.getItem("prefill_email") ?? "";
+  const [initialEmail, setInitialEmail] = useState("");
 
   const [notification, setNotification] = useState<NotificationState>({
     isOpen: false,
@@ -76,14 +75,31 @@ export default function LoginPage() {
     }
   }, [expiredFlag]);
 
+
+  useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const emailParam = searchParams.get("email");
+  const stored = sessionStorage.getItem("prefill_email");
+
+  setInitialEmail(emailParam ?? stored ?? "");
+}, [searchParams]);
+
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: initialEmail, password: "" },
   });
+useEffect(() => {
+  if (initialEmail) {
+    setValue("email", initialEmail);
+  }
+}, [initialEmail]);
 
   const manejarLogin = async (data: LoginFormData): Promise<void> => {
     setLoading(true);
