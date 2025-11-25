@@ -9,10 +9,14 @@ export default function RecentOffersSection() {
   const [recentOffers, setRecentOffers] = useState<JobOffer[]>([]);
 
   useEffect(() => {
-    // Get the 4 most recent
-    const sortedOffers = [...mockJobOffers]
+    const uniqueOffers = Array.from(
+      new Map(mockJobOffers.map((item) => [item.id, item])).values()
+    );
+
+    const sortedOffers = uniqueOffers
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 4);
+
     setRecentOffers(sortedOffers);
   }, []);
 
@@ -35,7 +39,6 @@ export default function RecentOffersSection() {
             Ver todas →
           </Link>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {recentOffers.map((offer) => (
             <JobOfferCard 

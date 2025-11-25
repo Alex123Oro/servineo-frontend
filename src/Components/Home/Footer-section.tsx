@@ -2,16 +2,12 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Globe } from 'lucide-react';
-interface FooterProps {
-  onRestartTour?: () => void;
-}
 
-export default function FooterSection({ onRestartTour }: FooterProps) {
+export default function FooterSection() {
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const handleRestartTour = () => {
-    localStorage.removeItem('servineoTourVisto');
-    window.location.reload();
+    window.dispatchEvent(new Event('restart-tour'));
   };
 
   const empresaLinks = [
@@ -45,7 +41,10 @@ export default function FooterSection({ onRestartTour }: FooterProps) {
           Saltar al contenido principal
         </a>
         <div className="text-center" aria-labelledby="footer-servineo-heading">
-          <h2 id="footer-servineo-heading" className="text-4xl font-bold mb-4 text-[#1AA7ED]">
+          <h2
+            id="footer-servineo-heading"
+            className="text-4xl font-bold mb-4 text-[#1AA7ED]"
+          >
             Servineo
           </h2>
           <p className="text-white max-w-3xl mx-auto leading-relaxed text-lg">
@@ -60,11 +59,13 @@ export default function FooterSection({ onRestartTour }: FooterProps) {
           aria-label="Enlaces del pie de página"
         >
           <div>
-            <h3 className="text-xl font-semibold text-[#1AA7ED] mb-2">Exploremos SERVINEO</h3>
+            <h3 className="text-xl font-semibold text-[#1AA7ED] mb-2">
+              Exploremos SERVINEO
+            </h3>
             <ul className="space-y-1 mt-1">
               {exploreLinks.map((link, i) => (
                 <li key={i}>
-                  <Link href={link.path} className="footerLink">
+                  <Link href={link.path} className="footerLink hover:text-[#1AA7ED] transition-colors">
                     {link.name}
                   </Link>
                 </li>
@@ -79,13 +80,17 @@ export default function FooterSection({ onRestartTour }: FooterProps) {
             <ul className="space-y-1 mt-1" role="list">
               {empresaLinks.map((link, i) => (
                 <li key={i}>
-                  <Link href={link.path} className="footerLink">
+                  <Link href={link.path} className="footerLink hover:text-[#1AA7ED] transition-colors">
                     {link.name}
                   </Link>
                 </li>
               ))}
               <li>
-                <button onClick={handleRestartTour} className="footerLink text-left w-full">
+                <button 
+                  onClick={handleRestartTour} 
+                  className="footerLink text-left w-full cursor-pointer hover:text-[#1AA7ED] transition-colors"
+                  style={{ background: 'none', border: 'none', font: 'inherit', color: 'inherit' }}
+                >
                   Ver guía nuevamente
                 </button>
               </li>
@@ -99,7 +104,7 @@ export default function FooterSection({ onRestartTour }: FooterProps) {
             <ul className="space-y-1 mt-1" role="list">
               {legalLinks.map((link, i) => (
                 <li key={i} role="listitem">
-                  <Link href={link.path} className="footerLink">
+                  <Link href={link.path} className="footerLink hover:text-[#1AA7ED] transition-colors">
                     {link.name}
                   </Link>
                 </li>
@@ -108,7 +113,10 @@ export default function FooterSection({ onRestartTour }: FooterProps) {
           </div>
 
           <div aria-labelledby="contacto-heading">
-            <h3 id="contacto-heading" className="text-xl font-semibold text-[#1AA7ED] mb-2">
+            <h3
+              id="contacto-heading"
+              className="text-xl font-semibold text-[#1AA7ED] mb-2"
+            >
               Contáctanos
             </h3>
             <div className="space-y-1 mt-1 text-white">
@@ -153,9 +161,13 @@ export default function FooterSection({ onRestartTour }: FooterProps) {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-t border-gray-700 pt-6">
+        <div
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-t border-gray-700 pt-6"
+        >
           <div className="flex items-center justify-center sm:justify-start gap-4">
-            <h3 className="text-xl font-semibold text-[#1AA7ED]">Síguenos</h3>
+            <h3 className="text-xl font-semibold text-[#1AA7ED]">
+              Síguenos
+            </h3>
             <div
               className="flex flex-row gap-6"
               role="list"

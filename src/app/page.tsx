@@ -3,29 +3,31 @@ import HeroSection from "@/Components/Home/Hero-section";
 import ServicesSection from "@/Components/Home/Services-section";
 import HowItWorksSection from "@/Components/Home/HowItWorks-section";
 import CTASection from "@/Components/Home/CTA-section";
-import MapSection from "@/Components/Home/Map-section";
 import InspirationSection from "@/Components/Home/Inspiration-section";
 import RecentOffersSection from "@/Components/Home/RecentOffer-secction";
-import { Fixer } from "@/Components/interface/Fixer_Interface";
 import dynamic from 'next/dynamic';
+
 const Map = dynamic(() => import('@/app/Mapa/Map'), { ssr: false });
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative">
+      {/* ANCLA INVISIBLE: Este punto fuerza al tour a iniciar arriba */}
+      <div id="tour-start-point" className="absolute top-0 left-0 w-1 h-1 opacity-0 pointer-events-none" />
+
       <HeroSection />
+
       <section className="py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div id="tour-map-section">
-            {/* Mapa Section */}
-      <section id="mapa" className="w-full py-16 px-4 bg-gray-50 scroll-mt-24">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center">
-            Encuentra Servicios Cerca de Ti
-          </h2>
-          <Map />
-        </div>
-      </section>
+            <section id="mapa" className="w-full py-16 px-4 bg-gray-50 scroll-mt-24">
+              <div className="max-w-7xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center">
+                  Encuentra Servicios Cerca de Ti
+                </h2>
+                <Map />
+              </div>
+            </section>
           </div>
           <div id="tour-inspiration-section">
             <InspirationSection />
@@ -35,6 +37,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
       <div id="tour-services-section">
         <ServicesSection 
           showHero={false}
