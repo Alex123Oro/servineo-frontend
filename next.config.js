@@ -1,13 +1,35 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   reactStrictMode: true,
-  // Configuración para mejorar la compatibilidad con Turbopack
+  // Fuerza a Next a usar este proyecto como raíz del tracing
+  outputFileTracingRoot: __dirname,
+  images: {
+    remotePatterns: [
+      // Avatares de demostración
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+        pathname: '/**',
+      },
+      // Avatares de Google OAuth
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
+      // Avatares de GitHub (si se usan)
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        pathname: '/**',
+      },
+    ],
+  },
   experimental: {
-    // Desactivar temporalmente la optimización de imágenes si causa problemas
     // images: { unoptimized: true },
   },
-  // Otras opciones de configuración
-  /* config options here */
 };
 
 module.exports = nextConfig;
