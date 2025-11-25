@@ -23,8 +23,7 @@ export default function TopMenu() {
     userData?.picture?.trim() ||
     userData?.url_photo?.trim() ||
     '/no-photo.png';
-
-  // Verificar si estamos en una ruta de registro o login
+    
   const isInRegistrationFlow = pathname?.startsWith('/signUp');
   const isInLoginFlow = pathname === '/login';
   const isInAuthFlow = isInRegistrationFlow || isInLoginFlow;

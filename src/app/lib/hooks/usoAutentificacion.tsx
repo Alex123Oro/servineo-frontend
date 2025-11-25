@@ -50,18 +50,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .then((data) => {
         if (data.valid && data.user) {
           setUser((prev) => {
-            // Leer el usuario actual de localStorage
             const currentStored = readUserFromStorage();
-            
             if (currentStored) {
-              // SIEMPRE usar localStorage como fuente de verdad
-              // NUNCA sobrescribir localStorage con datos del backend
-              // El backend puede estar desactualizado, pero localStorage tiene los datos más recientes
-              
               const storedName = currentStored.name || '';
               const backendName = data.user.name || '';
-              
-              // Log para debuggear
+          
               if (storedName !== backendName) {
                 console.log("🔄 localStorage tiene nombre diferente al backend:", {
                   localStorage: storedName,
@@ -69,20 +62,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   usando: "localStorage (más reciente)"
                 });
               }
-              
-              // Convertir currentStored a User de forma segura
+
               const userFromStorage: User = {
                 id: currentStored.id,
                 email: currentStored.email || '',
                 name: currentStored.name,
                 picture: currentStored.picture,
               };
-              
-              // NO tocar localStorage - ya tiene los datos correctos
-              // Solo actualizar el estado del contexto con los datos de localStorage
               return userFromStorage;
             } else {
-              // No hay datos en localStorage, usar los del backend
+            
               localStorage.setItem("servineo_user", JSON.stringify(data.user));
               return data.user;
             }
@@ -114,10 +103,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("storage", syncUser);
     };
   }, []);
-
-  // NO guardar automáticamente cuando user cambia desde el contexto
-  // localStorage es la fuente de verdad y solo se actualiza explícitamente
-  // cuando se actualiza el perfil o se verifica la sesión con el backend
 
   const logout = () => {
     localStorage.removeItem("servineo_token");

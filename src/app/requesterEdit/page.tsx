@@ -20,14 +20,13 @@ export default function ConfiguracionPage() {
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileError, setProfileError] = useState<string | null>(null)
 
-  // Estado local para el usuario, inicializado desde el contexto
+  
   type SafeUser = { name?: string; email?: string; photo?: string; picture?: string; url_photo?: string };
   const [localUser, setLocalUser] = useState<SafeUser | null>(() => {
-    // Inicializar con el user del contexto para evitar error de hidratación
+    
     return (user as SafeUser) ?? null;
   });
 
-  // Función para leer usuario de localStorage
   const readUserFromStorage = () => {
     if (typeof window === 'undefined') return null;
     try {
@@ -41,7 +40,7 @@ export default function ConfiguracionPage() {
     return null;
   };
 
-  // Actualizar desde localStorage al montar
+
   useEffect(() => {
     const storedUser = readUserFromStorage();
     if (storedUser) {
@@ -51,10 +50,8 @@ export default function ConfiguracionPage() {
     }
   }, []);
 
-  // Actualizar cuando user del contexto cambie
-  // PERO siempre priorizar localStorage sobre el contexto
   useEffect(() => {
-    // SIEMPRE leer de localStorage primero (es la fuente de verdad más reciente)
+  
     const storedUser = readUserFromStorage();
     if (storedUser) {
       console.log("🔄 Actualizando usuario desde contexto (priorizando localStorage):", storedUser);
@@ -65,10 +62,9 @@ export default function ConfiguracionPage() {
     }
   }, [user]);
 
-  // Escuchar cambios en localStorage directamente (eventos)
   useEffect(() => {
     const handleUserUpdate = () => {
-      // Pequeño delay para asegurar que localStorage se haya actualizado
+      
       setTimeout(() => {
         const storedUser = readUserFromStorage();
         if (storedUser) {
@@ -78,7 +74,6 @@ export default function ConfiguracionPage() {
       }, 50);
     };
 
-    // Función para verificar y actualizar desde localStorage
     const checkAndUpdate = () => {
       const storedUser = readUserFromStorage();
       if (storedUser) {
@@ -87,9 +82,7 @@ export default function ConfiguracionPage() {
       }
     };
 
-    // Listener para el evento personalizado
     window.addEventListener("servineo_user_updated", handleUserUpdate);
-    // Listener para cambios en storage (entre pestañas)
     window.addEventListener("storage", (e) => {
       if (e.key === "servineo_user" && e.newValue) {
         try {
@@ -102,9 +95,7 @@ export default function ConfiguracionPage() {
       }
     });
     
-    // Verificar cuando la ventana recibe foco (cuando vuelves a la página)
     window.addEventListener("focus", checkAndUpdate);
-    // Verificar cuando cambia la visibilidad de la página
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         checkAndUpdate();
@@ -119,7 +110,6 @@ export default function ConfiguracionPage() {
     };
   }, []);
 
-  // Usar localUser como safeUser
   const safeUser = localUser;
   const userPhoto = useMemo(() => {
     return (safeUser?.photo?.trim() || safeUser?.picture?.trim() || safeUser?.url_photo?.trim() || "");
@@ -156,7 +146,6 @@ export default function ConfiguracionPage() {
     if (seccionActiva === 'perfil') {
       loadProfileData()
     }
-    // Cuando se cambia a 'inicio', verificar si hay cambios en localStorage
     if (seccionActiva === 'inicio') {
       setTimeout(() => {
         const storedUser = readUserFromStorage();
