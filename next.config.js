@@ -1,13 +1,27 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: process.env.NODE_ENV === 'production' ? false : true,
+  },
+  typescript: {
+    ignoreBuildErrors: process.env.NODE_ENV !== 'production',
+  },
   reactStrictMode: true,
-  // Configuración para mejorar la compatibilidad con Turbopack
+  // Fuerza a Next a usar este proyecto como raíz del tracing
+  outputFileTracingRoot: __dirname,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      },
+    ],
+  },
   experimental: {
-    // Desactivar temporalmente la optimización de imágenes si causa problemas
     // images: { unoptimized: true },
   },
-  // Otras opciones de configuración
-  /* config options here */
 };
 
 module.exports = nextConfig;
