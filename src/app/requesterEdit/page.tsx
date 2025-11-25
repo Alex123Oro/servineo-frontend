@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../lib/hooks/usoAutentificacion';
@@ -20,11 +20,110 @@ export default function ConfiguracionPage() {
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileError, setProfileError] = useState<string | null>(null)
 
-  
-
+  // Estado local para el usuario, inicializado desde el contexto
   type SafeUser = { name?: string; email?: string; photo?: string; picture?: string; url_photo?: string };
-  const safeUser = (user as SafeUser) ?? null;
-  const userPhoto = (safeUser?.photo?.trim() || safeUser?.picture?.trim() || safeUser?.url_photo?.trim() || "");
+  const [localUser, setLocalUser] = useState<SafeUser | null>(() => {
+    // Inicializar con el user del contexto para evitar error de hidratación
+    return (user as SafeUser) ?? null;
+  });
+
+  // Función para leer usuario de localStorage
+  const readUserFromStorage = () => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = localStorage.getItem("servineo_user");
+      if (raw) {
+        return JSON.parse(raw) as SafeUser;
+      }
+    } catch (e) {
+      console.error("Error reading user from localStorage:", e);
+    }
+    return null;
+  };
+
+  // Actualizar desde localStorage al montar
+  useEffect(() => {
+    const storedUser = readUserFromStorage();
+    if (storedUser) {
+      setLocalUser(storedUser);
+    } else if (user) {
+      setLocalUser(user as SafeUser);
+    }
+  }, []);
+
+  // Actualizar cuando user del contexto cambie
+  // PERO siempre priorizar localStorage sobre el contexto
+  useEffect(() => {
+    // SIEMPRE leer de localStorage primero (es la fuente de verdad más reciente)
+    const storedUser = readUserFromStorage();
+    if (storedUser) {
+      console.log("🔄 Actualizando usuario desde contexto (priorizando localStorage):", storedUser);
+      setLocalUser(storedUser);
+    } else if (user) {
+      console.log("🔄 Actualizando usuario desde contexto (no hay localStorage):", user);
+      setLocalUser(user as SafeUser);
+    }
+  }, [user]);
+
+  // Escuchar cambios en localStorage directamente (eventos)
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      // Pequeño delay para asegurar que localStorage se haya actualizado
+      setTimeout(() => {
+        const storedUser = readUserFromStorage();
+        if (storedUser) {
+          console.log("🔄 Actualizando usuario desde evento:", storedUser);
+          setLocalUser(storedUser);
+        }
+      }, 50);
+    };
+
+    // Función para verificar y actualizar desde localStorage
+    const checkAndUpdate = () => {
+      const storedUser = readUserFromStorage();
+      if (storedUser) {
+        console.log("🔄 Actualizando usuario desde focus/visibility:", storedUser);
+        setLocalUser(storedUser);
+      }
+    };
+
+    // Listener para el evento personalizado
+    window.addEventListener("servineo_user_updated", handleUserUpdate);
+    // Listener para cambios en storage (entre pestañas)
+    window.addEventListener("storage", (e) => {
+      if (e.key === "servineo_user" && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue) as SafeUser;
+          console.log("🔄 Actualizando usuario desde storage event:", parsed);
+          setLocalUser(parsed);
+        } catch (err) {
+          console.error("Error parsing storage event:", err);
+        }
+      }
+    });
+    
+    // Verificar cuando la ventana recibe foco (cuando vuelves a la página)
+    window.addEventListener("focus", checkAndUpdate);
+    // Verificar cuando cambia la visibilidad de la página
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        checkAndUpdate();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("servineo_user_updated", handleUserUpdate);
+      window.removeEventListener("storage", handleUserUpdate);
+      window.removeEventListener("focus", checkAndUpdate);
+      document.removeEventListener("visibilitychange", checkAndUpdate);
+    };
+  }, []);
+
+  // Usar localUser como safeUser
+  const safeUser = localUser;
+  const userPhoto = useMemo(() => {
+    return (safeUser?.photo?.trim() || safeUser?.picture?.trim() || safeUser?.url_photo?.trim() || "");
+  }, [safeUser]);
 
   function getInitials(name: string) {
     const clean = (name || '').trim();
@@ -56,6 +155,16 @@ export default function ConfiguracionPage() {
   useEffect(() => {
     if (seccionActiva === 'perfil') {
       loadProfileData()
+    }
+    // Cuando se cambia a 'inicio', verificar si hay cambios en localStorage
+    if (seccionActiva === 'inicio') {
+      setTimeout(() => {
+        const storedUser = readUserFromStorage();
+        if (storedUser) {
+          console.log("🔄 Actualizando usuario al cambiar a inicio:", storedUser);
+          setLocalUser(storedUser);
+        }
+      }, 100);
     }
   }, [seccionActiva, loadProfileData])
 

@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import UserProfileSummary from "@/Components/profile/UserProfileSummary";
 import { Bell, BellOff, ShieldCheck, User2, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../lib/hooks/usoAutentificacion";
+import type { User } from "../redux/services/services/registro";
 import { UserData } from "@/types/User";
 
 export default function MiPerfilPage() {
   const router = useRouter();
+  const { user, setUser } = useAuth();
 
   /* ======================================================
                       📌 ESTADOS BASE
@@ -19,6 +22,18 @@ export default function MiPerfilPage() {
                  🔒 CARGA DE USUARIO SEGURO
   ====================================================== */
   const [userData, setUserData] = useState<UserData | null>(null);
+  // Ref para rastrear si userData viene de localStorage (más confiable)
+  const userDataFromStorageRef = useRef(false);
+
+  /* ======================================================
+               ✏️ EDICIÓN INLINE DEL PERFIL
+  ====================================================== */
+  const [editName, setEditName] = useState("");
+  const [editLastName, setEditLastName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPhotoFile, setEditPhotoFile] = useState<File | null>(null);
+  const [savingInline, setSavingInline] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   function safeParse(json: string | null) {
     if (!json) return null;
@@ -30,26 +45,169 @@ export default function MiPerfilPage() {
     }
   }
 
-  useEffect(() => {
+  // Función para cargar usuario desde localStorage (siempre la fuente de verdad)
+  const loadUserFromStorage = () => {
     const raw = localStorage.getItem("servineo_user");
-    setUserData(safeParse(raw));
+    const parsed = safeParse(raw);
+    if (parsed) {
+      setUserData(parsed as UserData);
+      setUser(parsed as User);
+      userDataFromStorageRef.current = true; // Marcar que viene de localStorage
+      return parsed as UserData;
+    }
+    userDataFromStorageRef.current = false;
+    return null;
+  };
+
+  // Función auxiliar para actualizar campos editables desde datos
+  const updateEditableFields = (
+    data: UserData & { firstName?: string; lastName?: string }
+  ) => {
+    if (!data || hasUnsavedChanges) return;
+
+    // 🔥 Si ya existen firstName / lastName guardados → usar esos SIEMPRE
+    // Esto preserva exactamente cómo el usuario dividió el nombre
+    // Usamos !== undefined para detectar si el campo existe (incluso si es string vacío)
+    if (data.firstName !== undefined || data.lastName !== undefined) {
+      setEditName(data.firstName ?? "");
+      setEditLastName(data.lastName ?? "");
+      setEditEmail(data.email ?? "");
+      return;
+    }
+
+    // Si NO hay firstName/lastName guardados, dividir el name completo
+    // Pero solo si los campos editables están vacíos (no interferir con escritura del usuario)
+    if (editName || editLastName) return;
+
+    const full = (data.name || "").trim().replace(/\s+/g, " ");
+    const parts = full.split(" ").filter(p => p.length > 0);
+
+    if (parts.length === 0) {
+      setEditName("");
+      setEditLastName("");
+    } else if (parts.length === 1) {
+      setEditName(parts[0]);
+      setEditLastName("");
+    } else if (parts.length === 2) {
+      // Ej: "Juan Pérez"
+      setEditName(parts[0]);
+      setEditLastName(parts[1]);
+    } else if (parts.length === 3) {
+      // Ej: "Juan Carlos Pérez"
+      setEditName(parts[0] + " " + parts[1]); // 2 nombres
+      setEditLastName(parts[2]); // 1 apellido
+    } else if (parts.length === 4) {
+      // Ej: "Juan Carlos Pérez García" → 2 nombres + 2 apellidos
+      setEditName(parts[0] + " " + parts[1]);
+      setEditLastName(parts[2] + " " + parts[3]);
+    } else {
+      // 5 o más palabras: primeros N-2 en nombre, últimos 2 en apellido
+      const apellidos = parts.slice(-2).join(" ");
+      const nombres = parts.slice(0, -2).join(" ");
+      setEditName(nombres);
+      setEditLastName(apellidos);
+    }
+
+    setEditEmail(data.email ?? "");
+  };
+
+
+  useEffect(() => {
+    const loaded = loadUserFromStorage();
+    // Inicializar campos editables inmediatamente desde localStorage
+    if (loaded) {
+      updateEditableFields(loaded);
+    }
   }, []);
 
   useEffect(() => {
     const handler = () => {
-      const raw = localStorage.getItem("servineo_user");
-      setUserData(safeParse(raw));
+      // Cuando hay un evento de actualización, cargar desde localStorage
+      const loaded = loadUserFromStorage();
+      if (loaded) {
+        updateEditableFields(loaded);
+      }
       setRefresh(Date.now());
     };
 
     window.addEventListener("servineo_user_updated", handler);
     window.addEventListener("storage", handler);
 
+    // Verificar cuando la página recibe foco (al volver de otra página)
+    const handleFocus = () => {
+      const loaded = loadUserFromStorage();
+      if (loaded) {
+        updateEditableFields(loaded);
+      }
+    };
+    window.addEventListener("focus", handleFocus);
+
+    // Verificar cuando la página se vuelve visible (al volver de otra pestaña/página)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        const loaded = loadUserFromStorage();
+        if (loaded) {
+          updateEditableFields(loaded);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
       window.removeEventListener("servineo_user_updated", handler);
       window.removeEventListener("storage", handler);
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [hasUnsavedChanges]);
+
+  // También actualizar cuando el user del contexto cambie, pero SIEMPRE priorizar localStorage
+  // IMPORTANTE: NO actualizar campos editables aquí para evitar interferir con la escritura del usuario
+  useEffect(() => {
+    // Leer siempre de localStorage primero (fuente de verdad)
+    const raw = localStorage.getItem("servineo_user");
+    const parsed = safeParse(raw);
+    
+    if (parsed) {
+      const parsedName = parsed.name || '';
+      const parsedEmail = parsed.email || '';
+      
+      // SIEMPRE actualizar userData con localStorage (es la fuente de verdad)
+      // Marcar que viene de localStorage
+      setUserData(parsed as UserData);
+      userDataFromStorageRef.current = true;
+      
+      // Si el contexto tiene datos diferentes (más antiguos), actualizar el contexto con localStorage
+      if (user) {
+        const contextName = user.name || '';
+        const contextEmail = user.email || '';
+        
+        // Si los datos de localStorage son diferentes (más recientes), actualizar el contexto
+        if (parsedName !== contextName || parsedEmail !== contextEmail) {
+          setUser(parsed as User);
+        }
+      } else {
+        // Si no hay contexto pero hay localStorage, actualizar el contexto
+        setUser(parsed as User);
+      }
+      
+      // NO actualizar campos editables aquí - solo se actualizan en:
+      // 1. Al montar (useEffect inicial)
+      // 2. En los eventos (servineo_user_updated, storage, focus, visibilitychange)
+      // Esto evita interferir cuando el usuario está escribiendo
+    } else if (user) {
+      // Solo usar el contexto si NO hay datos en localStorage
+      const userAsData: UserData = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+        photo: user.picture,
+      };
+      setUserData(userAsData);
+      userDataFromStorageRef.current = false; // Viene del contexto, no de localStorage
+    }
+  }, [user, setUser]);
 
   /* ======================================================
                      🔔 NOTIFICACIONES
@@ -74,44 +232,42 @@ export default function MiPerfilPage() {
   /* ======================================================
                ✏️ EDICIÓN INLINE DEL PERFIL
   ====================================================== */
-  const [editName, setEditName] = useState("");
-  const [editLastName, setEditLastName] = useState("");
-  const [editEmail, setEditEmail] = useState("");
-  const [editPhotoFile, setEditPhotoFile] = useState<File | null>(null);
-  const [savingInline, setSavingInline] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  // Los estados ya están definidos arriba, aquí solo el useEffect
 
+// Este useEffect solo actualiza si userData cambia Y los campos están vacíos
+// SIEMPRE prioriza localStorage sobre userData - NUNCA usar userData si localStorage tiene datos
 useEffect(() => {
-  if (!userData) return;
-
-  const full = (userData.name || "").trim().replace(/\s+/g, " ");
-  const parts = full.split(" ");
-
-  // 🛑 Si ya hay texto escrito (es edición manual del usuario) → NO tocar
-  if (editName || editLastName) return; 
-
-  if (parts.length === 1) {
-    setEditName(full);
-    setEditLastName("");
-  } 
-  else if (parts.length === 2) {
-    // Nombre + Apellido
-    setEditName(parts[0]);
-    setEditLastName(parts[1]);
-  } 
-  else if (parts.length === 3) {
-    // Nombre + 2 Apellidos
-    setEditName(parts[0]);
-    setEditLastName(parts[2]);
-  } 
-  else {
-    // 2 nombres + 2 apellidos (o más)
-    setEditName(parts.slice(0, 2).join(" "));
-    setEditLastName(parts.slice(2).join(" "));
+  // Si hay cambios sin guardar, NO actualizar
+  if (hasUnsavedChanges) return;
+  
+  // Si ya hay texto escrito, NO tocar (el usuario está editando)
+  if (editName || editLastName) return;
+  
+  // SIEMPRE leer de localStorage primero (fuente de verdad absoluta)
+  // NUNCA usar userData si localStorage tiene datos
+  const raw = localStorage.getItem("servineo_user");
+  const parsed = safeParse(raw);
+  
+  if (parsed) {
+    // SIEMPRE usar datos de localStorage (más recientes y confiables)
+    const parsedName = parsed.name || '';
+    const currentFullName = `${editName.trim()} ${editLastName.trim()}`.trim();
+    
+    // Actualizar solo si es diferente (evitar loops)
+    if (parsedName !== currentFullName || (parsed.email || '') !== editEmail) {
+      updateEditableFields(parsed as UserData);
+    }
+  } else if (userData && !userDataFromStorageRef.current) {
+    // Solo usar userData si NO hay datos en localStorage Y viene del contexto (no de localStorage)
+    // Si userData viene de localStorage, ya lo manejamos arriba
+    const userDataName = userData.name || '';
+    const currentFullName = `${editName.trim()} ${editLastName.trim()}`.trim();
+    
+    if (userDataName !== currentFullName || (userData.email || '') !== editEmail) {
+      updateEditableFields(userData);
+    }
   }
-
-  setEditEmail(userData.email ?? "");
-}, [userData]);
+}, [userData, hasUnsavedChanges, editName, editLastName, editEmail]);
 
 
 
@@ -141,6 +297,34 @@ useEffect(() => {
       .replace(/\s+/g, " ")
       .trim();
 
+
+    // VALIDAR EMAIL ESTRICTO
+function isValidEmail(email: string) {
+  const allowedDomains = [
+    "gmail.com",
+    "hotmail.com",
+    "outlook.com",
+    "yahoo.com",
+    "icloud.com",
+    "live.com"
+  ];
+
+  if (!email) return false;
+
+  const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+  if (!regex.test(email)) return false;
+
+  const domain = email.split("@")[1];
+  return allowedDomains.includes(domain);
+}
+
+if (!isValidEmail(editEmail.trim())) {
+  alert("⚠️ Correo inválido.");
+  setSavingInline(false);
+  return;
+}
+
       const payload = {
         name: fullName,
         email: editEmail.trim(),
@@ -162,18 +346,65 @@ useEffect(() => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Error al actualizar");
 
+      // Construir el nuevo usuario con los datos actualizados
+      // IMPORTANTE: Usar SIEMPRE los datos que se enviaron (payload) como fuente de verdad
+      // No confiar en data.user del backend si puede estar desactualizado
+      const currentUser = userData || {};
       const newUser = {
+        ...currentUser,
         ...data.user,
+        // SIEMPRE usar los datos del payload (lo que el usuario acaba de enviar)
         name: payload.name,
         email: payload.email,
-        photo: payload.photo ?? data.user?.photo,
+        // Guardar firstName y lastName por separado para preservar la división exacta
+        firstName: editName.trim(),
+        lastName: editLastName.trim(),
+        photo: payload.photo ?? currentUser?.photo ?? currentUser?.picture ?? currentUser?.url_photo ?? data.user?.photo ?? null,
+        picture: payload.photo ?? currentUser?.picture ?? currentUser?.photo ?? currentUser?.url_photo ?? data.user?.picture ?? null,
+        url_photo: payload.photo ?? currentUser?.url_photo ?? currentUser?.photo ?? currentUser?.picture ?? data.user?.url_photo ?? null,
       };
 
+      // IMPORTANTE: Guardar en localStorage PRIMERO con los datos que acabamos de enviar
+      // Esto asegura que localStorage siempre tenga los datos más recientes
+      // Verificar que el nombre se está guardando correctamente
+      console.log("💾 Guardando en localStorage:", { 
+        name: payload.name, 
+        email: payload.email,
+        firstName: editName.trim(),
+        lastName: editLastName.trim()
+      });
       localStorage.setItem("servineo_user", JSON.stringify(newUser));
+      
+      // Verificar que se guardó correctamente
+      const verify = localStorage.getItem("servineo_user");
+      if (verify) {
+        const verified = JSON.parse(verify);
+        console.log("✅ Verificado en localStorage:", { 
+          name: verified.name, 
+          email: verified.email,
+          firstName: verified.firstName,
+          lastName: verified.lastName
+        });
+      }
+      
+      // Disparar evento personalizado INMEDIATAMENTE después de guardar
       window.dispatchEvent(new Event("servineo_user_updated"));
+      
+      // Actualizar estados locales
       setUserData(newUser);
+      setUser(newUser as User);
       setHasUnsavedChanges(false);
       setEditPhotoFile(null);
+
+      // Forzar actualización en otras pestañas/componentes
+      if (typeof window !== 'undefined' && window.dispatchEvent) {
+        // También disparar un evento de storage para sincronizar entre pestañas
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'servineo_user',
+          newValue: JSON.stringify(newUser),
+          storageArea: localStorage
+        }));
+      }
 
       alert("Los cambios se han guardado correctamente");
     } catch {

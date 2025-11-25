@@ -18,21 +18,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const readUserFromStorage = () => {
+    const storedUser = localStorage.getItem("servineo_user");
+    try {
+      if (storedUser && storedUser !== "undefined") {
+        return JSON.parse(storedUser) as User;
+      }
+      return null;
+    } catch {
+      console.error("Usuario malformado en localStorage, reseteando");
+      localStorage.removeItem("servineo_user");
+      return null;
+    }
+  };
+
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem("servineo_user");
-try {
-  if (storedUser && storedUser !== "undefined") {
-    setUser(JSON.parse(storedUser));
-  } else {
-    setUser(null);
-  }
-} catch {
-  console.error("Usuario malformado en localStorage, reseteando");
-  localStorage.removeItem("servineo_user");
-  setUser(null);
-}
-
+      setUser(readUserFromStorage());
     } catch (e) {
       console.error("Error leyendo usuario:", e);
       localStorage.removeItem("servineo_user");
@@ -48,9 +50,42 @@ try {
       .then((data) => {
         if (data.valid && data.user) {
           setUser((prev) => {
-            const newUser = { ...prev, ...data.user };
-            localStorage.setItem("servineo_user", JSON.stringify(newUser));
-            return newUser;
+            // Leer el usuario actual de localStorage
+            const currentStored = readUserFromStorage();
+            
+            if (currentStored) {
+              // SIEMPRE usar localStorage como fuente de verdad
+              // NUNCA sobrescribir localStorage con datos del backend
+              // El backend puede estar desactualizado, pero localStorage tiene los datos más recientes
+              
+              const storedName = currentStored.name || '';
+              const backendName = data.user.name || '';
+              
+              // Log para debuggear
+              if (storedName !== backendName) {
+                console.log("🔄 localStorage tiene nombre diferente al backend:", {
+                  localStorage: storedName,
+                  backend: backendName,
+                  usando: "localStorage (más reciente)"
+                });
+              }
+              
+              // Convertir currentStored a User de forma segura
+              const userFromStorage: User = {
+                id: currentStored.id,
+                email: currentStored.email || '',
+                name: currentStored.name,
+                picture: currentStored.picture,
+              };
+              
+              // NO tocar localStorage - ya tiene los datos correctos
+              // Solo actualizar el estado del contexto con los datos de localStorage
+              return userFromStorage;
+            } else {
+              // No hay datos en localStorage, usar los del backend
+              localStorage.setItem("servineo_user", JSON.stringify(data.user));
+              return data.user;
+            }
           });
         } else {
           localStorage.removeItem("servineo_token");
@@ -67,10 +102,22 @@ try {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("servineo_user", JSON.stringify(user));
-    }
-  }, [user]);
+    const syncUser = () => {
+      setUser(readUserFromStorage());
+    };
+
+    window.addEventListener("servineo_user_updated", syncUser);
+    window.addEventListener("storage", syncUser);
+
+    return () => {
+      window.removeEventListener("servineo_user_updated", syncUser);
+      window.removeEventListener("storage", syncUser);
+    };
+  }, []);
+
+  // NO guardar automáticamente cuando user cambia desde el contexto
+  // localStorage es la fuente de verdad y solo se actualiza explícitamente
+  // cuando se actualiza el perfil o se verifica la sesión con el backend
 
   const logout = () => {
     localStorage.removeItem("servineo_token");

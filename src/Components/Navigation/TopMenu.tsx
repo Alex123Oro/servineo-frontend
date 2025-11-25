@@ -24,6 +24,11 @@ export default function TopMenu() {
     userData?.url_photo?.trim() ||
     '/no-photo.png';
 
+  // Verificar si estamos en una ruta de registro o login
+  const isInRegistrationFlow = pathname?.startsWith('/signUp');
+  const isInLoginFlow = pathname === '/login';
+  const isInAuthFlow = isInRegistrationFlow || isInLoginFlow;
+
   /* -------- SCROLL -------- */
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -257,7 +262,10 @@ const navItemsDesktop = [
           </nav>
 
           <div className="flex items-center gap-4" id="tour-auth-buttons-desktop">
-            {!isLogged ? (
+            {isInAuthFlow ? (
+              // Espacio en blanco durante el registro o login
+              <div className="w-0" />
+            ) : !isLogged ? (
               <>
                 <Link
                   href="/login"
@@ -293,7 +301,7 @@ const navItemsDesktop = [
       </header>
 
       {/* MENU DE PERFIL */}
-      {isLogged && (
+      {isLogged && !isInAuthFlow && (
         <div
           ref={dropdownRef}
           className={`${styles.profileMenu} ${profileMenuOpen ? styles.show : ''}`}
@@ -356,7 +364,10 @@ const navItemsDesktop = [
             </span>
           </button>
 
-          {!isLogged ? (
+          {isInAuthFlow ? (
+            // Espacio en blanco durante el registro o login
+            <div className="w-0" />
+          ) : !isLogged ? (
             <div className="flex items-center gap-2 flex-nowrap" id="tour-auth-buttons-mobile">
               <Link
                 href="/login"
