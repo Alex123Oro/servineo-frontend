@@ -1,13 +1,10 @@
-
-
-
-
 "use client";
 
 import { Marker, Popup, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import { Fixer } from "@/Components/interface/Fixer_Interface";
 import { getServiceStyle } from "@/app/Mapa/serviceStyles";
+import { useRouter } from "next/navigation";
 
 interface FixerMarkerProps { 
   fixer: Fixer;
@@ -16,16 +13,17 @@ interface FixerMarkerProps {
 const palette = {
   popupBg: "#FFFFFF",
   popupShadow: "0 6px 18px rgba(0,0,0,0.2)",
-  whatsappBg: "#2B6AE0",       
-  whatsappHover: "#3B7BDD",    
-  profileBg: "#4B3FE8",        
-  profileHover: "#6B3FE8",     
+  whatsappBg: "#2B6AE0",        
+  whatsappHover: "#3B7BDD",     
+  profileBg: "#4B3FE8",         
+  profileHover: "#6B3FE8",      
   buttonText: "#FFFFFF",
   iconBorderBusy: "#ff4444",
-  textColor: "#2B6AE0",        
+  textColor: "#2B6AE0",         
 };
   
 export default function FixerMarker({ fixer }: FixerMarkerProps) {
+  const router = useRouter();
   const style = getServiceStyle(fixer.servicio);
 
   const icon = L.divIcon({
@@ -54,7 +52,6 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
 
   return (
     <Marker position={[fixer.lat, fixer.lng]} icon={icon}>
-      {/* Tooltip */}
       <Tooltip direction="top" offset={[0, -25]} opacity={1} permanent={false}>
         <div
           style={{
@@ -77,7 +74,6 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
         </div>
       </Tooltip>
 
-      {/* Popup */}
       <Popup closeButton autoClose={false}>
         <div
           style={{
@@ -147,12 +143,13 @@ export default function FixerMarker({ fixer }: FixerMarkerProps) {
                 fontWeight: 600,
                 fontSize: "13px",
                 cursor: "pointer",
+                border: "none",
                 transition: "background 0.3s",
                 fontFamily: "'Roboto', sans-serif",
               }}
               onMouseOver={(e) => (e.currentTarget.style.background = palette.profileHover)}
               onMouseOut={(e) => (e.currentTarget.style.background = palette.profileBg)}
-              onClick={() => alert(`Ver perfil de ${fixer.nombre}`)}
+              onClick={() => router.push(`/fixer/${fixer.id}`)}
             >
               Ver perfil
             </button>
