@@ -1,13 +1,20 @@
-
 import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import Header from './Home/Header/header';
-import BottomNav from './Home/BottomNav/BottomNav';
+import { roboto } from './fonts';
+import 'leaflet/dist/leaflet.css';
+import { Providers } from './providers';
+import { AuthProvider } from './lib/hooks/usoAutentificacion';
+import TopMenu from '@/Components/Navigation/TopMenu';
+import FooterSection from '@/Components/Home/Footer-section';
+import { TourLogic } from '@/Components/Tour/TourLogic';
 
-const roboto = Roboto({
-  variable: '--font-roboto',
-  weight: ['400', '700'],
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
   subsets: ['latin'],
 });
 
@@ -22,11 +29,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${roboto.variable} antialiased`}>
-        <Header />
-        <main className="pb-20 lg:pb-0">{children}</main>
-        <BottomNav />
+    <html lang="en" className={`${roboto.className} `}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
+        <Providers>
+          <AuthProvider>
+            <TourLogic />
+            <div className="">
+              <TopMenu />
+            </div>
+            {children}
+            <FooterSection />
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

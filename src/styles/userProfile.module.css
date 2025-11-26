@@ -1,0 +1,98 @@
+/* styles/userProfile.module.css */
+
+/* animación */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* contenedor pequeño del menú (scoped) */
+.profileMenu {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  background: #fff;
+  color: #000;
+  border-radius: 12px;
+  box-shadow: 0 2px 18px rgba(0, 0, 0, .15);
+  width: 280px;
+  padding: 12px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 9999; /* alto para que aparezca encima */
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+/* cuando está abierto lo mostramos */
+.show {
+  display: flex;
+  animation: fadeIn .18s ease;
+}
+
+/* header del menú */
+.menuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* botón de cerrar */
+.closeBtn {
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* preview foto */
+.profilePreview {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 8px auto;
+  border: 3px solid #fff;
+  background: #f0f0f0;
+}
+
+/* items */
+.menuItem {
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  border: 1px solid #d0d4e6;
+  background: #f8f9ff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.menuItem:hover {
+  background: #2B6AF0;
+  color: #fff;
+  border-color: #2B6AF0;
+  box-shadow: 0 2px 6px rgba(43,106,240,0.25);
+}
+
+/* botones especiales */
+.logoutBtn {
+  /* aplicamos la misma base que .menuItem, pero lo distinguimos */
+}
+
+/* responsivo: si quieres mover posición en móvil */
+@media (max-width: 480px) {
+  .profileMenu {
+    width: 94%;
+    right: 3%;
+    top: 88px;
+  }
+}
+
+.shadow-neu-inner {
+  box-shadow: 8px 8px 16px rgba(0,0,0,0.08), -8px -8px 16px rgba(255,255,255,0.9);
+}
