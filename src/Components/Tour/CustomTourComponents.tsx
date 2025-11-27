@@ -1,7 +1,15 @@
 'use client';
 import React from 'react';
 
-export const NextBtn = ({ ...props }: any) => {
+interface NextBtnProps {
+  currentStep: number;
+  stepsLength: number;
+  setCurrentStep?: (updater: (step: number) => number) => void;
+  setIsOpen?: (isOpen: boolean) => void;
+  steps?: unknown[];
+}
+
+export const NextBtn = ({ ...props }: NextBtnProps) => {
   const isLastStep = props.currentStep === props.stepsLength - 1;
 
   // NUEVO: Si es el paso 0 (Bienvenida), ocultamos el botón "Siguiente" estándar
@@ -13,7 +21,9 @@ export const NextBtn = ({ ...props }: any) => {
     e.stopPropagation();
     if (props.setCurrentStep && props.steps) {
         if (isLastStep) {
-            props.setIsOpen(false);
+            if (props.setIsOpen) {
+              props.setIsOpen(false);
+            }
             localStorage.setItem('servineoTourVisto', 'true');
         } else {
             props.setCurrentStep((s: number) => s + 1);
@@ -48,7 +58,12 @@ export const NextBtn = ({ ...props }: any) => {
   );
 };
 
-export const PrevBtn = ({ ...props }: any) => {
+interface PrevBtnProps {
+  currentStep: number;
+  setCurrentStep?: (updater: (step: number) => number) => void;
+}
+
+export const PrevBtn = ({ ...props }: PrevBtnProps) => {
   // YA TENÍAS ESTO: Si es paso 0, no mostrar "Anterior"
   if (props.currentStep === 0) return null;
 

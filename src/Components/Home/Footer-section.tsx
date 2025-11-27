@@ -1,13 +1,18 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Globe } from 'lucide-react';
 
-export default function FooterSection() {
-  const [activeTab, setActiveTab] = useState<string | null>(null);
+interface FooterSectionProps {
+  onRestartTour?: () => void;
+}
 
+export default function FooterSection({ onRestartTour }: FooterSectionProps = {}) {
   const handleRestartTour = () => {
-    window.dispatchEvent(new Event('restart-tour'));
+    if (onRestartTour) {
+      onRestartTour();
+    } else {
+      window.dispatchEvent(new Event('restart-tour'));
+    }
   };
 
   const empresaLinks = [
@@ -126,7 +131,7 @@ export default function FooterSection() {
                   aria-hidden="true"
                 />
                 <a
-                  href="https://maps.app.goo.gl/n7LWKTiuy92PBoAx8?g_st=aw"
+                  href="https://maps.app.goo.gl/z8DHcrdYNUSLiFmi7"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#1AA7ED] transition-colors"
@@ -138,23 +143,23 @@ export default function FooterSection() {
               <div className="flex items-center" aria-label="Número de WhatsApp">
                 <Phone className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true" />
                 <a
-                  href="https://wa.me/59163765632"
+                  href="https://wa.me/59175139742?text=Hola%2C%20me%20gustaria%20recibir%20informacion%20sobre%20los%20servicios%20que%20ofrece%20SERVINEO.%20Muchas%20gracias."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#1AA7ED] transition-colors"
-                  aria-label="Enviar mensaje por WhatsApp al +591 63765632"
+                  aria-label="Enviar mensaje por WhatsApp al +591 75139742"
                 >
-                  +591 637-65632
+                  +591 751-39742
                 </a>
               </div>
               <div className="flex items-center" aria-label="Correo electrónico de contacto">
                 <Mail className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true" />
                 <a
-                  href="mailto:espinozapacaflora@gmail.com?subject=Consulta de servicios&body=Hola, me gustaría saber más sobre sus servicios."
+                  href="mailto:servineo.serviciostecnicos@gmail.com?subject=Consulta de servicios&body=Hola, me gustaria recibir informacion sobre los servicios que ofrece SERVINEO."
                   className="hover:text-[#1AA7ED] transition-colors"
-                  aria-label="Enviar correo electrónico a espinozapacaflora@gmail.com"
+                  aria-label="Enviar correo electrónico a servineo.serviciostecnicos@gmail.com"
                 >
-                  contacto@servineo.bo
+                  serviciostecnicos@gmail.com
                 </a>
               </div>
             </div>
@@ -174,7 +179,7 @@ export default function FooterSection() {
               aria-label="Redes sociales de Servineo"
             >
               <a
-                href="https://facebook.com/DptoInformaticaSistemas/"
+                href="https://www.facebook.com/profile.php?id=61584421344788"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
@@ -183,7 +188,7 @@ export default function FooterSection() {
                 <Facebook className="h-6 w-6" aria-hidden="true" />
               </a>
               <a
-                href="https://instagram.com/dpto_informatica.sistemas.umss/"
+                href="https://www.instagram.com/servineoserviciostecnicos?igsh=amR3YWtvczFuaTd2"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
@@ -192,7 +197,7 @@ export default function FooterSection() {
                 <Instagram className="h-6 w-6" aria-hidden="true" />
               </a>
               <a
-                href="https://x.com/umssboloficial?lang=es"
+                href="https://x.com/ServineoSTG?t=SUKbiRR3mEqFgE4vaViXvw&s=09"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-[#1AA7ED] transition-colors"
