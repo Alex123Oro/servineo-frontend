@@ -1,13 +1,18 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Globe } from 'lucide-react';
 
-export default function FooterSection() {
-  const [activeTab, setActiveTab] = useState<string | null>(null);
+interface FooterSectionProps {
+  onRestartTour?: () => void;
+}
 
+export default function FooterSection({ onRestartTour }: FooterSectionProps = {}) {
   const handleRestartTour = () => {
-    window.dispatchEvent(new Event('restart-tour'));
+    if (onRestartTour) {
+      onRestartTour();
+    } else {
+      window.dispatchEvent(new Event('restart-tour'));
+    }
   };
 
   const empresaLinks = [

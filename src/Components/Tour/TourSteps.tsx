@@ -40,7 +40,7 @@ export const tourSteps: StepType[] = [
       <div>
         <h4 className="font-bold text-lg mb-2 text-gray-800">1. Búsqueda Inteligente</h4>
         <p className="text-gray-600 text-sm">
-          Escribe aquí el servicio que necesitas (ej. "Plomero") para encontrar ayuda rápidamente.
+          Escribe aquí el servicio que necesitas (ej. &quot;Plomero&quot;) para encontrar ayuda rápidamente.
         </p>
       </div>
     ),
