@@ -23,7 +23,7 @@ export default function TopMenu() {
     userData?.picture?.trim() ||
     userData?.url_photo?.trim() ||
     '/no-photo.png';
-    
+
   const isInRegistrationFlow = pathname?.startsWith('/signUp');
   const isInLoginFlow = pathname === '/login';
   const isInAuthFlow = isInRegistrationFlow || isInLoginFlow;
@@ -103,7 +103,7 @@ export default function TopMenu() {
           const target = `/login?expired=1${email ? `&email=${encodeURIComponent(email)}` : ''}`;
           router.push(target);
         },
-      15 * 60 * 1000,
+        15 * 60 * 1000,
       );
     };
 
@@ -146,33 +146,33 @@ export default function TopMenu() {
   };
 
   /* -------- NAV ITEMS -------- */
-const navItemsDesktop = [
- // name: 'Inicio', href: '/' },
-  { name: "Ofertas de trabajo", href: "/job-offer-list" },
-  //{ name: 'Convertirse en fixer', href: '/become-fixer' },
-  ...(userData?.role === "fixer"
-    ? [
-        { name: "Mis ofertas", href: "/fixer/my-offers" },
-       // name: 'Perfil', href: '/fixer/profile' },
-      ]
-    : []),
-  { name: "Ayuda", href: "/ayuda" },
-];
+  const navItemsDesktop =
+    userData?.role === 'fixer'
+      ? [
+          { name: 'Mis ofertas', href: '/fixer/my-offers' },
+          { name: 'Calendario', href: '/fixer/calendar' },
+          { name: 'Solicitudes de trabajo', href: '/fixer/requests' },
+          { name: 'Ayuda', href: '/ayuda' },
+        ]
+      : [
+          { name: 'Servicios', href: '/servicios' },
+          { name: 'Ofertas de trabajo', href: '/job-offer-list' },
+          { name: 'Ayuda', href: '/ayuda' },
+        ];
 
-
-  const navItemsMobile = [
-   // icon: <Home size={20} />, href: '/', label: 'Inicio' },
-    { icon: <Tag size={20} />, href: '/job-offer-list', label: 'Ofertas' },
-   // { icon: <Wrench size={20} />, href: '/become-fixer', label: 'Fixer' },
-    ...(userData?.role === "fixer"
-  ? [
-      { icon: <Briefcase size={20} />, href: "/fixer/my-offers", label: "Mis trabajos" },
-     // icon: <User size={20} />, href: '/fixer/profile', label: 'Perfil' },
-    ]
-  : []),
-
-    { icon: <HelpCircle size={20} />, href: '/ayuda', label: 'Ayuda' },
-  ];
+  const navItemsMobile =
+    userData?.role === 'fixer'
+      ? [
+          { icon: <Briefcase size={20} />, href: '/fixer/my-offers', label: 'Mis ofertas' },
+          { icon: <Home size={20} />, href: '/fixer/calendar', label: 'Calendario' },
+          { icon: <Tag size={20} />, href: '/fixer/requests', label: 'Solicitudes' },
+          { icon: <HelpCircle size={20} />, href: '/ayuda', label: 'Ayuda' },
+        ]
+      : [
+          { icon: <Wrench size={20} />, href: '/servicios', label: 'Servicios' },
+          { icon: <Tag size={20} />, href: '/job-offer-list', label: 'Ofertas' },
+          { icon: <HelpCircle size={20} />, href: '/ayuda', label: 'Ayuda' },
+        ];
 
   /* -------- TECLAS EN MENU DESKTOP -------- */
   const handleDesktopNavKeyDown = (e: KeyboardEvent<HTMLElement>) => {
@@ -320,26 +320,25 @@ const navItemsDesktop = [
 
           <hr style={{ margin: '8px 0', opacity: 0.3 }} />
 
-          {userData?.role !== "fixer" && (
-  <>
-    <button onClick={() => router.push('/mi-perfil')} className={styles.menuItem}>
-      Editar perfil
-    </button>
+          {userData?.role !== 'fixer' && (
+            <>
+              <button onClick={() => router.push('/mi-perfil')} className={styles.menuItem}>
+                Editar perfil
+              </button>
 
-    <button onClick={() => router.push('/become-fixer')} className={styles.menuItem}>
-      Convertirse en Fixer
-    </button>
-  </>
-)}
+              <button onClick={() => router.push('/become-fixer')} className={styles.menuItem}>
+                Convertirse en Fixer
+              </button>
+            </>
+          )}
 
-{userData?.role === "fixer" && (
-  <>
-    <button onClick={() => router.push('/fixer/profile')} className={styles.menuItem}>
-      Perfil
-    </button>
-  </>
-)}
-
+          {userData?.role === 'fixer' && (
+            <>
+              <button onClick={() => router.push('/fixer/profile')} className={styles.menuItem}>
+                Perfil
+              </button>
+            </>
+          )}
 
           <button onClick={logout} className={`${styles.menuItem} ${styles.logoutBtn}`}>
             Cerrar sesión
