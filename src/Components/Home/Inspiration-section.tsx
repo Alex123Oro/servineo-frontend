@@ -150,7 +150,7 @@ export default function InspirationSection() {
     };
   }, [currentIndex]);
 
-  return (
+   return (
     <section className="inspiration-section py-16 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
@@ -196,10 +196,21 @@ export default function InspirationSection() {
 
               <div className="carrusel-overlay"></div>
               <div className="carrusel-content">
-                <span className="carrusel-category">{slide.category}</span>
+                {/* 🔥 CATEGORÍA con sombra extra gruesa */}
+                <span className="carrusel-category bg-black/90 text-white px-4 py-2 rounded-lg font-bold text-sm [text-shadow:_0_0_8px_black,_0_0_4px_black,_0_0_2px_black]">
+                  {slide.category}
+                </span>
+                
                 <div className="carrusel-text-group">
-                  <h2 className="carrusel-title">{slide.title}</h2>
-                  <p className="carrusel-subtitle">{slide.subtitle}</p>
+                  {/* 🔥 TÍTULO con sombra ULTRA GRUESA */}
+                  <h2 className="carrusel-title text-white font-bold text-3xl md:text-5xl [text-shadow:_0_0_20px_black,_0_0_12px_black,_0_0_6px_black,_0_0_3px_black]">
+                    {slide.title}
+                  </h2>
+                  
+                  {/* 🔥 SUBTÍTULO con sombra gruesa */}
+                  <p className="carrusel-subtitle text-white font-medium text-lg md:text-xl [text-shadow:_0_0_12px_black,_0_0_6px_black,_0_0_3px_black]">
+                    {slide.subtitle}
+                  </p>
                 </div>
               </div>
             </div>
