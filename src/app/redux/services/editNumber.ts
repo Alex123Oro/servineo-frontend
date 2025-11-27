@@ -41,6 +41,7 @@ export async function obtenerDatosUsuarioLogueado(): Promise<RequesterData> {
     const res = await fetch(fullUrl, {
       method: "GET",
       headers: { "Authorization": `Bearer ${token}` },
+      credentials: "include",
     });
 
     if (!res.ok) {
@@ -76,6 +77,7 @@ export async function actualizarDatosUsuario(
         "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify(data),
+      credentials: "include",
     });
 
     // parseamos siempre el body (si existe)

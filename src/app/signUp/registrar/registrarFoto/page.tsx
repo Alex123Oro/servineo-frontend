@@ -49,6 +49,7 @@ export default function FotoPerfil() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ usuarioId, fotoPerfil: fotoBase64 }),
+        credentials: "include",
       });
 
       const data = await response.json();

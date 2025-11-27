@@ -103,8 +103,10 @@ useEffect(() => {
 
   const manejarLogin = async (data: LoginFormData): Promise<void> => {
     setLoading(true);
+    let res: ApiResponse<LoginResponse> | null = null;
+    
     try {
-      const res: ApiResponse<LoginResponse> = await api.post('/auth/login', data);
+      res = await api.post('/auth/login', data);
 
       if (res.success && res.data) {
         const datos = res.data;
@@ -115,6 +117,7 @@ useEffect(() => {
           const extraRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/controlC/modificar-datos/requester/data`, {
             method: "GET",
             headers: { Authorization: `Bearer ${datos.token}` },
+            credentials: "include",
           });
           const extra = await extraRes.json().catch(() => ({}));
           if (extra && (extra.telefono || extra.ubicacion)) {
@@ -138,9 +141,9 @@ useEffect(() => {
         }, 1000);
       } else {
         const mensajeError =
-          res.message ||
-          (res.data as unknown as { message?: string })?.message ||
-          (res as unknown as { error?: string })?.error ||
+          res?.message ||
+          res?.error ||
+          (res?.data as unknown as { message?: string })?.message ||
           'Credenciales inválidas o error en el servidor.';
 
         setNotification({
@@ -151,12 +154,17 @@ useEffect(() => {
         });
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'No se pudo conectar con el servidor.';
+      console.error("Error en manejarLogin:", err);
+      
+      // El error ya viene formateado del ApiClient en res.error
+      const errorMessage = res?.error || 
+        (err instanceof Error ? err.message : 'No se pudo conectar con el servidor. Verifica tu conexión a internet.');
+      
       setNotification({
         isOpen: true,
         type: 'error',
         title: 'Error de conexión',
-        message,
+        message: errorMessage,
       });
     } finally {
       setLoading(false);

@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-// Configuración de las variables de entorno
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+// Configuración de las variables de entorno (normalizamos sin slash final)
+const apiOrigin = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+const API_URL = `${apiOrigin}/api/controlC`;
 
 // Configuración base para las queries
 export const baseQuery = fetchBaseQuery({

@@ -78,6 +78,7 @@ export default function ClientResend({ email: emailProp }: { email?: string; tok
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
+        credentials: 'include',
       });
       const data = await res.json();
 

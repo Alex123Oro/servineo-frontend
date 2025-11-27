@@ -299,6 +299,7 @@ if (!isValidEmail(editEmail.trim())) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
+          credentials: "include",
         }
       );
 
@@ -406,6 +407,7 @@ if (!isValidEmail(editEmail.trim())) {
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         }
       );
 

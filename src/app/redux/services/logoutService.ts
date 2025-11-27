@@ -20,6 +20,7 @@ export async function cerrarTodasSesiones(): Promise<LogoutResponse> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({}), // cuerpo vacío
+      credentials: "include",
     });
 
     if (!response.ok) {

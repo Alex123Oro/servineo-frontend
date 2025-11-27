@@ -43,6 +43,7 @@ export default function LoginGoogle({ onMensajeChange }: LoginGoogleProps) {
           const extraRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/controlC/modificar-datos/requester/data`, {
             method: "GET",
             headers: { Authorization: `Bearer ${res.data.token}` },
+            credentials: "include",
           });
           const extra = await extraRes.json().catch(() => ({}));
           if (extra && (extra.telefono || extra.ubicacion)) {

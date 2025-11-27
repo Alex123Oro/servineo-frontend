@@ -30,6 +30,7 @@ export async function enviarRegistroManual(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
+      credentials: "include",
     });
 
     const contentType = res.headers.get("content-type");
@@ -76,6 +77,7 @@ export async function enviarUbicacion(
         Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ lat, lng, direccion, departamento, pais }),
+        credentials: "include",
     });
 
     const contentType = res.headers.get("content-type");
@@ -130,6 +132,7 @@ export async function enviarFotoPerfil(usuarioId: string, archivo: File): Promis
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ usuarioId, fotoPerfil: base64Foto }),
+    credentials: "include",
   });
 
   const data = await res.json();

@@ -19,7 +19,8 @@ export default function ClientVerify({ token }: { token?: string }) {
     const verifyLink = async () => {
       try {
         const res = await fetch(
-          `${BASE_API}/auth/magic-login?token=${encodeURIComponent(token)}`
+          `${BASE_API}/auth/magic-login?token=${encodeURIComponent(token)}`,
+          { credentials: 'include' }
         );
         const data = await res.json();
         if (cancelled) return;

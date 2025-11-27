@@ -57,6 +57,7 @@ export default function RecuperacionCorreoPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: data.email }),
+        credentials: 'include',
       });
       const responseData = await res.json();
 

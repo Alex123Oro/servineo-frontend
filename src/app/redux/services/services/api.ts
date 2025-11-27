@@ -30,6 +30,7 @@ export async function obtenerMetodosCliente(): Promise<AuthProvider[]> {
     const res = await fetch(`${BASE_URL}${CLIENT_BASE}/profile`, {
       method: "GET",
       headers: { "Authorization": `Bearer ${token}` },
+      credentials: "include",
     });
 
     const data: APIResponse = await res.json().catch(() => ({ client: { authProviders: [] } }));
@@ -55,6 +56,7 @@ export async function desvincularMetodo(provider: string): Promise<AuthProvider[
         "Authorization": `Bearer ${token}`,
       },
       body: JSON.stringify({ provider }),
+      credentials: "include",
     });
 
     const data: APIResponse = await res.json().catch(() => ({ client: { authProviders: [] } }));
@@ -89,6 +91,7 @@ export async function vincularCorreoContrasena(
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
 
     const data = await res.json();
@@ -159,6 +162,7 @@ export async function vincularGoogle(tokenUsuario: string, tokenGoogle: string):
         Authorization: `Bearer ${tokenUsuario}`,
       },
       body: JSON.stringify({ tokenGoogle }),
+      credentials: "include",
     });
 
     const data = await res.json();

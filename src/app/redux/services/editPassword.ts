@@ -35,6 +35,7 @@ export async function cambiarContrasena(
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(data),
+      credentials: 'include',
     });
 
     const result: ChangePasswordResponse = await response.json();

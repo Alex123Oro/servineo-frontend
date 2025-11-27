@@ -26,6 +26,7 @@ export async function enviarTokenGoogle(token: string): Promise<GoogleAuthRespon
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
+      credentials: "include",
     });
 
     if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
@@ -41,6 +42,7 @@ export async function verificarSesionBackend(token: string) {
     const res = await fetch(`${BASE_URL}/google/verify`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
     });
 
     if (!res.ok) throw new Error("Token inválido o expirado");
@@ -67,6 +69,7 @@ export async function enviarUbicacion(
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ lat, lng, direccion, departamento, pais }),
+      credentials: "include",
     });
 
     if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
@@ -93,6 +96,7 @@ export async function enviarRegistroManual(name: string, email: string, password
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
+      credentials: "include",
     });
 
     const data = await res.json().catch(() => ({}));

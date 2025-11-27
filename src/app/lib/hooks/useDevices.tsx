@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export interface Session {
   _id: string;
   deviceId: string;
@@ -21,7 +23,9 @@ export function useDevices(userId?: string) {
     if (!userId) return;
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:8000/api/controlC/${userId}`);
+      const res = await fetch(`${API_URL}/api/controlC/${userId}`, {
+        credentials: "include",
+      });
       const data = await res.json();
 
       if (res.ok) {
@@ -42,10 +46,11 @@ export function useDevices(userId?: string) {
       return { success: false, message: "Datos insuficientes" };
 
     try {
-      const res = await fetch(`http://localhost:8000/api/controlC/${userId}`, {
+      const res = await fetch(`${API_URL}/api/controlC/${userId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentDeviceId }),
+        credentials: "include",
       });
 
       const data = await res.json();

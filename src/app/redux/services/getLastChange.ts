@@ -1,4 +1,5 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'; 
+const BASE_ORIGIN = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+const BASE_URL = BASE_ORIGIN;
 const ULTIMO_CAMBIO_BASE = '/api/controlC/ultimo-cambio';
 
 export interface LastPasswordChangeResponse {
@@ -31,6 +32,7 @@ export async function obtenerUltimoCambio(): Promise<LastPasswordChangeResponse>
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
     });
 
     console.log('📡 Response status:', response.status);

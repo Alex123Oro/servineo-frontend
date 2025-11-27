@@ -31,6 +31,8 @@ class ApiClient {
           'Content-Type': 'application/json',
           ...(options.headers || {}),
         },
+        mode: 'cors',
+        credentials: 'include',
       });
 
       const data = await response.json();

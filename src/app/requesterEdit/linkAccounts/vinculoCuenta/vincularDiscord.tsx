@@ -9,6 +9,8 @@ interface VincularDiscordProps {
   onLinked?: (client: undefined) => void;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function VincularDiscord({ onLinked }: VincularDiscordProps) {
   const [loading, setLoading] = useState(false);
 
@@ -28,8 +30,14 @@ export default function VincularDiscord({ onLinked }: VincularDiscordProps) {
       })
     );
 
+    if (!API_URL) {
+      toast.error("No se ha configurado la URL del backend");
+      setLoading(false);
+      return;
+    }
+
     const popup = window.open(
-      `http://localhost:8000/auth/discord?state=${state}`,
+      `${API_URL}/auth/discord?state=${state}`,
       "DiscordLink",
       "width=600,height=700"
     );
@@ -41,7 +49,7 @@ export default function VincularDiscord({ onLinked }: VincularDiscordProps) {
     }
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== "http://localhost:8000") return;
+      if (event.origin !== API_URL) return;
 
       const data = event.data;
 
