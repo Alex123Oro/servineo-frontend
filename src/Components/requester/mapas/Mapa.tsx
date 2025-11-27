@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Circle, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -13,11 +13,42 @@ const customIcon = new L.Icon({
   iconAnchor: [17, 35],
 });
 
+// 🔥 FIX: Componente simplificado sin propiedades que no existen
 function MoveMapToPosition({ position }: { position: [number, number] }) {
   const map = useMap();
+
   useEffect(() => {
-    if (position) map.setView(position, 15);
+    if (position) {
+      map.setView(position, 15);
+    }
   }, [position, map]);
+
+  return null;
+}
+
+// 🔥 NEW: Componente para manejar redimensionamiento
+function MapResizeHandler() {
+  const map = useMap();
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 150);
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 300);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timer);
+    };
+  }, [map]);
+
   return null;
 }
 
@@ -28,9 +59,29 @@ export default function MapaLeaflet() {
   const [departamento, setDepartamento] = useState<string | null>(null);
   const [pais, setPais] = useState<string | null>(null);
   const [cargandoDireccion, setCargandoDireccion] = useState(false);
+  const [mapKey, setMapKey] = useState(0); // 🔥 NEW: Key para forzar re-render
 
   const router = useRouter();
   const ejecutado = useRef(false);
+
+  // 🔥 FIX: MEMO para NO RECREAR el mapa y evitar congelamientos
+  const initialMap = useMemo(
+    () => ({
+      center: position || [-17.3895, -66.1568],
+      zoom: position ? 14 : 5,
+    }),
+    [] // se crea una sola vez
+  );
+
+  // 🔥 NEW: Efecto para manejar redimensionamiento
+  useEffect(() => {
+    const handleResize = () => {
+      setMapKey(prev => prev + 1);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (ejecutado.current) return;
@@ -42,34 +93,34 @@ export default function MapaLeaflet() {
           const { latitude, longitude } = pos.coords;
           setPosition([latitude, longitude]);
           setUbicacionPermitida(true);
-try {
-  setCargandoDireccion(true);
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
-  );
-  const data = await res.json();
 
-  if (data) {
-    const dep = data.address?.state || null;
-    const country = data.address?.country || null;
-    let dir = data.display_name || null;
+          try {
+            setCargandoDireccion(true);
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
+            );
+            const data = await res.json();
 
-    if (dir) {
-      if (dep) dir = dir.replace(new RegExp(`,?\\s*${dep}`, "gi"), "");
-      if (country) dir = dir.replace(new RegExp(`,?\\s*${country}`, "gi"), "");
-      dir = dir.replace(/,\s*$/, "");
-    }
+            if (data) {
+              const dep = data.address?.state || null;
+              const country = data.address?.country || null;
+              let dir = data.display_name || null;
 
-    setDireccion(dir);
-    setDepartamento(dep);
-    setPais(country);
-  }
-} catch (error) {
-  console.error("Error obteniendo dirección:", error);
-} finally {
-  setCargandoDireccion(false);
-}
+              if (dir) {
+                if (dep) dir = dir.replace(new RegExp(`,?\\s*${dep}`, "gi"), "");
+                if (country) dir = dir.replace(new RegExp(`,?\\s*${country}`, "gi"), "");
+                dir = dir.replace(/,\s*$/, "");
+              }
 
+              setDireccion(dir);
+              setDepartamento(dep);
+              setPais(country);
+            }
+          } catch (error) {
+            console.error("Error obteniendo dirección:", error);
+          } finally {
+            setCargandoDireccion(false);
+          }
         },
         (error) => {
           console.warn("No se pudo obtener la ubicación:", error.message);
@@ -92,29 +143,25 @@ try {
   }, []);
 
   const manejarEnvio = async () => {
-  try {
-    if (cargandoDireccion) {
-      return;
+    try {
+      if (cargandoDireccion) return;
+
+      await enviarUbicacion(
+        position?.[0] || 0,
+        position?.[1] || 0,
+        direccion || null,
+        departamento || null,
+        pais || null
+      );
+
+      router.push("/");
+    } catch (error) {
+      console.error(error);
     }
-
-    await enviarUbicacion(
-      position?.[0] || 0,
-      position?.[1] || 0,
-      direccion || null,
-      departamento || null,
-      pais || null
-    );
-
-    router.push("/");
-  } catch (error) {
-    console.error(error);
-  }
-};
-
+  };
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-
       <div
         style={{
           background: "white",
@@ -152,21 +199,29 @@ try {
             marginBottom: "1.5rem",
           }}
         >
+          {/* 🔥 FIX: Agregar key dinámica para forzar re-render */}
           <MapContainer
-            center={position || [-17.3895, -66.1568]}
-            zoom={position ? 14 : 5}
+            key={mapKey}
+            center={initialMap.center}
+            zoom={initialMap.zoom}
             style={{ height: "100%", width: "100%" }}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
             />
+
+            {/* 🔥 NEW: Agregar manejador de redimensionamiento */}
+            <MapResizeHandler />
+
             {position && ubicacionPermitida && <MoveMapToPosition position={position} />}
+
             {position && ubicacionPermitida && (
               <>
                 <Marker position={position} icon={customIcon}>
                   <Popup>Tu ubicación actual</Popup>
                 </Marker>
+
                 <Circle
                   center={position}
                   radius={1000}

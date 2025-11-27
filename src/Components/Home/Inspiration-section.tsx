@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, TouchEvent } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
   image: string;
@@ -63,7 +64,6 @@ export default function InspirationSection() {
   const [touchStart, setTouchStart] = useState<number>(0);
   const [touchEnd, setTouchEnd] = useState<number>(0);
 
-  // Prefetch con verificación por timeout
   useEffect(() => {
     if (typeof window === "undefined") return;
     
@@ -117,22 +117,24 @@ export default function InspirationSection() {
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    }
   };
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % slides.length);
+    if (currentIndex < slides.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    }
   };
 
-  // Auto-play cada 8 segundos
   useEffect(() => {
     const interval = setInterval(() => {
-      nextSlide();
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
     }, 8000);
     return () => clearInterval(interval);
   }, [currentIndex]);
 
-  // Navegación con teclado
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') {
@@ -151,7 +153,6 @@ export default function InspirationSection() {
   return (
     <section className="inspiration-section py-16 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
             Inspiración para tu hogar
@@ -161,7 +162,6 @@ export default function InspirationSection() {
           </p>
         </div>
 
-        {/* Carrusel Container */}
         <div 
           className="carrusel-container"
           onTouchStart={handleTouchStart}
@@ -207,17 +207,19 @@ export default function InspirationSection() {
 
           <button 
             onClick={prevSlide} 
-            className="carrusel-arrow carrusel-arrow-left"
+            disabled={currentIndex === 0}
+            className={`carrusel-arrow carrusel-arrow-left ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
             aria-label="Diapositiva anterior"
           >
-            &#10094;
+            <ChevronLeft className="w-6 h-6" />
           </button>
           <button 
             onClick={nextSlide} 
-            className="carrusel-arrow carrusel-arrow-right"
+            disabled={currentIndex === slides.length - 1}
+            className={`carrusel-arrow carrusel-arrow-right ${currentIndex === slides.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
             aria-label="Diapositiva siguiente"
           >
-            &#10095;
+            <ChevronRight className="w-6 h-6" />
           </button>
 
           <div className="carrusel-dots">

@@ -1,11 +1,13 @@
 'use client';
 import Image from 'next/image';
+import { useState } from 'react';
 
 export default function ParaReparadores() {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <main className="bg-[var(--background)] text-[var(--foreground)] min-h-screen font-sans">
       
-      {/* Hero Section */}
       <section className="relative bg-[var(--primary)] text-white py-16 px-6 md:px-12 overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[var(--primary)]/20 rounded-full blur-2xl"></div>
@@ -20,7 +22,6 @@ export default function ParaReparadores() {
         </div>
       </section>
 
-      {/* Beneficios */}
       <section className="max-w-6xl mx-auto py-12 px-6 md:px-10">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-[var(--primary)] mb-2">
@@ -43,16 +44,16 @@ export default function ParaReparadores() {
           </div>
           <div className="relative h-[320px]">
             <Image
-              src="/reparadores.jpg"
+              src={imgError ? "/fallback-image.svg" : "/reparadores.jpg"}
               alt="Reparadores en acción"
               fill
               className="rounded-xl shadow-xl object-cover"
+              onError={() => setImgError(true)}
             />
           </div>
         </div>
       </section>
 
-      {/* Cómo Funciona */}
       <section className="bg-gray-50 py-12 px-6 md:px-10 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-10 left-10 w-40 h-40 border-4 border-[var(--primary)] rounded-full"></div>
@@ -69,7 +70,6 @@ export default function ParaReparadores() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Card 1 */}
             <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-[var(--primary)]">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[var(--primary)] rounded-lg flex items-center justify-center flex-shrink-0">
@@ -88,7 +88,6 @@ export default function ParaReparadores() {
               </div>
             </div>
 
-            {/* Card 2 */}
             <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-[var(--primary)]">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[var(--primary)] rounded-lg flex items-center justify-center flex-shrink-0">
@@ -110,7 +109,6 @@ export default function ParaReparadores() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="max-w-6xl mx-auto py-12 px-6 md:px-10 text-center">
         <h2 className="text-3xl font-bold text-[var(--primary)] mb-4">
           ¡Únete como reparador hoy!
