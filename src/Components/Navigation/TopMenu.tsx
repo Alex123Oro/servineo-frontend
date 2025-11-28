@@ -112,7 +112,7 @@ export default function TopMenu() {
 
     resetTimer();
     return () => events.forEach((e) => window.removeEventListener(e, resetTimer));
-  }, []);
+  }, [router]); // <--- AQUI ESTABA EL ERROR: Faltaba esta dependencia
 
   /* -------- CLOSE DROPDOWN OUTSIDE -------- */
   useEffect(() => {
@@ -262,7 +262,6 @@ export default function TopMenu() {
 
           <div className="flex items-center gap-4" id="tour-auth-buttons-desktop">
             {isInAuthFlow ? (
-              // Espacio en blanco durante el registro o login
               <div className="w-0" />
             ) : !isLogged ? (
               <>
@@ -288,6 +287,8 @@ export default function TopMenu() {
                 <img
                   src={userPhoto}
                   alt="Foto"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full object-cover border"
                 />
                 <span className="font-medium text-gray-700 hover:text-primary">
@@ -308,7 +309,7 @@ export default function TopMenu() {
           <div className={styles.menuHeader}>
             <strong>Mi cuenta</strong>
             <span className={styles.closeBtn} onClick={() => setProfileMenuOpen(false)}>
-              ✕
+               ✕
             </span>
           </div>
 
@@ -363,7 +364,6 @@ export default function TopMenu() {
           </button>
 
           {isInAuthFlow ? (
-            // Espacio en blanco durante el registro o login
             <div className="w-0" />
           ) : !isLogged ? (
             <div className="flex items-center gap-2 flex-nowrap" id="tour-auth-buttons-mobile">
@@ -395,6 +395,7 @@ export default function TopMenu() {
             </button>
           )}
         </div>
+
         {/* Barra inferior mobile */}
         <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-gray-200 bg-white/95 backdrop-blur-sm flex justify-around items-center z-50">
           {navItemsMobile.map((item) => (

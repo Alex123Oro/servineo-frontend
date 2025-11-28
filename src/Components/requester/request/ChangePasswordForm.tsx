@@ -6,11 +6,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { cambiarContrasena } from '../../../app/redux/services/editPassword';
-import { cerrarTodasSesiones } from '../../../app/redux/services/logoutService';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { obtenerUltimoCambio } from '../../../app/redux/services/getLastChange';
 
-// 🎯 ESQUEMA DE VALIDACIÓN CON ZOD
 const changePasswordSchema = z.object({
   currentPassword: z
     .string()
@@ -43,10 +41,9 @@ type Props = {
   onSaved?: () => void;
 };
 
-export default function ChangePasswordForm({ onCancel}: Props) {
+export default function ChangePasswordForm({ onCancel }: Props) {
   const router = useRouter();
 
-  // 🎯 REACT HOOK FORM + ZOD
   const {
     register,
     handleSubmit,
@@ -55,25 +52,22 @@ export default function ChangePasswordForm({ onCancel}: Props) {
     clearErrors
   } = useForm<ChangePasswordFormData>({
     resolver: zodResolver(changePasswordSchema),
-    mode: 'onChange' // Validación en tiempo real
+    mode: 'onChange'
   });
 
-  // Estados para UI
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [ultimaModificacion, setUltimaModificacion] = useState<string>('');
   const [cargandoFecha, setCargandoFecha] = useState(true);
+
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    // Opcional: mostrar mensaje al usuario
     setApiError('Por seguridad, no se permite pegar en los campos de contraseña');
   };
 
-  // Resto de useEffect igual...
   useEffect(() => {
     const cargarUltimoCambio = async () => {
       try {
@@ -90,16 +84,6 @@ export default function ChangePasswordForm({ onCancel}: Props) {
     cargarUltimoCambio();
   }, []);
 
-  const actualizarFecha = async () => {
-    try {
-      const resultado = await obtenerUltimoCambio();
-      setUltimaModificacion(resultado.fechaFormateada);
-    } catch (error) {
-      console.error('Error al actualizar fecha:', error);
-    }
-  };
-
-  // 🎯 SUBMIT HANDLER SIMPLIFICADO
   const onSubmit = async (data: ChangePasswordFormData) => {
     setApiError(null);
     setSuccess(null);
@@ -114,11 +98,15 @@ export default function ChangePasswordForm({ onCancel}: Props) {
       const result = await cambiarContrasena(data);
 
       if (result.success) {
-        setSuccess('Contraseña actualizada exitosamente');
-        reset(); // Limpiar formulario
-        //onSaved?.();
-        await actualizarFecha();
-        setTimeout(() => setShowSuggestionModal(true), 500);
+        setSuccess('Contraseña actualizada exitosamente. Cerrando sesión...');
+        reset();
+        
+        setTimeout(() => {
+          localStorage.removeItem("servineo_token");
+          localStorage.removeItem("servineo_user");
+          window.location.href = "/login";
+        }, 2000);
+
       } else {
         setApiError(result.message || 'El cambio no se completó, error inesperado.');
 
@@ -138,11 +126,6 @@ export default function ChangePasswordForm({ onCancel}: Props) {
         console.error('Error desconocido:', err);
         setApiError('El cambio no se completó, error inesperado.');
       }
-    } finally {
-      setTimeout(() => {
-        setApiError(null);
-        setSuccess(null);
-      }, 10000);
     }
   };
 
@@ -153,7 +136,6 @@ export default function ChangePasswordForm({ onCancel}: Props) {
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        {/* Contraseña actual */}
         <div>
           <label htmlFor="currentPassword" className="block text-sm font-semibold text-[#1A223F] mb-2 text-left">
             Contraseña actual
@@ -188,7 +170,6 @@ export default function ChangePasswordForm({ onCancel}: Props) {
           )}
         </div>
 
-        {/* Nueva contraseña */}
         <div>
           <label htmlFor="newPassword" className="block text-sm font-semibold text-[#1A223F] mb-2 text-left">
             Nueva contraseña
@@ -223,7 +204,6 @@ export default function ChangePasswordForm({ onCancel}: Props) {
           )}
         </div>
 
-        {/* Confirmar contraseña */}
         <div>
           <label htmlFor="confirmPassword" className="block text-sm font-semibold text-[#1A223F] mb-2 text-left">
             Confirmar nueva contraseña
@@ -258,7 +238,6 @@ export default function ChangePasswordForm({ onCancel}: Props) {
           )}
         </div>
 
-        {/* Mensajes de API */}
         {apiError && (
           <div className={`rounded-md p-3 text-sm transition-opacity duration-1000 ease-out ${apiError.includes('bloqueada') || apiError.includes('Demasiados intentos') || apiError.includes('restantes')
               ? 'bg-red-100 border border-red-300 text-red-800'
@@ -287,7 +266,6 @@ export default function ChangePasswordForm({ onCancel}: Props) {
           </div>
         )}
 
-        {/* Resto del componente igual... */}
         <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">
@@ -304,7 +282,6 @@ export default function ChangePasswordForm({ onCancel}: Props) {
           </div>
         </div>
 
-        {/* Botones */}
         <div className="pt-4 flex justify-end gap-3">
           <button
             type="submit"
@@ -329,48 +306,6 @@ export default function ChangePasswordForm({ onCancel}: Props) {
           </button>
         </div>
       </form>
-
-      {/* Modal igual... */}
-      {showSuggestionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-white w-[520px] rounded-lg shadow-lg overflow-hidden">
-            <div
-              className="text-center text-white font-semibold py-4 text-lg"
-              style={{ background: 'linear-gradient(135deg, #2B31E0 0%, #1AA7ED 50%, #5E2BE0 100%)' }}
-            >
-              Sugerencia
-            </div>
-            <div className="p-6 text-center text-[#1A223F] text-base">
-              Servineo te recomienda cerrar todas las sesiones activas de tus dispositivos.
-            </div>
-            <div className="flex justify-between px-6 pb-6 gap-6">
-              <button
-                onClick={() => router.push('/')}
-                className="flex-1 rounded-md bg-[#E5F4FB] px-4 py-2 text-[#1A223F] font-semibold hover:bg-[#2BDDE0]/20"
-              >
-                No, cerrar sesiones
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    const result = await cerrarTodasSesiones();
-                    console.log("✅ Resultado:", result.message);
-                    localStorage.removeItem("servineo_token");
-                    localStorage.removeItem("servineo_user");
-                    window.location.href = "/";
-                  } catch (error) {
-                    console.error("❌ Error al cerrar sesiones:", error);
-                    alert("No se pudo cerrar todas las sesiones. Intenta nuevamente.");
-                  }
-                }}
-                className="flex-1 rounded-md bg-[#1A223F] px-4 py-2 text-white font-semibold hover:bg-[#2B31E0]"
-              >
-                Sí, cerrar sesiones
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
