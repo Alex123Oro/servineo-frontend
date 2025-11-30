@@ -7,7 +7,7 @@ export const useImageCarousel = (id: string, totalImages: number) => {
   const [isVisible, setIsVisible] = useState(false); // 🆕 Estado de visibilidad
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null); // 🆕 Ref del elemento
-  
+
   // Estados para touch/swipe
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
@@ -49,7 +49,7 @@ export const useImageCarousel = (id: string, totalImages: number) => {
       clearCurrentInterval();
       setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
     },
-    [totalImages, clearCurrentInterval]
+    [totalImages, clearCurrentInterval],
   );
 
   const handleNextImage = useCallback(
@@ -58,15 +58,18 @@ export const useImageCarousel = (id: string, totalImages: number) => {
       clearCurrentInterval();
       setCurrentIndex((prev) => (prev + 1) % totalImages);
     },
-    [totalImages, clearCurrentInterval]
+    [totalImages, clearCurrentInterval],
   );
 
   // Touch handlers para swipe
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    setIsTouching(true);
-    clearCurrentInterval();
-  }, [clearCurrentInterval]);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+      setIsTouching(true);
+      clearCurrentInterval();
+    },
+    [clearCurrentInterval],
+  );
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
@@ -89,14 +92,14 @@ export const useImageCarousel = (id: string, totalImages: number) => {
   // 🆕 Intersection Observer para mobile
   useEffect(() => {
     const isMobile = window.innerWidth < 1024;
-    
+
     if (!isMobile || !elementRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           setIsVisible(entry.isIntersecting);
-          
+
           // Si la card está visible (>50% en pantalla), activar carrusel
           if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
             startCarousel();
@@ -109,7 +112,7 @@ export const useImageCarousel = (id: string, totalImages: number) => {
       {
         threshold: [0, 0.5, 1], // Detectar cuando esté 50% visible
         rootMargin: '-10% 0px -10% 0px', // Margen para activación
-      }
+      },
     );
 
     observer.observe(elementRef.current);

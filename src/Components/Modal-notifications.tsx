@@ -1,62 +1,62 @@
-"use client"
+'use client';
 
-import { X, CheckCircle, AlertCircle, Info, Trash2, type LucideIcon, AlertTriangle } from "lucide-react"
-import { useEffect, type ReactNode } from "react"
+import { X, CheckCircle, AlertCircle, Info, type LucideIcon, AlertTriangle } from 'lucide-react';
+import { useEffect, type ReactNode } from 'react';
 
 interface NotificationModalProps {
-  isOpen: boolean
-  onClose: () => void
-  type: "success" | "error" | "info" | "warning"
-  title: string
-  message: ReactNode
-  icon?: LucideIcon
-  autoClose?: boolean
-  autoCloseDelay?: number
+  isOpen: boolean;
+  onClose: () => void;
+  type: 'success' | 'error' | 'info' | 'warning';
+  title: string;
+  message: ReactNode;
+  icon?: LucideIcon;
+  autoClose?: boolean;
+  autoCloseDelay?: number;
   // Acciones para confirmación
-  onConfirm?: () => void
-  onCancel?: () => void
-  confirmText?: string
-  cancelText?: string
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirmText?: string;
+  cancelText?: string;
 }
 
 const typeConfig = {
   success: {
     icon: CheckCircle,
-    bgColor: "bg-green-500/10",
-    borderColor: "border-green-500/30",
-    iconColor: "text-green-500",
-    titleColor: "text-green-700 dark:text-green-400",
-    progressColor: "bg-green-500",
-    buttonColor: "bg-green-600 hover:bg-green-700",
+    bgColor: 'bg-green-500/10',
+    borderColor: 'border-green-500/30',
+    iconColor: 'text-green-500',
+    titleColor: 'text-green-700 dark:text-green-400',
+    progressColor: 'bg-green-500',
+    buttonColor: 'bg-green-600 hover:bg-green-700',
   },
   error: {
     icon: AlertCircle,
-    bgColor: "bg-red-500/10",
-    borderColor: "border-red-500/30",
-    iconColor: "text-red-500",
-    titleColor: "text-red-700 dark:text-red-400",
-    progressColor: "bg-red-500",
-    buttonColor: "bg-red-600 hover:bg-red-700",
+    bgColor: 'bg-red-500/10',
+    borderColor: 'border-red-500/30',
+    iconColor: 'text-red-500',
+    titleColor: 'text-red-700 dark:text-red-400',
+    progressColor: 'bg-red-500',
+    buttonColor: 'bg-red-600 hover:bg-red-700',
   },
   info: {
     icon: Info,
-    bgColor: "bg-blue-500/10",
-    borderColor: "border-blue-500/30",
-    iconColor: "text-blue-500",
-    titleColor: "text-blue-700 dark:text-blue-400",
-    progressColor: "bg-blue-500",
-    buttonColor: "bg-blue-600 hover:bg-blue-700",
+    bgColor: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/30',
+    iconColor: 'text-blue-500',
+    titleColor: 'text-blue-700 dark:text-blue-400',
+    progressColor: 'bg-blue-500',
+    buttonColor: 'bg-blue-600 hover:bg-blue-700',
   },
   warning: {
     icon: AlertTriangle, // Cambiado a triangulo para advertencia general
-    bgColor: "bg-orange-500/10",
-    borderColor: "border-orange-500/30",
-    iconColor: "text-orange-500",
-    titleColor: "text-orange-700 dark:text-orange-400",
-    progressColor: "bg-orange-500",
-    buttonColor: "bg-orange-600 hover:bg-orange-700", // Color del botón de confirmar
+    bgColor: 'bg-orange-500/10',
+    borderColor: 'border-orange-500/30',
+    iconColor: 'text-orange-500',
+    titleColor: 'text-orange-700 dark:text-orange-400',
+    progressColor: 'bg-orange-500',
+    buttonColor: 'bg-orange-600 hover:bg-orange-700', // Color del botón de confirmar
   },
-}
+};
 
 export default function NotificationModal({
   isOpen,
@@ -69,35 +69,35 @@ export default function NotificationModal({
   autoCloseDelay = 3000,
   onConfirm,
   onCancel,
-  confirmText = "Confirmar",
-  cancelText = "Cancelar",
+  confirmText = 'Confirmar',
+  cancelText = 'Cancelar',
 }: NotificationModalProps) {
-  const config = typeConfig[type] || typeConfig.info
-  const IconComponent = CustomIcon || config.icon
+  const config = typeConfig[type] || typeConfig.info;
+  const IconComponent = CustomIcon || config.icon;
 
   // Lógica: Solo auto-cerrar si NO es warning, o si el usuario forzó autoClose=true explícitamente
-  const shouldAutoClose = isOpen && autoClose && type !== "warning"
+  const shouldAutoClose = isOpen && autoClose && type !== 'warning';
 
   useEffect(() => {
     if (shouldAutoClose) {
       const timer = setTimeout(() => {
-        onClose()
-      }, autoCloseDelay)
-      return () => clearTimeout(timer)
+        onClose();
+      }, autoCloseDelay);
+      return () => clearTimeout(timer);
     }
-  }, [shouldAutoClose, autoCloseDelay, onClose])
+  }, [shouldAutoClose, autoCloseDelay, onClose]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   const handleConfirm = () => {
-    if (onConfirm) onConfirm()
-    onClose()
-  }
+    if (onConfirm) onConfirm();
+    onClose();
+  };
 
   const handleCancel = () => {
-    if (onCancel) onCancel()
-    onClose()
-  }
+    if (onCancel) onCancel();
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 animate-fade-in">
@@ -116,7 +116,9 @@ export default function NotificationModal({
         <div className="p-6">
           <div className="flex items-start gap-4">
             {/* Ícono */}
-            <div className={`flex-shrink-0 w-12 h-12 ${config.bgColor} rounded-xl flex items-center justify-center`}>
+            <div
+              className={`flex-shrink-0 w-12 h-12 ${config.bgColor} rounded-xl flex items-center justify-center`}
+            >
               <IconComponent className={`w-6 h-6 ${config.iconColor}`} />
             </div>
 
@@ -137,7 +139,7 @@ export default function NotificationModal({
           </div>
 
           {/* Botones de Acción (Solo si es warning o se pasó onConfirm) */}
-          {(type === "warning" || onConfirm) && (
+          {(type === 'warning' || onConfirm) && (
             <div className="mt-6 flex gap-3 justify-end">
               <button
                 onClick={handleCancel}
@@ -166,5 +168,5 @@ export default function NotificationModal({
         </div>
       </div>
     </div>
-  )
+  );
 }

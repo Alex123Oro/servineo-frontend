@@ -6,11 +6,11 @@ interface DisplayFieldProps {
   className?: string;
 }
 
-export const DisplayField = ({ 
-  label, 
-  value, 
-  placeholder = "No especificado",
-  className = ""
+export const DisplayField = ({
+  label,
+  value,
+  placeholder = 'No especificado',
+  className = '',
 }: DisplayFieldProps) => {
   return (
     <div className={`block ${className}`}>

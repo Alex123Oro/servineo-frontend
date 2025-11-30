@@ -7,13 +7,18 @@ interface DescriptionSectionProps {
   readOnly?: boolean;
 }
 
-export const DescriptionSection = ({ description, error, onChange,readOnly=false }: DescriptionSectionProps) => {
+export const DescriptionSection = ({
+  description,
+  error,
+  onChange,
+  readOnly = false,
+}: DescriptionSectionProps) => {
   return (
     <TextArea
       label="Descripción del trabajo"
       value={description}
       onChange={readOnly ? undefined : (e) => onChange?.(e.target.value)}
-      placeholder={readOnly ? "" : "Breve descripción de lo que se requiere"}
+      placeholder={readOnly ? '' : 'Breve descripción de lo que se requiere'}
       rows={3}
       error={error}
       readOnly={readOnly}

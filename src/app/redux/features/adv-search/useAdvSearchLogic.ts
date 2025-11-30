@@ -42,7 +42,7 @@ export default function useAdvSearchLogic() {
     categorias: false,
     precio: false,
   });
-  
+
   const [selectedRanges, setSelectedRanges] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
@@ -51,7 +51,7 @@ export default function useAdvSearchLogic() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedPriceKey, setSelectedPriceKey] = useState<string>('');
   const [resultsCount, setResultsCount] = useState<number | null>(null);
-  
+
   // Date filter state: 'recent' | 'oldest' | 'specific'
   const [selectedDateFilter, setSelectedDateFilter] = useState<string>('specific');
   const [selectedSpecificDate, setSelectedSpecificDate] = useState<Date | null>(null);
@@ -64,7 +64,8 @@ export default function useAdvSearchLogic() {
   const [clearSignal, setClearSignal] = useState<number>(0);
 
   // ✅ RTK Query: lazy query para el contador de resultados
-  const [triggerGetOffers, { data: offersData, isLoading: isQueryLoading }] = useLazyGetOffersQuery();
+  const [triggerGetOffers, { data: offersData, isLoading: isQueryLoading }] =
+    useLazyGetOffersQuery();
 
   const toggleSection = (section: string) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -267,7 +268,7 @@ export default function useAdvSearchLogic() {
     if (selectedJobs.length) params.set('category', selectedJobs.join(','));
     if (selectedTags.length) params.set('tags', selectedTags.join(','));
     const { minPrice, maxPrice } = parsePriceRange(selectedPriceKey);
-    
+
     if (selectedDateFilter === 'recent') {
       params.set('sortBy', 'recent');
     } else if (selectedDateFilter === 'oldest') {
@@ -283,7 +284,7 @@ export default function useAdvSearchLogic() {
     if (selectedRating != null) params.set('rating', String(selectedRating));
     params.set('page', '1');
     params.set('limit', '10');
-    
+
     if (typeof window !== 'undefined') {
       try {
         window.sessionStorage.setItem('fromAdv', 'true');
@@ -291,7 +292,7 @@ export default function useAdvSearchLogic() {
         // ignore
       }
       params.set('fromAdv', 'true');
-      
+
       try {
         const state = {
           search: searchQuery,
@@ -310,7 +311,7 @@ export default function useAdvSearchLogic() {
       } catch {
         // ignore
       }
-      
+
       window.location.href = `/resultsAdvSearch?${params.toString()}`;
     } else {
       params.set('fromAdv', 'true');

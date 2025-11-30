@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { Menu, X, Wrench, UserCircle } from "lucide-react";
-import { useGetUserByIdQuery } from "@/app/redux/services/userApi";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "@/app/redux/slice/userSlice";
-import { IUser } from "@/types/user";
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { Menu, X, Wrench, UserCircle } from 'lucide-react';
+import { useGetUserByIdQuery } from '@/app/redux/services/userApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser } from '@/app/redux/slice/userSlice';
+import { IUser } from '@/types/user';
 
 interface UserState {
   user: IUser | null;
@@ -22,6 +22,7 @@ export default function TopMenu() {
   const dispatch = useDispatch();
   // Acceder correctamente al estado
   const { user, loading } = useSelector((state: RootState) => state.user);
+  console.log('User in TopMenu:', user);
 
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -32,13 +33,13 @@ export default function TopMenu() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const navItems = [
-    { name: "Inicio", href: "/" },
-    { name: "Ofertas de trabajo", href: "/job-offer-list" },
+    { name: 'Inicio', href: '/' },
+    { name: 'Ofertas de trabajo', href: '/job-offer-list' },
   ];
 
   // Obtener userId desde localStorage
   useEffect(() => {
-    const token = localStorage.getItem("servineo_user");
+    const token = localStorage.getItem('servineo_user');
     if (token) {
       const userData = JSON.parse(token);
       setUserId(userData._id);
@@ -58,12 +59,12 @@ export default function TopMenu() {
   // Detectar scroll y login
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
 
-    const token = localStorage.getItem("servineo_token");
+    const token = localStorage.getItem('servineo_token');
     setIsLogged(!!token);
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Click fuera del dropdown
@@ -73,8 +74,8 @@ export default function TopMenu() {
         setAccountOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Determinar qué botón mostrar según el rol
@@ -84,11 +85,11 @@ export default function TopMenu() {
 
     if (!user.role) return null;
 
-    if (user.role === "requester") {
+    if (user.role === 'requester') {
       return (
         <Link
           href="/become-fixer"
-          className="flex items-center gap-2  text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
+          className="flex items-center gap-2  px-4 py-2 rounded-md text-sm font-medium text-primary transition-colors"
         >
           <Wrench className="h-4 w-4" />
           Convertir a Fixer
@@ -96,11 +97,11 @@ export default function TopMenu() {
       );
     }
 
-    if (user.role === "fixer") {
+    if (user.role === 'fixer') {
       return (
         <Link
           href="/fixer/dashboard"
-          className="flex items-center gap-2  text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2  text-white px-4 py-2 rounded-md text-sm font-medium bg-primary transition-colors"
         >
           <UserCircle className="h-4 w-4" />
           Perfil de Fixer
@@ -117,7 +118,7 @@ export default function TopMenu() {
 
     if (!user.role) return null;
 
-    if (user.role === "requester") {
+    if (user.role === 'requester') {
       return (
         <Link
           href="/become-fixer"
@@ -130,7 +131,7 @@ export default function TopMenu() {
       );
     }
 
-    if (user.role === "fixer") {
+    if (user.role === 'fixer') {
       return (
         <Link
           href="/fixer/dashboard"
@@ -149,8 +150,9 @@ export default function TopMenu() {
   return (
     <>
       <header
-        className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-white shadow-md" : "bg-white/95 backdrop-blur-sm"
-          } border-t-[1.5px] border-b-[1.5px] border-primary`}
+        className={`fixed w-full z-50 transition-all duration-300 ${
+          scrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
+        } border-t-[1.5px] border-b-[1.5px] border-primary`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
@@ -211,8 +213,8 @@ export default function TopMenu() {
                         </Link>
                         <button
                           onClick={() => {
-                            localStorage.removeItem("servineo_token");
-                            localStorage.removeItem("servineo_user");
+                            localStorage.removeItem('servineo_token');
+                            localStorage.removeItem('servineo_user');
                             window.location.reload();
                           }}
                           className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
@@ -240,8 +242,9 @@ export default function TopMenu() {
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden ${isOpen ? "block" : "hidden"
-            } bg-white/95 backdrop-blur-sm border-t border-gray-200`}
+          className={`md:hidden ${
+            isOpen ? 'block' : 'hidden'
+          } bg-white/95 backdrop-blur-sm border-t border-gray-200`}
         >
           <div className="px-2 pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
@@ -294,8 +297,8 @@ export default function TopMenu() {
                   </Link>
                   <button
                     onClick={() => {
-                      localStorage.removeItem("servineo_token");
-                      localStorage.removeItem("servineo_user");
+                      localStorage.removeItem('servineo_token');
+                      localStorage.removeItem('servineo_user');
                       window.location.reload();
                     }}
                     className="block w-full text-left text-red-600 px-4 py-2 rounded-md text-base font-medium hover:bg-red-50"

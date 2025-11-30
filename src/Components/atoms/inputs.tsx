@@ -20,7 +20,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
       </label>
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';

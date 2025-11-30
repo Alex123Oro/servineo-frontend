@@ -1,30 +1,29 @@
-"use client";
-import { useState } from "react";
-import Link from "next/link";
-import RegistroGoogle from "./registrar/registroServicios/registroGoogle";
-import RegistroForm from "./registrar/registroServicios/page";
-import GithubButton from "@/Components/requester/botonRegistro/buttonGithub";
-import DiscordButton from "@/Components/requester/botonRegistro/buttonDiscord";
-import NotificationModal from "@/Components/Modal-notifications";
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+import RegistroGoogle from './registrar/registroServicios/registroGoogle';
+import RegistroForm from './registrar/registroServicios/page';
+import GithubButton from '@/Components/requester/botonRegistro/buttonGithub';
+import DiscordButton from '@/Components/requester/botonRegistro/buttonDiscord';
+import NotificationModal from '@/Components/Modal-notifications';
 
 export default function SignUp() {
   const [notification, setNotification] = useState({
     isOpen: false,
-    type: "info" as "success" | "error" | "info" | "warning",
-    title: "",
-    message: "",
+    type: 'info' as 'success' | 'error' | 'info' | 'warning',
+    title: '',
+    message: '',
   });
 
   const handleNotify = (notif: {
-    type: "success" | "error" | "info" | "warning";
+    type: 'success' | 'error' | 'info' | 'warning';
     title: string;
     message: string;
   }) => {
     setNotification({ isOpen: true, ...notif });
   };
 
-  const handleCloseNotification = () =>
-    setNotification((prev) => ({ ...prev, isOpen: false }));
+  const handleCloseNotification = () => setNotification((prev) => ({ ...prev, isOpen: false }));
 
   return (
     <>
@@ -43,9 +42,7 @@ export default function SignUp() {
           <h1 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-primary/80 to-primary/60 bg-clip-text text-transparent">
             Regístrate
           </h1>
-          <p className="text-center text-gray-600 mb-8 text-sm">
-            Modo requester
-          </p>
+          <p className="text-center text-gray-600 mb-8 text-sm">Modo requester</p>
 
           <RegistroForm onNotify={handleNotify} />
 
@@ -67,7 +64,7 @@ export default function SignUp() {
               className="mt-1 mr-2 accent-blue-500 focus:ring-2 focus:ring-blue-300 rounded"
             />
             <p>
-              Al registrarte aceptas los{" "}
+              Al registrarte aceptas los{' '}
               <Link
                 href="signUp/registrar/Terminosycondiciones"
                 className="underline text-blue-500 hover:text-blue-400 transition"
@@ -79,7 +76,7 @@ export default function SignUp() {
           </div>
 
           <p className="mt-6 text-center text-gray-700 text-sm">
-            ¿Ya tienes cuenta?{" "}
+            ¿Ya tienes cuenta?{' '}
             <Link
               href="login"
               className="text-blue-500 hover:text-blue-400 font-semibold hover:underline transition"

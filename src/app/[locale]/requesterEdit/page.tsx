@@ -30,13 +30,13 @@ export default function ConfiguracionPage() {
   const { user } = useAuth();
   const router = useRouter();
   //const [menuOpen, setMenuOpen] = useState(false);
-  
+
   const [seccionActiva, setSeccionActiva] = useState('inicio');
 
   // 🆕 Estados para HU5 (Editar Perfil)
   //const [profileData, setProfileData] = useState<RequesterDataState>(INITIAL_DATA)
-  const [profileLoading, setProfileLoading] = useState(false)
-  const [profileError, setProfileError] = useState<string | null>(null)
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
 
   // 🆕 Estados para HU8 (Cambiar Contraseña)
   //onst [passwordChanging, setPasswordChanging] = useState(false)
@@ -54,10 +54,10 @@ export default function ConfiguracionPage() {
 
   //Función para cargar datos de perfil (HU5)
   const loadProfileData = useCallback(async () => {
-    if (!user) return
+    if (!user) return;
 
-    setProfileLoading(true)
-    setProfileError(null)
+    setProfileLoading(true);
+    setProfileError(null);
 
     try {
       //const rawData = await obtenerDatosUsuarioLogueado()
@@ -74,32 +74,32 @@ export default function ConfiguracionPage() {
       */
       //setProfileData(data)
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error al cargar los datos del perfil.'
-      setProfileError(message)
+      const message = err instanceof Error ? err.message : 'Error al cargar los datos del perfil.';
+      setProfileError(message);
       //setProfileData(INITIAL_DATA)
     } finally {
-      setProfileLoading(false)
+      setProfileLoading(false);
     }
-  }, [user])
+  }, [user]);
 
   //Cargar datos cuando se activa la sección de perfil
   useEffect(() => {
     if (seccionActiva === 'perfil') {
-      loadProfileData()
+      loadProfileData();
     }
-  }, [seccionActiva, loadProfileData])
+  }, [seccionActiva, loadProfileData]);
 
   //Callbacks para HU8 (Cambiar Contraseña)
   const handlePasswordCancel = () => {
-    setSeccionActiva('inicio') // Volver al inicio
-  }
+    setSeccionActiva('inicio'); // Volver al inicio
+  };
 
   const handlePasswordSaved = () => {
     //setPasswordChanging(false)
     setTimeout(() => {
-      setSeccionActiva('inicio') // Volver al inicio después de cambiar
-    }, 1500)
-  }
+      setSeccionActiva('inicio'); // Volver al inicio después de cambiar
+    }, 1500);
+  };
 
   // Función para renderizar el contenido según la sección
   const renderContenido = () => {
@@ -110,7 +110,7 @@ export default function ConfiguracionPage() {
             <div className="flex items-center justify-center h-64">
               <p className="text-blue-600 text-lg animate-pulse">Cargando datos del perfil...</p>
             </div>
-          )
+          );
         }
 
         if (profileError) {
@@ -125,14 +125,12 @@ export default function ConfiguracionPage() {
                 Reintentar Carga
               </button>
             </div>
-          )
+          );
         }
 
         return (
           <div className="max-w-4xl w-full">
-            <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">
-              Editar Perfil
-            </h2>
+            <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">Editar Perfil</h2>
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
               <RequesterEditForm />
             </div>
@@ -146,10 +144,7 @@ export default function ConfiguracionPage() {
               Cambiar Contraseña
             </h2>
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
-              <ChangePasswordForm 
-                onCancel={handlePasswordCancel}
-                onSaved={handlePasswordSaved}
-              />
+              <ChangePasswordForm onCancel={handlePasswordCancel} onSaved={handlePasswordSaved} />
             </div>
           </div>
         );
@@ -169,12 +164,13 @@ export default function ConfiguracionPage() {
                 className="flex items-center gap-3 px-6 py-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out bg-white text-gray-800 cursor-pointer min-w-[220px]"
               >
                 <div className="p-2 rounded-md bg-blue-50">
-                  <Image 
-                  src="/icons/edit-pass.png" 
-                  alt="Cambiar contraseña" 
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 object-contain text-blue-600" />
+                  <Image
+                    src="/icons/edit-pass.png"
+                    alt="Cambiar contraseña"
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 object-contain text-blue-600"
+                  />
                 </div>
                 <span className="font-medium">Cambiar contraseña</span>
               </button>
@@ -185,12 +181,13 @@ export default function ConfiguracionPage() {
                 className="flex items-center gap-3 px-6 py-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out bg-white text-gray-800 cursor-pointer min-w-[220px]"
               >
                 <div className="p-2 rounded-md bg-blue-50">
-                  <Image 
-                  src="/icons/logins.png" 
-                  alt="Dispositivos vinculados" 
-                  width={24}
-                  height={24}
-                  className="w-6 h-6 object-contain text-blue-600" />
+                  <Image
+                    src="/icons/logins.png"
+                    alt="Dispositivos vinculados"
+                    width={24}
+                    height={24}
+                    className="w-6 h-6 object-contain text-blue-600"
+                  />
                 </div>
                 <span className="font-medium">Dispositivos vinculados</span>
               </button>
@@ -199,7 +196,7 @@ export default function ConfiguracionPage() {
         );
 
       case 'cuentas':
-        return <AccountLoginSettings token={localStorage.getItem("servineo_token") ?? ""} />;
+        return <AccountLoginSettings token={localStorage.getItem('servineo_token') ?? ''} />;
 
       default: // 'inicio'
         return (
@@ -208,12 +205,13 @@ export default function ConfiguracionPage() {
               <>
                 <div className="mb-4">
                   {safeUser.url_photo ? (
-                    <Image 
-                    src={safeUser.url_photo} 
-                    alt="Foto de perfil" 
-                    width={112} 
-                    height={112} 
-                    className="w-28 h-28 rounded-full border-4 border-blue-100 object-cover mb-4 shadow-sm"/>
+                    <Image
+                      src={safeUser.url_photo}
+                      alt="Foto de perfil"
+                      width={112}
+                      height={112}
+                      className="w-28 h-28 rounded-full border-4 border-blue-100 object-cover mb-4 shadow-sm"
+                    />
                   ) : (
                     <div className="w-28 h-28 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-semibold text-blue-700 mb-4 shadow-sm border-4 border-blue-200">
                       {getInitials(safeUser.name ?? safeUser.email ?? '')}
@@ -221,10 +219,12 @@ export default function ConfiguracionPage() {
                   )}
                 </div>
                 <h2 className="text-2xl font-semibold mb-2 text-gray-800">
-                  Te damos la bienvenida, <span className="text-blue-600">{safeUser.name ?? 'Usuario'}</span>
+                  Te damos la bienvenida,{' '}
+                  <span className="text-blue-600">{safeUser.name ?? 'Usuario'}</span>
                 </h2>
                 <p className="text-gray-600 max-w-md text-center">
-                  Gestiona tu información, privacidad y seguridad para mejorar tu experiencia en <strong>Servineo</strong>.
+                  Gestiona tu información, privacidad y seguridad para mejorar tu experiencia en{' '}
+                  <strong>Servineo</strong>.
                 </p>
               </>
             ) : (
@@ -238,14 +238,17 @@ export default function ConfiguracionPage() {
   return (
     <div className="font-sans flex flex-col min-h-screen bg-gray-50 text-gray-800">
       {/* Header - igual */}
-      
+
       <div className="flex flex-1">
         {/* Sidebar actualizado */}
         <aside className="w-64 bg-white p-6 flex flex-col justify-between relative shadow-md">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <button onClick={() => router.back()} className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600">
+                <button
+                  onClick={() => router.back()}
+                  className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600"
+                >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
                 Configuración
@@ -262,12 +265,13 @@ export default function ConfiguracionPage() {
                     : 'hover:bg-blue-50 hover:text-blue-600 hover:font-semibold'
                 }`}
               >
-                <Image 
-                src="/icons/edit-config.png" 
-                alt="Editar Perfil" 
-                width={24}
-                height={24}
-                className="w-6 h-6" />
+                <Image
+                  src="/icons/edit-config.png"
+                  alt="Editar Perfil"
+                  width={24}
+                  height={24}
+                  className="w-6 h-6"
+                />
                 Editar Perfil
               </button>
 
@@ -280,12 +284,13 @@ export default function ConfiguracionPage() {
                     : 'hover:bg-blue-50 hover:text-blue-600 hover:font-semibold'
                 }`}
               >
-                <Image 
-                src="/icons/seguridad-config.png" 
-                alt="Seguridad" 
-                width={28}
-                height={28}
-                className="w-7 h-7" />
+                <Image
+                  src="/icons/seguridad-config.png"
+                  alt="Seguridad"
+                  width={28}
+                  height={28}
+                  className="w-7 h-7"
+                />
                 Seguridad
               </button>
 
@@ -298,12 +303,13 @@ export default function ConfiguracionPage() {
                     : 'hover:bg-blue-50 hover:text-blue-600 hover:font-semibold'
                 }`}
               >
-                <Image 
-                src="/icons/cuentas.png" 
-                alt="Cuentas" 
-                width={28}
-                height={28}
-                className="w-7 h-7" />
+                <Image
+                  src="/icons/cuentas.png"
+                  alt="Cuentas"
+                  width={28}
+                  height={28}
+                  className="w-7 h-7"
+                />
                 Cuentas vinculadas
               </button>
             </nav>

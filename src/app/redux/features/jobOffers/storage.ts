@@ -43,7 +43,7 @@ export const saveToStorage = <T>(key: string, value: T): void => {
 export const clearJobOffersStorage = (): void => {
   if (typeof window !== 'undefined') {
     try {
-      Object.values(STORAGE_KEYS).forEach(key => {
+      Object.values(STORAGE_KEYS).forEach((key) => {
         localStorage.removeItem(key);
       });
     } catch (error) {

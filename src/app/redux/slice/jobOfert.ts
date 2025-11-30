@@ -1,11 +1,7 @@
 // src\app\redux\slice\jobOfert.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FilterState, JobOffersState } from '../features/jobOffers/types';
-import { 
-  saveToStorage, 
-  clearJobOffersStorage, 
-  STORAGE_KEYS 
-} from '../features/jobOffers/storage';
+import { saveToStorage, clearJobOffersStorage, STORAGE_KEYS } from '../features/jobOffers/storage';
 
 const getDefaultState = (): JobOffersState => ({
   loading: false,
@@ -95,7 +91,7 @@ const jobOffersSlice = createSlice({
     setRegistrosPorPagina: (state, action: PayloadAction<number>) => {
       state.registrosPorPagina = action.payload;
       state.paginaActual = 1;
-      
+
       if (state.shouldPersist) {
         saveToStorage(STORAGE_KEYS.PAGE_SIZE, action.payload);
         saveToStorage(STORAGE_KEYS.PAGE, 1);
@@ -116,7 +112,7 @@ const jobOffersSlice = createSlice({
 
     setPaginaActual: (state, action: PayloadAction<number>) => {
       state.paginaActual = action.payload;
-      
+
       if (state.shouldPersist) {
         saveToStorage(STORAGE_KEYS.PAGE, action.payload);
       }
@@ -133,16 +129,26 @@ const jobOffersSlice = createSlice({
       }
     },
 
-    updatePagination: (state, action: PayloadAction<{
-      total: number;
-      page: number;
-      limit: number;
-      totalPages: number;
-      listKey?: string;
-      isInitialSearch?: boolean;
-    }>) => {
-      const { total, page, limit, totalPages, listKey = 'offers', isInitialSearch } = action.payload;
-      
+    updatePagination: (
+      state,
+      action: PayloadAction<{
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+        listKey?: string;
+        isInitialSearch?: boolean;
+      }>,
+    ) => {
+      const {
+        total,
+        page,
+        limit,
+        totalPages,
+        listKey = 'offers',
+        isInitialSearch,
+      } = action.payload;
+
       if (!state.paginaciones[listKey]) {
         state.paginaciones[listKey] = {
           paginaActual: 1,
@@ -161,7 +167,7 @@ const jobOffersSlice = createSlice({
       if (page === 1 && isInitialSearch) {
         state.preservedTotalRegistros = total;
       }
-      
+
       const totalToUse = state.preservedTotalRegistros > 0 ? state.preservedTotalRegistros : total;
 
       state.paginaActual = page;
@@ -210,7 +216,7 @@ const jobOffersSlice = createSlice({
 
     resetPagination: (state) => {
       state.paginaActual = 1;
-      
+
       if (state.shouldPersist) {
         saveToStorage(STORAGE_KEYS.PAGE, 1);
       }
@@ -227,17 +233,20 @@ const jobOffersSlice = createSlice({
       }
     },
 
-    restoreSavedState: (state, action: PayloadAction<{
-      search: string;
-      filters: FilterState;
-      sortBy: string;
-      paginaActual: number;
-      registrosPorPagina: number;
-      titleOnly: boolean;
-      exact: boolean;
-      date: string | null;
-      rating: number | null;
-    }>) => {
+    restoreSavedState: (
+      state,
+      action: PayloadAction<{
+        search: string;
+        filters: FilterState;
+        sortBy: string;
+        paginaActual: number;
+        registrosPorPagina: number;
+        titleOnly: boolean;
+        exact: boolean;
+        date: string | null;
+        rating: number | null;
+      }>,
+    ) => {
       const restored = action.payload;
       state.search = restored.search;
       state.filters = restored.filters;
