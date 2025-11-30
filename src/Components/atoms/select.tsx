@@ -27,7 +27,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
       </label>
     );
-  }
+  },
 );
 
 Select.displayName = 'Select';

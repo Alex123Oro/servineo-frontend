@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import FixerRegisterForm from "@/Components/fixer/Fixer-register-form";
-import { FixerEnableWizard } from "@/Components/fixer/Filter-eneable-wizard";
-import { useSelector } from "react-redux";
-import { RootState } from "@/app/redux/store";
-import { IUser } from "@/types/user";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from 'react';
+import FixerRegisterForm from '@/Components/fixer/Fixer-register-form';
+import { FixerEnableWizard } from '@/Components/fixer/Filter-eneable-wizard';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/redux/store';
+import { IUser } from '@/types/user';
+import { useRouter } from 'next/navigation';
 
 export default function BecomeFixerPage() {
   const router = useRouter();
@@ -15,15 +15,15 @@ export default function BecomeFixerPage() {
   const [requester, setRequester] = useState<IUser | null>(null);
 
   useEffect(() => {
-    if (user?.role === "fixer") {
-      router.push("/fixer/dashboard");
+    if (user?.role === 'fixer') {
+      router.push('/fixer/dashboard');
     }
   }, [user, router]);
 
   const defaultValues = {
-    name: user?.name || "",
-    email: user?.email || "",
-    phone: user?.telefono || "",
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.telefono || '',
   };
 
   return (
@@ -45,12 +45,12 @@ export default function BecomeFixerPage() {
                 defaultValues={defaultValues}
                 onSubmit={(data) => {
                   const finalUser: IUser = {
-                    _id: user?._id || "",
-                    name: data.name || user?.name || "",
-                    email: data.email || user?.email || "",
+                    _id: user?._id || '',
+                    name: data.name || user?.name || '',
+                    email: data.email || user?.email || '',
                     telefono: data.phone,
-                    url_photo: user?.url_photo || "https://picsum.photos/80",
-                    role: user?.role || "requester",
+                    url_photo: user?.url_photo || 'https://picsum.photos/80',
+                    role: user?.role || 'requester',
                   };
 
                   setRequester(finalUser);

@@ -1,7 +1,7 @@
-"use client";
-import * as React from "react";
-import { Dialog, DialogContent } from "../../../calendar/ui/dialog";
-import { Button } from "../../../atoms/button";
+'use client';
+import * as React from 'react';
+import { Dialog, DialogContent } from '../../../calendar/ui/dialog';
+import { Button } from '../../../atoms/button';
 
 interface JustificationPopupProps {
   open: boolean;
@@ -19,14 +19,14 @@ export const JustificationPopup: React.FC<JustificationPopupProps> = ({
   open,
   onClose,
   onSubmit,
-  title = "Justificación",
-  confirmLabel = "Continuar",
-  cancelLabel = "Volver",
+  title = 'Justificación',
+  confirmLabel = 'Continuar',
+  cancelLabel = 'Volver',
   minLength = 10,
   maxLength = 300,
-  placeholder = "Describe brevemente el motivo…",
+  placeholder = 'Describe brevemente el motivo…',
 }) => {
-  const [reason, setReason] = React.useState("");
+  const [reason, setReason] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
 
@@ -35,7 +35,7 @@ export const JustificationPopup: React.FC<JustificationPopupProps> = ({
       setTimeout(() => textareaRef.current?.focus(), 40);
     } else {
       // limpiar al cerrar
-      setReason("");
+      setReason('');
       setError(null);
     }
   }, [open]);
@@ -63,7 +63,6 @@ export const JustificationPopup: React.FC<JustificationPopupProps> = ({
             <span className="font-semibold">{title}</span>
             <button
               onClick={onClose}
-              
               className="opacity-90 hover:opacity-100 transition"
               aria-label="Cerrar"
             >

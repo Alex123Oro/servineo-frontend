@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import { api, ApiResponse } from "../../../app/redux/services/loginApi";
+import { useState } from 'react';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import { api, ApiResponse } from '../../../app/redux/services/loginApi';
 
 interface LoginGoogleProps {
-  onMensajeChange: (mensaje: string, tipo: "error") => void;
+  onMensajeChange: (mensaje: string, tipo: 'error') => void;
 }
 
 interface GoogleLoginResponse {
@@ -26,32 +26,29 @@ export default function LoginGoogle({ onMensajeChange }: LoginGoogleProps) {
     setLoading(true);
 
     try {
-      const res: ApiResponse<GoogleLoginResponse> = await api.post(
-        "/auth/google",
-        {
-          credential: credentialResponse.credential,
-          token: credentialResponse.credential,
-          modo: "login",
-        }
-      );
+      const res: ApiResponse<GoogleLoginResponse> = await api.post('/auth/google', {
+        credential: credentialResponse.credential,
+        token: credentialResponse.credential,
+        modo: 'login',
+      });
 
       if (res.success && res.data) {
-        localStorage.setItem("servineo_token", res.data.token);
-        localStorage.setItem("servineo_user", JSON.stringify(res.data.user));
-        window.location.href = "/";
+        localStorage.setItem('servineo_token', res.data.token);
+        localStorage.setItem('servineo_user', JSON.stringify(res.data.user));
+        window.location.href = '/';
       } else {
         const mensajeError =
           res.message ||
           res.data?.message ||
           res.error ||
-          "Error desconocido al iniciar sesión con Google.";
-        onMensajeChange(mensajeError, "error");
+          'Error desconocido al iniciar sesión con Google.';
+        onMensajeChange(mensajeError, 'error');
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
-        onMensajeChange(err.message, "error");
+        onMensajeChange(err.message, 'error');
       } else {
-        onMensajeChange("No se pudo conectar con el servidor.", "error");
+        onMensajeChange('No se pudo conectar con el servidor.', 'error');
       }
     } finally {
       setLoading(false);
@@ -59,7 +56,7 @@ export default function LoginGoogle({ onMensajeChange }: LoginGoogleProps) {
   };
 
   const handleError = () => {
-    onMensajeChange("Error al iniciar sesión con Google.", "error");
+    onMensajeChange('Error al iniciar sesión con Google.', 'error');
   };
 
   return (
@@ -69,9 +66,7 @@ export default function LoginGoogle({ onMensajeChange }: LoginGoogleProps) {
       </div>
 
       {loading && (
-        <p className="text-sm text-gray-500 mt-2 animate-pulse">
-          Verificando credenciales...
-        </p>
+        <p className="text-sm text-gray-500 mt-2 animate-pulse">Verificando credenciales...</p>
       )}
     </div>
   );

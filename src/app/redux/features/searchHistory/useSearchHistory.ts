@@ -24,14 +24,8 @@ interface UseSearchHistoryReturn {
   error: string | null;
 }
 
-export function useSearchHistory(
-  options: UseSearchHistoryOptions = {}
-): UseSearchHistoryReturn {
-  const {
-    useBackend = false,
-    maxItems = MAX_HISTORY_ITEMS,
-    storageKey = HISTORY_KEY,
-  } = options;
+export function useSearchHistory(options: UseSearchHistoryOptions = {}): UseSearchHistoryReturn {
+  const { useBackend = false, maxItems = MAX_HISTORY_ITEMS, storageKey = HISTORY_KEY } = options;
 
   const [history, setHistory] = useState<string[]>([]);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -39,8 +33,8 @@ export function useSearchHistory(
   const lastBackendData = useRef<string[] | undefined>(undefined);
 
   // ===== RTK QUERY HOOKS =====
-  const { 
-    data: backendHistory, 
+  const {
+    data: backendHistory,
     isLoading: isLoadingHistory,
     error: historyError,
     refetch: refetchHistory,
@@ -67,29 +61,32 @@ export function useSearchHistory(
     }
   }, [storageKey]);
 
-  const persistToLocalStorage = useCallback((items: string[]) => {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(items));
-      console.log('💾 Persisted to localStorage:', items);
-    } catch (error) {
-      console.error('Error saving search history to localStorage:', error);
-    }
-  }, [storageKey]);
+  const persistToLocalStorage = useCallback(
+    (items: string[]) => {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(items));
+        console.log('💾 Persisted to localStorage:', items);
+      } catch (error) {
+        console.error('Error saving search history to localStorage:', error);
+      }
+    },
+    [storageKey],
+  );
 
   // ===== INICIALIZACIÓN (solo una vez al montar) =====
   useEffect(() => {
     if (hasInitialized.current) return;
 
     console.log('🎬 Initializing search history...');
-    
+
     // SIEMPRE cargar desde localStorage primero
     const localHistory = loadFromLocalStorage();
     console.log('📂 Loaded from localStorage:', localHistory);
-    
+
     if (localHistory.length > 0) {
       setHistory(localHistory);
     }
-    
+
     hasInitialized.current = true;
   }, [loadFromLocalStorage]);
 
@@ -97,27 +94,27 @@ export function useSearchHistory(
   useEffect(() => {
     // No hacer nada si no estamos usando backend
     if (!useBackend) return;
-    
+
     // No hacer nada si aún no hemos inicializado
     if (!hasInitialized.current) return;
-    
+
     // No hacer nada si el backend no ha devuelto datos aún
     if (backendHistory === undefined) return;
-    
+
     // Evitar re-procesar los mismos datos del backend
     if (lastBackendData.current === backendHistory) {
       console.log('⏭️ Skipping - same backend data');
       return;
     }
-    
+
     console.log('🔄 Backend data changed:', {
       previous: lastBackendData.current,
       current: backendHistory,
       currentHistory: history,
     });
-    
+
     lastBackendData.current = backendHistory;
-    
+
     // Si el backend tiene datos, usarlos
     if (backendHistory.length > 0) {
       console.log('✅ Using backend data:', backendHistory);
@@ -135,7 +132,7 @@ export function useSearchHistory(
       console.log('🔒 KEEPING local data - NOT overwriting');
       // NO sobrescribir - mantener los datos locales
     }
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [useBackend, backendHistory, persistToLocalStorage]);
   // NOTA: NO incluir 'history' en las dependencias para evitar loops
@@ -164,7 +161,7 @@ export function useSearchHistory(
         }, 500);
       }
     },
-    [maxItems, persistToLocalStorage, useBackend, refetchHistory]
+    [maxItems, persistToLocalStorage, useBackend, refetchHistory],
   );
 
   // ===== ELIMINAR ITEM =====
@@ -187,7 +184,7 @@ export function useSearchHistory(
         if (useBackend) {
           // Intentar eliminar en el backend
           const result = await deleteHistoryItem(item).unwrap();
-          
+
           if (!result.success) {
             throw new Error('Backend deletion failed');
           }
@@ -201,13 +198,13 @@ export function useSearchHistory(
       } catch (err) {
         console.error('❌ Remove from history error:', err);
         setLocalError('Error al eliminar del historial');
-        
+
         // Rollback: restaurar estado anterior
         setHistory(previousHistory);
         persistToLocalStorage(previousHistory);
       }
     },
-    [history, useBackend, deleteHistoryItem, persistToLocalStorage]
+    [history, useBackend, deleteHistoryItem, persistToLocalStorage],
   );
 
   // ===== LIMPIAR TODO =====
@@ -226,11 +223,11 @@ export function useSearchHistory(
       if (useBackend) {
         // Intentar limpiar en el backend
         const result = await clearHistoryMutation().unwrap();
-        
+
         if (!result.success) {
           throw new Error('Backend clear failed');
         }
-        
+
         console.log('✅ Backend confirmed clear:', result.updatedHistory);
         lastBackendData.current = result.updatedHistory;
         setHistory(result.updatedHistory);
@@ -239,7 +236,7 @@ export function useSearchHistory(
     } catch (err) {
       console.error('❌ Clear history error:', err);
       setLocalError('Error al limpiar historial');
-      
+
       // Rollback: restaurar estado anterior
       setHistory(previousHistory);
       persistToLocalStorage(previousHistory);

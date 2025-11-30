@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import axios from 'axios';
@@ -48,22 +48,21 @@ export const DaySelectionModal = forwardRef<DaySelectionModalHandles, DaySelecti
         setIsOpen(true);
         loadPreviousConfiguration();
       },
-      close: () => handleClose()
+      close: () => handleClose(),
     }));
 
     const loadPreviousConfiguration = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await axios.get<AvailabilityResponse>(
-          `${API}/api/crud_read/appointments/get_fixer_availability?fixer_id=${fixerId}`
+          `${API}/api/crud_read/appointments/get_fixer_availability?fixer_id=${fixerId}`,
         );
-        
+
         const availability = response.data.availability;
 
         setAvailability(availability);
-
       } catch (err) {
         setError('Error al cargar la configuracion previa');
         console.error('Error loading availability:', err);
@@ -109,16 +108,17 @@ export const DaySelectionModal = forwardRef<DaySelectionModalHandles, DaySelecti
 
     return (
       <>
-        <div className={`fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 ${
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}>
-          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 transform transition-transform duration-300 ${
+        <div
+          className={`fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 ${
+            isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          <div
+            className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 transform transition-transform duration-300 ${
             isOpen ? 'scale-100' : 'scale-95'
-          }">
-            <AvailabilityHeader 
-              headerText='Seleccionar Disponibilidad' 
-              onClose={handleClose}
-            />
+          }"
+          >
+            <AvailabilityHeader headerText="Seleccionar Disponibilidad" onClose={handleClose} />
 
             <p className="text-black font-semibold mb-4">Días de trabajo de la semana</p>
 
@@ -131,13 +131,13 @@ export const DaySelectionModal = forwardRef<DaySelectionModalHandles, DaySelecti
               <div className="text-red-600 text-center py-4">
                 {error}
                 <div className="flex gap-2 justify-center mt-3">
-                  <button 
+                  <button
                     onClick={loadPreviousConfiguration}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
                   >
                     Reintentar
                   </button>
-                  <button 
+                  <button
                     onClick={handleClose}
                     className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 text-sm"
                   >
@@ -158,7 +158,7 @@ export const DaySelectionModal = forwardRef<DaySelectionModalHandles, DaySelecti
 
                 <AvailabilityActions
                   onCancel={handleCancel}
-                  confirmPlaceholder='Editar'
+                  confirmPlaceholder="Editar"
                   onConfirm={handleConfirm}
                   confirmDisabled={isConfirmDisabled}
                 />
@@ -167,7 +167,7 @@ export const DaySelectionModal = forwardRef<DaySelectionModalHandles, DaySelecti
           </div>
         </div>
 
-        <DayAvailabilityModal 
+        <DayAvailabilityModal
           ref={hourModalRef}
           fixerId={fixerId}
           onClose={handleHourModalClose}
@@ -176,7 +176,7 @@ export const DaySelectionModal = forwardRef<DaySelectionModalHandles, DaySelecti
         />
       </>
     );
-  }
+  },
 );
 
 DaySelectionModal.displayName = 'DaySelectionModal';

@@ -1,5 +1,5 @@
-import * as React from "react";
-import { createPortal } from "react-dom";
+import * as React from 'react';
+import { createPortal } from 'react-dom';
 
 type DialogProps = {
   open: boolean;
@@ -11,10 +11,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   React.useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onOpenChange?.(false);
+      if (e.key === 'Escape') onOpenChange?.(false);
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [open, onOpenChange]);
 
   if (!open) return null;
@@ -24,18 +24,17 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
       <div className="fixed inset-0 bg-black/50" onClick={() => onOpenChange?.(false)} />
       {children}
     </div>,
-    document.body
+    document.body,
   );
 }
 
 type DivProps = React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode };
 
-
 export function DialogContent({ className, children, ...rest }: DivProps) {
   return (
     <div
       {...rest}
-      className={["relative z-[10000]", className].filter(Boolean).join(" ")}
+      className={['relative z-[10000]', className].filter(Boolean).join(' ')}
       onClick={(e) => e.stopPropagation()}
     >
       {children}

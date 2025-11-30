@@ -5,16 +5,12 @@ interface WeekDaysSectionProps {
   onDaysChange: (days: string[]) => void;
 }
 
-export const WeekDaysSection = ({ 
-  selectedDays, 
-  onDaysChange 
-}: WeekDaysSectionProps) => {
-  
+export const WeekDaysSection = ({ selectedDays, onDaysChange }: WeekDaysSectionProps) => {
   const toggleDay = (day: string) => {
-    const newSelectedDays = selectedDays.includes(day) 
-      ? selectedDays.filter(d => d !== day)
+    const newSelectedDays = selectedDays.includes(day)
+      ? selectedDays.filter((d) => d !== day)
       : [...selectedDays, day];
-    
+
     onDaysChange(newSelectedDays);
   };
 
@@ -22,9 +18,8 @@ export const WeekDaysSection = ({
 
   return (
     <div className="mb-6">
-      
       <div className="flex justify-between items-center mb-4">
-        {days.map(day => (
+        {days.map((day) => (
           <CircularDayButton
             key={day}
             day={day}

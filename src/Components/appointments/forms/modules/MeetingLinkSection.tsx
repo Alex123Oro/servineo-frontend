@@ -7,7 +7,12 @@ interface MeetingLinkSectionProps {
   readonly?: boolean;
 }
 
-export const MeetingLinkSection = ({ meetingLink, error, onChange ,readonly}: MeetingLinkSectionProps) => {
+export const MeetingLinkSection = ({
+  meetingLink,
+  error,
+  onChange,
+  readonly,
+}: MeetingLinkSectionProps) => {
   return (
     <div className="space-y-2">
       <Input
@@ -18,7 +23,9 @@ export const MeetingLinkSection = ({ meetingLink, error, onChange ,readonly}: Me
         placeholder="https://meet.example.com/abcd"
         error={error}
       />
-      <p className="text-xs text-gray-600">Si no ingresa enlace, se generará uno automáticamente.</p>
+      <p className="text-xs text-gray-600">
+        Si no ingresa enlace, se generará uno automáticamente.
+      </p>
     </div>
   );
 };

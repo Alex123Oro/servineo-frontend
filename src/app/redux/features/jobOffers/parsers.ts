@@ -47,13 +47,13 @@ export function parseUrlToFilters(searchParams: URLSearchParams): {
   const search = searchParams.get('search') || '';
   const ranges = searchParams.getAll('range');
   const city = searchParams.get('city') || '';
-  
+
   const categoryRaw = searchParams.get('category') || '';
   const category = categoryRaw ? categoryRaw.split(',').filter(Boolean) : [];
-  
+
   const tagsRaw = searchParams.get('tags') || '';
   const tags = tagsRaw ? tagsRaw.split(',').filter(Boolean) : [];
-  
+
   const minPriceRaw = searchParams.get('minPrice');
   const maxPriceRaw = searchParams.get('maxPrice');
   const minPrice = minPriceRaw != null ? Number(minPriceRaw) : null;
@@ -61,16 +61,17 @@ export function parseUrlToFilters(searchParams: URLSearchParams): {
 
   const page = parseInt(searchParams.get('page') || '1', 10) || 1;
   const limit = parseInt(searchParams.get('limit') || '10', 10) || 10;
-  
+
   const sortBy = searchParams.get('sort') || searchParams.get('sortBy') || 'recent';
-  
+
   const titleOnly = searchParams.get('titleOnly') === 'true';
   const exact = searchParams.get('exact') === 'true' || searchParams.get('exactWords') === 'true';
-  
+
   const date = searchParams.get('date') || null;
-  
+
   const ratingRaw = searchParams.get('rating');
-  const rating = ratingRaw != null ? (Number.isNaN(Number(ratingRaw)) ? null : Number(ratingRaw)) : null;
+  const rating =
+    ratingRaw != null ? (Number.isNaN(Number(ratingRaw)) ? null : Number(ratingRaw)) : null;
 
   return {
     search,
@@ -97,7 +98,7 @@ export function parseUrlToFilters(searchParams: URLSearchParams): {
  */
 export function parseAppliedParams(searchParams: URLSearchParams): ParamsMap {
   const params: ParamsMap = {};
-  
+
   const keys = [
     'search',
     'titleOnly',
@@ -125,7 +126,7 @@ export function parseAppliedParams(searchParams: URLSearchParams): ParamsMap {
 
     const val = searchParams.get(k);
     if (val == null) return;
-    
+
     if (k === 'tags' || k === 'category') {
       // these are encoded as a single, comma-separated value by AdvSearch
       params[k] = val.split(',').filter(Boolean);
@@ -167,7 +168,7 @@ export function filtersToUrlParams(params: {
   if (params.search?.trim()) urlParams.set('search', params.search.trim());
   if (params.titleOnly) urlParams.set('titleOnly', 'true');
   if (params.exact) urlParams.set('exact', 'true');
-  
+
   if (params.filters?.range?.length) {
     params.filters.range.forEach((r) => urlParams.append('range', r));
   }
@@ -184,7 +185,7 @@ export function filtersToUrlParams(params: {
   if (params.filters?.maxPrice != null) {
     urlParams.set('maxPrice', String(params.filters.maxPrice));
   }
-  
+
   if (params.sortBy) urlParams.set('sort', params.sortBy);
   if (params.date) urlParams.set('date', params.date);
   if (params.rating != null) urlParams.set('rating', String(params.rating));
@@ -202,10 +203,10 @@ export function formatDateForDisplay(dateStr: string | null): string {
   try {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateStr;
-    return date.toLocaleDateString('es-ES', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   } catch {
     return dateStr;
