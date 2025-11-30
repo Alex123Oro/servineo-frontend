@@ -51,16 +51,8 @@ export async function getAppointmentsByHour(
       console.log('No se encontraron citas ');
       return [];
     }
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Error de Axios:', {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-    } else {
+  } catch (error) {   
       console.error('Error desconocido:', error);
-    }
     return [];
   }
 }
