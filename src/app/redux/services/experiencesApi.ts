@@ -1,41 +1,41 @@
 // src/app/redux/services/experienceApi.ts
-import { baseApi } from "./baseApi";
-import type { IExperience } from "@/types/fixer-profile";
+import { baseApi } from './baseApi';
+import type { IExperience } from '@/types/fixer-profile';
 export const experienceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Crear experiencia
     createExperience: builder.mutation<IExperience, Partial<IExperience>>({
       query: (body) => ({
-        url: "/experiences",
-        method: "POST",
+        url: '/experiences',
+        method: 'POST',
         body,
       }),
-      invalidatesTags: ["Experience"],
+      invalidatesTags: ['Experience'],
     }),
 
     // Obtener experiencias por fixer
     getExperiencesByFixer: builder.query<IExperience[], string>({
       query: (fixerId) => `/experiences/fixer/${fixerId}`,
-      providesTags: ["Experience"],
+      providesTags: ['Experience'],
     }),
 
     // Actualizar experiencia
     updateExperience: builder.mutation<IExperience, { id: string; data: Partial<IExperience> }>({
       query: ({ id, data }) => ({
         url: `/experiences/${id}`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ["Experience"],
+      invalidatesTags: ['Experience'],
     }),
 
     // Eliminar experiencia
     deleteExperience: builder.mutation<{ message: string }, string>({
       query: (id) => ({
         url: `/experiences/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
-      invalidatesTags: ["Experience"],
+      invalidatesTags: ['Experience'],
     }),
   }),
   overrideExisting: false,

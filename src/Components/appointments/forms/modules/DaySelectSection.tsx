@@ -1,22 +1,19 @@
-import { useState } from "react";
-import { AvailabilityButton } from "./AvailabilityButton";
+import { useState } from 'react';
+import { AvailabilityButton } from './AvailabilityButton';
 
 interface DaySelectionProps {
   availableDays: Record<string, number[]>;
   onDaysChange: (days: string[]) => void;
 }
 
-export const DaySelectSection: React.FC<DaySelectionProps> = ({
-  availableDays,
-  onDaysChange
-}) => {
+export const DaySelectSection: React.FC<DaySelectionProps> = ({ availableDays, onDaysChange }) => {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
   const toggleDay = (day: string) => {
-    const newSelectedDays = selectedDays.includes(day) 
-      ? selectedDays.filter(d => d !== day)
+    const newSelectedDays = selectedDays.includes(day)
+      ? selectedDays.filter((d) => d !== day)
       : [...selectedDays, day];
-    
+
     setSelectedDays(newSelectedDays);
     onDaysChange(newSelectedDays);
   };
@@ -28,18 +25,18 @@ export const DaySelectSection: React.FC<DaySelectionProps> = ({
   };
 
   return (
-  <div className="mb-4">
-    <div className="flex flex-col gap-2">
-      {days.map(day => (
-        <AvailabilityButton
-          key={day}
-          label={day}
-          selected={selectedDays.includes(day)}
-          disabled={isDayDisabled(day)}
-          onToggle={() => toggleDay(day)}
-        />
-      ))}
+    <div className="mb-4">
+      <div className="flex flex-col gap-2">
+        {days.map((day) => (
+          <AvailabilityButton
+            key={day}
+            label={day}
+            selected={selectedDays.includes(day)}
+            disabled={isDayDisabled(day)}
+            onToggle={() => toggleDay(day)}
+          />
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
 };

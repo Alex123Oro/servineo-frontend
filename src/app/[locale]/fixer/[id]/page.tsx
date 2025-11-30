@@ -1,47 +1,46 @@
-"use client"
+'use client';
 // aqui falta refacotorizar porque tenemos que traernos con el id todo la data del fixer que esta en la card
-import { useState } from "react"
-import Image from "next/image"
-import { MapPin, Star, MessageCircle, Share2, Flag } from "lucide-react"
-import { PillButton } from "@/Components/Pill-button"
+import { useState } from 'react';
+import Image from 'next/image';
+import { MapPin, Star, MessageCircle, Share2, Flag } from 'lucide-react';
+import { PillButton } from '@/Components/Pill-button';
 
-
-import { CertificationsSection } from "@/Components/fixer/dashboard/CertificationsSection"
-import { ExperienceSection } from "@/Components/fixer/dashboard/ExperienceSection"
-import { PortfolioSection } from "@/Components/fixer/dashboard/PortfolioSection"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/Tabs/Tabs"
-import EstadisticasTrabajos from "@/Components/fixer/Fixer-statistics"
-import { JobOfferCard } from "@/Components/Job-offers/JobOfferCard"
-import type { JobOfferData } from "@/types/jobOffers"
-import { useGetJobOffersByFixerQuery, type JobOffer } from "@/app/redux/services/jobOfferApi"
-import { useParams } from "next/navigation"
+import { CertificationsSection } from '@/Components/fixer/dashboard/CertificationsSection';
+import { ExperienceSection } from '@/Components/fixer/dashboard/ExperienceSection';
+import { PortfolioSection } from '@/Components/fixer/dashboard/PortfolioSection';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/Tabs/Tabs';
+import EstadisticasTrabajos from '@/Components/fixer/Fixer-statistics';
+import { JobOfferCard } from '@/Components/Job-offers/JobOfferCard';
+import type { JobOfferData } from '@/types/jobOffers';
+import { useGetJobOffersByFixerQuery, type JobOffer } from '@/app/redux/services/jobOfferApi';
+import { useParams } from 'next/navigation';
 
 // Mock data for the profile header
 const MOCK_FIXER = {
-  name: "Juan Perez",
-  role: "Plomero Profesional",
+  name: 'Juan Perez',
+  role: 'Plomero Profesional',
   rating: 4.8,
   reviews: 124,
-  location: "Cochabamba, Bolivia",
-  photo: "https://picsum.photos/80",
-  bio: "Especialista en plomería residencial y comercial con más de 10 años de experiencia. Garantizo trabajos limpios y duraderos.",
-  verified: true
-}
+  location: 'Cochabamba, Bolivia',
+  photo: 'https://picsum.photos/80',
+  bio: 'Especialista en plomería residencial y comercial con más de 10 años de experiencia. Garantizo trabajos limpios y duraderos.',
+  verified: true,
+};
 
 export default function FixerProfilePage() {
-  const params = useParams<{ locale: string; id: string }>()
-  const fixerId = params?.id
-  const [activeTab, setActiveTab] = useState("resumen")
-  const { data: fixerOffers, isLoading, isError } = useGetJobOffersByFixerQuery(fixerId as string)
+  const params = useParams<{ locale: string; id: string }>();
+  const fixerId = params?.id;
+  const [activeTab, setActiveTab] = useState('resumen');
+  const { data: fixerOffers, isLoading, isError } = useGetJobOffersByFixerQuery(fixerId as string);
 
   const mapJobOfferToCardData = (offer: JobOffer): JobOfferData => ({
-    _id: offer._id || offer.id || "",
+    _id: offer._id || offer.id || '',
     fixerId: offer.fixerId,
     fixerName: offer.fixerName,
     fixerPhoto: offer.fixerPhoto,
-    title: offer.title || "Servicio",
+    title: offer.title || 'Servicio',
     description: offer.description,
-    category: offer.services?.[0] || "otros",
+    category: offer.services?.[0] || 'otros',
     tags: offer.tags || offer.services || [],
     price: offer.price,
     city: offer.city,
@@ -53,9 +52,9 @@ export default function FixerProfilePage() {
     imagenUrl: offer.photos && offer.photos.length > 0 ? offer.photos[0] : undefined,
     completedJobs: offer.completedJobs,
     location: offer.location ? [offer.location.address] : undefined,
-  })
+  });
 
-  const mappedOffers: JobOfferData[] = fixerOffers?.map(mapJobOfferToCardData) || []
+  const mappedOffers: JobOfferData[] = fixerOffers?.map(mapJobOfferToCardData) || [];
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
       {/* Profile Header */}
@@ -74,7 +73,10 @@ export default function FixerProfilePage() {
                 />
               </div>
               {MOCK_FIXER.verified && (
-                <div className="absolute bottom-1 right-1 bg-blue-500 text-white p-1.5 rounded-full ring-2 ring-white" title="Verificado">
+                <div
+                  className="absolute bottom-1 right-1 bg-blue-500 text-white p-1.5 rounded-full ring-2 ring-white"
+                  title="Verificado"
+                >
                   <Star className="w-4 h-4 fill-current" />
                 </div>
               )}
@@ -114,9 +116,7 @@ export default function FixerProfilePage() {
                 </div>
               </div>
 
-              <p className="mt-4 text-gray-600 max-w-2xl leading-relaxed">
-                {MOCK_FIXER.bio}
-              </p>
+              <p className="mt-4 text-gray-600 max-w-2xl leading-relaxed">{MOCK_FIXER.bio}</p>
             </div>
           </div>
         </div>
@@ -126,24 +126,34 @@ export default function FixerProfilePage() {
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="bg-white p-1 rounded-xl border shadow-sm inline-flex">
-            <TabsTrigger value="resumen" className="px-6">Resumen</TabsTrigger>
-            <TabsTrigger value="ofertas" className="px-6">Ofertas</TabsTrigger>
-            <TabsTrigger value="experiencia" className="px-6">Experiencia</TabsTrigger>
-            <TabsTrigger value="certificaciones" className="px-6">Certificaciones</TabsTrigger>
-            <TabsTrigger value="portafolio" className="px-6">Portafolio</TabsTrigger>
-            <TabsTrigger value="estadisticas" className="px-6">Estadísticas</TabsTrigger>
+            <TabsTrigger value="resumen" className="px-6">
+              Resumen
+            </TabsTrigger>
+            <TabsTrigger value="ofertas" className="px-6">
+              Ofertas
+            </TabsTrigger>
+            <TabsTrigger value="experiencia" className="px-6">
+              Experiencia
+            </TabsTrigger>
+            <TabsTrigger value="certificaciones" className="px-6">
+              Certificaciones
+            </TabsTrigger>
+            <TabsTrigger value="portafolio" className="px-6">
+              Portafolio
+            </TabsTrigger>
+            <TabsTrigger value="estadisticas" className="px-6">
+              Estadísticas
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="resumen" className="space-y-8">
-
-
             <section>
               <h2 className="text-xl font-bold text-gray-900 mb-4">Ofertas Destacadas</h2>
-              {isLoading && (
-                <p className="text-gray-500 text-sm">Cargando ofertas...</p>
-              )}
+              {isLoading && <p className="text-gray-500 text-sm">Cargando ofertas...</p>}
               {isError && (
-                <p className="text-red-500 text-sm">No se pudieron cargar las ofertas de este fixer.</p>
+                <p className="text-red-500 text-sm">
+                  No se pudieron cargar las ofertas de este fixer.
+                </p>
               )}
               {!isLoading && !isError && mappedOffers.length === 0 && (
                 <p className="text-gray-500 text-sm">Este fixer aún no tiene ofertas publicadas.</p>
@@ -151,12 +161,7 @@ export default function FixerProfilePage() {
               {!isLoading && !isError && mappedOffers.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {mappedOffers.map((offer) => (
-                    <JobOfferCard
-                      key={offer._id}
-                      offer={offer}
-                      readOnly
-                      className="h-full"
-                    />
+                    <JobOfferCard key={offer._id} offer={offer} readOnly className="h-full" />
                   ))}
                 </div>
               )}
@@ -164,11 +169,11 @@ export default function FixerProfilePage() {
           </TabsContent>
 
           <TabsContent value="ofertas">
-            {isLoading && (
-              <p className="text-gray-500 text-sm">Cargando ofertas...</p>
-            )}
+            {isLoading && <p className="text-gray-500 text-sm">Cargando ofertas...</p>}
             {isError && (
-              <p className="text-red-500 text-sm">No se pudieron cargar las ofertas de este fixer.</p>
+              <p className="text-red-500 text-sm">
+                No se pudieron cargar las ofertas de este fixer.
+              </p>
             )}
             {!isLoading && !isError && mappedOffers.length === 0 && (
               <p className="text-gray-500 text-sm">Este fixer aún no tiene ofertas publicadas.</p>
@@ -176,12 +181,7 @@ export default function FixerProfilePage() {
             {!isLoading && !isError && mappedOffers.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {mappedOffers.map((offer) => (
-                  <JobOfferCard
-                    key={offer._id}
-                    offer={offer}
-                    readOnly
-                    className="h-full"
-                  />
+                  <JobOfferCard key={offer._id} offer={offer} readOnly className="h-full" />
                 ))}
               </div>
             )}
@@ -204,5 +204,5 @@ export default function FixerProfilePage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

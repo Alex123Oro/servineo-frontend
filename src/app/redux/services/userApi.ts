@@ -1,57 +1,58 @@
 // refactorizar  las rutas
 
-import { baseApi } from "./baseApi"
-import type { IUserProfile } from "@/types/job-offer"
-import type { IUser } from "@/types/user"
+import { baseApi } from './baseApi';
+import type { IUserProfile } from '@/types/job-offer';
+import type { IUser } from '@/types/user';
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
     createUserProfile: builder.mutation<IUserProfile, IUserProfile>({
       query: (body) => ({
-        url: "/user-profiles",
-        method: "POST",
+        url: '/user-profiles',
+        method: 'POST',
         body,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ['User'],
     }),
 
     getUserProfiles: builder.query<IUserProfile[], void>({
-      query: () => "/user-profiles",
-      providesTags: ["User"],
+      query: () => '/user-profiles',
+      providesTags: ['User'],
     }),
     updateDescription: builder.mutation<IUser, { id: string; description: string }>({
       query: ({ id, description }) => ({
         url: `/user/${id}/description`,
-        method: "POST",
+        method: 'POST',
         body: { description },
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ['User'],
     }),
 
     getUsersByRole: builder.query<IUserProfile[], string>({
       query: (role) => `/user-profiles/role/${role}`,
-      providesTags: ["User"],
+      providesTags: ['User'],
     }),
 
-    convertToFixer: builder.mutation<IUserProfile, { id: string; profile: IUserProfile["profile"] }>({
+    convertToFixer: builder.mutation<
+      IUserProfile,
+      { id: string; profile: IUserProfile['profile'] }
+    >({
       query: ({ id, profile }) => ({
         url: `/user-profiles/${id}/convert-fixer`,
-        method: "PATCH",
+        method: 'PATCH',
         body: { profile },
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ['User'],
     }),
 
     getUserById: builder.query<IUser, string>({
       query: (id) => `/user/${id}`,
-      providesTags: ["User"],
+      providesTags: ['User'],
     }),
-
   }),
 
   overrideExisting: false,
-})
+});
 
 export const {
   useCreateUserProfileMutation,
@@ -61,5 +62,4 @@ export const {
   useConvertToFixerMutation,
   useLazyGetUserByIdQuery,
   useGetUserByIdQuery,
-
-} = userApi
+} = userApi;

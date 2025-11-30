@@ -1,38 +1,33 @@
-"use client"
+'use client';
 
-import { useRouter } from 'next/navigation'
-import { MapPin, Star, ChevronRight, MessageCircle } from "lucide-react"
-import type { JobOffer } from "@/app/lib/mock-data"
-import { ImageCarousel } from "@/Components/Shared/ImageCarousel"
-import Image from "next/image"
+import { useRouter } from 'next/navigation';
+import { MapPin, Star, ChevronRight, MessageCircle } from 'lucide-react';
+import type { JobOffer } from '@/app/lib/mock-data';
+import { ImageCarousel } from '@/Components/Shared/ImageCarousel';
+import Image from 'next/image';
 
 interface JobOfferCardProps {
-  offer: JobOffer
-  showFixerInfo?: boolean
-  onClick?: () => void
+  offer: JobOffer;
+  showFixerInfo?: boolean;
+  onClick?: () => void;
 }
 
-export function JobOfferCard({
-  offer,
-  showFixerInfo = true,
-  onClick
-}: JobOfferCardProps) {
-  const router = useRouter()
+export function JobOfferCard({ offer, showFixerInfo = true, onClick }: JobOfferCardProps) {
+  const router = useRouter();
 
   const handleCardClick = () => {
     if (onClick) {
-      onClick()
+      onClick();
     }
-  }
+  };
 
   const handleViewProfile = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    router.push(`/fixer/${offer.fixerId}`)
-  }
+    e.stopPropagation();
+    router.push(`/fixer/${offer.fixerId}`);
+  };
 
-  const images = offer.photos?.length > 0
-    ? offer.photos
-    : ["/placeholder.svg?height=180&width=320&text=Oferta"]
+  const images =
+    offer.photos?.length > 0 ? offer.photos : ['/placeholder.svg?height=180&width=320&text=Oferta'];
 
   return (
     <div
@@ -40,10 +35,7 @@ export function JobOfferCard({
       className="group relative w-full overflow-hidden rounded-xl  border-primary border-2 bg-white shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
     >
       <div className="h-48 w-full relative">
-        <ImageCarousel
-          images={images}
-          alt={offer.title || 'Oferta de trabajo'}
-        />
+        <ImageCarousel images={images} alt={offer.title || 'Oferta de trabajo'} />
 
         {/* City Badge */}
         <div className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs text-slate-700 shadow-sm border border-gray-200">
@@ -75,12 +67,8 @@ export function JobOfferCard({
       <div className="p-4 flex flex-col h-full">
         <div className="flex-1">
           <div className="mb-3">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">
-              {offer.title}
-            </h3>
-            <p className="text-sm text-gray-500 line-clamp-2">
-              {offer.description}
-            </p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">{offer.title}</h3>
+            <p className="text-sm text-gray-500 line-clamp-2">{offer.description}</p>
           </div>
 
           {/* Service Type */}
@@ -95,10 +83,7 @@ export function JobOfferCard({
 
         {/* Fixer Info - Ahora en la parte inferior */}
         {showFixerInfo && (
-          <div
-            className="mt-4 pt-3 border-t border-gray-100"
-            onClick={handleViewProfile}
-          >
+          <div className="mt-4 pt-3 border-t border-gray-100" onClick={handleViewProfile}>
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
                 {offer.fixerPhoto ? (
@@ -134,5 +119,5 @@ export function JobOfferCard({
         )}
       </div>
     </div>
-  )
+  );
 }

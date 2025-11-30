@@ -1,5 +1,5 @@
-"use client";
-import { useEffect, useMemo, useState } from "react";
+'use client';
+import { useEffect, useMemo, useState } from 'react';
 //BASE DE DATOS (DE MOMENTO POSTMAN)
 const API = process.env.NEXT_PUBLIC_API_BASE_URL as string;
 type CitaResponse = {
@@ -13,8 +13,8 @@ type CitaResponse = {
   };
   DetalleCita: {
     id_Cita: string;
-    estado_Cita: "Activo" | "Cancelado";
-    modalidad_Cita: "Presencial" | "Virtual";
+    estado_Cita: 'Activo' | 'Cancelado';
+    modalidad_Cita: 'Presencial' | 'Virtual';
     descripcion_Cita: string;
     id_Ubicacion: string;
   };
@@ -31,7 +31,7 @@ type CitaResponse = {
     id_Horario: string;
     Hora_Inicio: string;
     Hora_Fin: string;
-    estado_Horario: "libre" | "ocupado" | "no_disponible";
+    estado_Horario: 'libre' | 'ocupado' | 'no_disponible';
   };
   Ubicacion: {
     id_Ubicacion: string;
@@ -54,14 +54,14 @@ type CitaResponse = {
 
 function formatFechaHora(iso: string) {
   const d = new Date(iso);
-  const fmtFecha = d.toLocaleDateString("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
+  const fmtFecha = d.toLocaleDateString('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
   });
-  const fmtHora = d.toLocaleTimeString("es-ES", {
-    hour: "numeric",
-    minute: "2-digit",
+  const fmtHora = d.toLocaleTimeString('es-ES', {
+    hour: 'numeric',
+    minute: '2-digit',
   });
   return { fmtFecha, fmtHora };
 }
@@ -77,37 +77,34 @@ export default function EditBookingModal({
 }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState("");
+  const [err, setErr] = useState('');
   const [data, setData] = useState<CitaResponse | null>(null);
   const [descEditable, setDescEditable] = useState(false);
-  const [desc, setDesc] = useState("");
+  const [desc, setDesc] = useState('');
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        setErr("");
+        setErr('');
         const res = await fetch(`${API}/citas/${bookingId}`);
         const txt = await res.text();
         if (!res.ok) throw new Error(`No se pudo cargar la cita (HTTP ${res.status})`);
         const json: CitaResponse = JSON.parse(txt);
         setData(json);
-        setDesc(json.DetalleCita?.descripcion_Cita ?? "");
+        setDesc(json.DetalleCita?.descripcion_Cita ?? '');
       } catch (e) {
         if (e instanceof Error) setErr(e.message);
-        else setErr("Error desconocido");
+        else setErr('Error desconocido');
       } finally {
         setLoading(false);
       }
     })();
   }, [bookingId]);
 
-  const titulo = useMemo(
-    () => data?.Requester?.nombre_Requester ?? "—",
-    [data]
-  );
+  const titulo = useMemo(() => data?.Requester?.nombre_Requester ?? '—', [data]);
   const { fmtFecha, fmtHora } = useMemo(() => {
-    if (!data) return { fmtFecha: "—", fmtHora: "—" };
+    if (!data) return { fmtFecha: '—', fmtHora: '—' };
     return formatFechaHora(data.Cita.fecha_Cita);
   }, [data]);
 
@@ -115,33 +112,32 @@ export default function EditBookingModal({
     if (!data) return;
     try {
       setSaving(true);
-      setErr("");
+      setErr('');
       if (descEditable && desc !== data.DetalleCita.descripcion_Cita) {
         const r2 = await fetch(`${API}/citas/${data.Cita.id_Cita}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            DetalleCita: { 
-              descripcion_Cita: desc, 
-              modalidad_Cita: data.DetalleCita.modalidad_Cita 
+            DetalleCita: {
+              descripcion_Cita: desc,
+              modalidad_Cita: data.DetalleCita.modalidad_Cita,
             },
           }),
         });
-        if (!r2.ok) throw new Error("No se pudo guardar la descripción");
+        if (!r2.ok) throw new Error('No se pudo guardar la descripción');
       }
 
       onSaved?.();
       onClose();
     } catch (e) {
       if (e instanceof Error) setErr(e.message);
-      else setErr("Error al guardar");
+      else setErr('Error al guardar');
     } finally {
       setSaving(false);
     }
   }
 
-  const handleEditUbicacion = () => {
-  };
+  const handleEditUbicacion = () => {};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -191,7 +187,7 @@ export default function EditBookingModal({
               </label>
 
               <input
-                value={data.Ubicacion?.direccion ?? ""}
+                value={data.Ubicacion?.direccion ?? ''}
                 readOnly
                 className="w-full rounded-xl border bg-slate-100 p-2.5 text-[15px] text-slate-700"
               />
@@ -208,10 +204,10 @@ export default function EditBookingModal({
                   onClick={() => setDescEditable((v) => !v)}
                   className={`rounded-md p-1 ${
                     descEditable
-                      ? "bg-amber-100 text-amber-700"
-                      : "text-slate-800 hover:bg-slate-100"
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'text-slate-800 hover:bg-slate-100'
                   }`}
-                  title={descEditable ? "Salir de edición" : "Editar"}
+                  title={descEditable ? 'Salir de edición' : 'Editar'}
                 >
                   ✎
                 </button>
@@ -230,8 +226,8 @@ export default function EditBookingModal({
                 placeholder="Describe el trabajo…"
                 className={`w-full resize-none rounded-xl border p-2.5 text-[15px] transition ${
                   descEditable
-                    ? "bg-white ring-2 ring-sky-400 border-sky-300 text-gray-900"
-                    : "bg-slate-100 text-slate-600"
+                    ? 'bg-white ring-2 ring-sky-400 border-sky-300 text-gray-900'
+                    : 'bg-slate-100 text-slate-600'
                 }`}
               />
               {descEditable && (
@@ -255,7 +251,7 @@ export default function EditBookingModal({
                 disabled={saving}
                 className="rounded-2xl bg-sky-600 px-5 py-2.5 text-[15px] font-medium text-white hover:bg-sky-700 disabled:opacity-60"
               >
-                {saving ? "Guardando…" : "Aceptar"}
+                {saving ? 'Guardando…' : 'Aceptar'}
               </button>
             </div>
           </>

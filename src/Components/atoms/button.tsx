@@ -10,7 +10,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = 'px-4 py-2 rounded text-sm transition-colors';
     const variants = {
       primary: 'bg-[#2B6AE0] text-white disabled:opacity-60 disabled:cursor-not-allowed',
-      secondary: 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+      secondary: 'bg-gray-300 text-gray-700 hover:bg-gray-400',
     };
 
     return (
@@ -23,7 +23,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {loading ? 'Actualizando...' : children}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = 'Button';

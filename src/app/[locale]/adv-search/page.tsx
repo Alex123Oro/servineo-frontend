@@ -39,7 +39,9 @@ function AdvancedSearchPage() {
 
   const CITIES = DB_VALUES.cities.map((dbValue, index) => ({
     dbValue,
-    label: t(`city.options.${['beni', 'chuquisaca', 'cochabamba', 'laPaz', 'oruro', 'pando', 'potosi', 'santaCruz', 'tarija'][index]}`),
+    label: t(
+      `city.options.${['beni', 'chuquisaca', 'cochabamba', 'laPaz', 'oruro', 'pando', 'potosi', 'santaCruz', 'tarija'][index]}`,
+    ),
   }));
 
   const JOBS = DB_VALUES.jobTypes.map((dbValue, index) => ({

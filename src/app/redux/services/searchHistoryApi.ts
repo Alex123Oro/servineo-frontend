@@ -35,7 +35,7 @@ export const searchHistoryApi = baseApi.injectEndpoints({
         // Asegurar que existe sessionId antes de cada petición
         ensureSessionId();
         const sessionId = localStorage.getItem('sessionId') || '';
-        
+
         return {
           url: `/devmaster/offers`,
           params: {
@@ -67,7 +67,7 @@ export const searchHistoryApi = baseApi.injectEndpoints({
       query: (searchTerm) => {
         ensureSessionId();
         const sessionId = localStorage.getItem('sessionId') || '';
-        
+
         return {
           url: `/devmaster/offers`,
           params: {
@@ -99,7 +99,7 @@ export const searchHistoryApi = baseApi.injectEndpoints({
       query: () => {
         ensureSessionId();
         const sessionId = localStorage.getItem('sessionId') || '';
-        
+
         return {
           url: `/devmaster/offers`,
           params: {
@@ -130,7 +130,7 @@ export const searchHistoryApi = baseApi.injectEndpoints({
       query: ({ query, limit = 6 }) => {
         ensureSessionId();
         const sessionId = localStorage.getItem('sessionId') || '';
-        
+
         return {
           url: `/devmaster/offers`,
           params: {
@@ -151,9 +151,7 @@ export const searchHistoryApi = baseApi.injectEndpoints({
         }
 
         if (response.success && response.suggestions) {
-          return response.suggestions
-            .map((s) => String(s.term ?? ''))
-            .filter(Boolean);
+          return response.suggestions.map((s) => String(s.term ?? '')).filter(Boolean);
         }
         return [];
       },

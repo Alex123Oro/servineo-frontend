@@ -7,7 +7,7 @@ export const fixerApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getFixerById: builder.query<IUserProfile, string>({
       query: (id) => `user-profiles/${id}`,
-      providesTags: (result) => result ? [{ type: 'User', id: result.user.id }] : [],
+      providesTags: (result) => (result ? [{ type: 'User', id: result.user.id }] : []),
     }),
 
     getFixers: builder.query<IUserProfile[], void>({
@@ -34,8 +34,4 @@ export const fixerApi = baseApi.injectEndpoints({
   }),
 });
 
-export const {
-  useGetFixerByIdQuery,
-  useGetFixersQuery,
-  useGetJobsByFixerQuery,
-} = fixerApi;
+export const { useGetFixerByIdQuery, useGetFixersQuery, useGetJobsByFixerQuery } = fixerApi;
