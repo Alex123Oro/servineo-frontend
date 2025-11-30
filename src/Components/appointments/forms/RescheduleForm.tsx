@@ -38,6 +38,14 @@ const baseSchema = z.object({
     .string()
     .regex(/^[67]\d{7}$/, "Ingrese un número de teléfono válido (8 dígitos)")
     .nonempty("Ingrese un número de teléfono"),
+    
+  mail: z.string()
+    .email("Ingrese un correo electrónico válido")
+    .refine((email) => email.endsWith('@gmail.com'), {
+            message: "El correo debe ser de Gmail (@gmail.com)"})
+    .optional()
+    .or(z.literal('')), // Permite campo vacío
+  
   description: z
     .string()
     .nonempty("Ingrese una descripción de trabajo")
@@ -119,6 +127,8 @@ export default forwardRef<RescheduleFormHandle, RescheduleFormProps>(
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const [mail, setMail] = useState(""); 
 
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [showReminderModal, setShowReminderModal] = useState(false);
@@ -213,6 +223,7 @@ export default forwardRef<RescheduleFormHandle, RescheduleFormProps>(
         setClient(ap.current_requester_name || "");
         setContact(ap.current_requester_phone || "");
         setDescription(ap.appointment_description || "");
+        setMail(Array.isArray(ap.mail) ? ap.mail[0] : ap.mail || "");
 
         const isPresential = ap.appointment_type === "presential";
         setModality(isPresential ? "presential" : "virtual");
@@ -369,6 +380,7 @@ export default forwardRef<RescheduleFormHandle, RescheduleFormProps>(
           appointment_description: description,
           current_requester_name: client,
           current_requester_phone: contact,
+          mail: mail ? [mail] : [],
           link_id: modality === "virtual" ? meetingLink : "",
           display_name_location:
             modality === "presential" ? place : "",
@@ -561,6 +573,23 @@ export default forwardRef<RescheduleFormHandle, RescheduleFormProps>(
                         {errors.contact}
                       </p>
                     )}
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3">
+                  <label className="block">
+                    <span className="text-sm font-medium">Correo electrónico (Opcional)</span>
+                    <input
+                      type="email"
+                      value={mail}
+                      onChange={(e) => setMail(e.target.value)}
+                      placeholder="usuario@gmail.com"
+                      className="mt-1 block w-full border rounded px-3 py-2 bg-white"
+                    />
+                    {errors.mail && <p className="text-red-600 text-sm mt-1">{errors.mail}</p>}
+                    <p className="text-xs text-gray-500 mt-1">
+                      Solo se aceptan correos de Gmail
+                    </p>
                   </label>
                 </div>
 
