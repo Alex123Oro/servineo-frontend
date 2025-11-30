@@ -35,7 +35,6 @@ export default function RootLayout({
           <AuthProvider>
             <TourLogic />
             <div className="">
-              <TopMenu />
             </div>
             {children}
             <FooterSection />

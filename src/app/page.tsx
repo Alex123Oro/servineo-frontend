@@ -9,7 +9,7 @@ import InspirationSection from '@/Components/Home/Inspiration-section';
 import RecentOffersSection from '@/Components/Home/RecentOffer-secction';
 import RequestsSection from '@/Components/Home/Requests-section';
 import dynamic from 'next/dynamic';
-import { UserData } from '@/types/User';
+import { UserData } from '@/types/user';
 
 const MyOffer = dynamic(() => import('@/Components/Home/MyOffer-section'), {
   ssr: false,
@@ -49,7 +49,7 @@ export default function Home() {
       />
 
       {/* Hero cambia según el rol */}
-      <HeroSection isFixer={isFixer} />
+      <HeroSection/>
 
       {/* Sección intermedia: mapa + ofertas / MyOffer */}
       <section className={isFixer ? 'bg-white' : 'py-16 px-4 bg-white'}>
@@ -86,11 +86,6 @@ export default function Home() {
           <RequestsSection />
         ) : (
           <ServicesSection
-            showHero={false}
-            showAllServices={false}
-            showCTA={false}
-            title="Servicios Disponibles"
-            subtitle="Encuentra el profesional perfecto para cualquier trabajo en tu hogar"
           />
         )}
       </div>

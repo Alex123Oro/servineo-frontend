@@ -6,10 +6,10 @@ import { Menu, X, Wrench, UserCircle } from 'lucide-react';
 import { useGetUserByIdQuery } from '@/app/redux/services/userApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '@/app/redux/slice/userSlice';
-import { IUser } from '@/types/user';
+import { UserData } from '@/types/user';
 
 interface UserState {
-  user: IUser | null;
+  user: UserData | null;
   isAuthenticated: boolean;
   loading: boolean;
 }
