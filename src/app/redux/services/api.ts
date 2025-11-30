@@ -16,10 +16,7 @@ class ApiClient {
     this.timeout = timeout;
   }
 
-  private async request<T>(
-    url: string,
-    options: RequestInit
-  ): Promise<ApiResponse<T>> {
+  private async request<T>(url: string, options: RequestInit): Promise<ApiResponse<T>> {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), this.timeout);
 
@@ -31,15 +28,12 @@ class ApiClient {
           'Content-Type': 'application/json',
           ...(options.headers || {}),
         },
-        mode: 'cors',
-        credentials: 'include',
       });
 
       const data = await response.json();
       return { success: response.ok, data, message: data.message };
-    } 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    catch (error: any) {
+    } catch (error: any) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return { success: false, error: error.message };
     } finally {
       clearTimeout(id);

@@ -1,43 +1,39 @@
-import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from "react"
-import TabsTrigger, { type TabsTriggerProps } from "./TabsTrigger"
-import TabsContent from "./TabsContent"
+'use client';
+
+import * as React from 'react';
+import TabsList from './TabsList';
+import TabsTrigger from './TabsTrigger';
+import TabsContent from './TabsContent';
+
+interface TabsContextValue {
+  value: string;
+  onValueChange: (value: string) => void;
+}
+
+const TabsContext = React.createContext<TabsContextValue | undefined>(undefined);
+
+export const useTabs = () => {
+  const context = React.useContext(TabsContext);
+  if (!context) {
+    throw new Error('Tabs components must be used within a Tabs provider');
+  }
+  return context;
+};
 
 interface TabsProps {
-  value: string
-  onValueChange: (value: string) => void
-  className?: string
-  children: ReactNode
+  value: string;
+  onValueChange: (value: string) => void;
+  children: React.ReactNode;
+  className?: string;
 }
 
-const Tabs = ({ value, onValueChange, className, children }: TabsProps) => {
-  const enhance = (node: ReactNode): ReactNode => {
-    if (!isValidElement(node)) return node
+const Tabs = ({ value, onValueChange, children, className }: TabsProps) => {
+  return (
+    <TabsContext.Provider value={{ value, onValueChange }}>
+      <div className={className}>{children}</div>
+    </TabsContext.Provider>
+  );
+};
 
-    if (node.type === TabsTrigger) {
-      return cloneElement(node as ReactElement<TabsTriggerProps>, {
-        activeTab: value,
-        onValueChange,
-      })
-    }
-
-    if (node.type === TabsContent) {
-      return cloneElement(node as ReactElement<{ activeTab?: string }>, {
-        activeTab: value,
-      })
-    }
-
-    const { children: nestedChildren, ...rest } = (node as ReactElement<{ children?: ReactNode }>).props
-    if (nestedChildren) {
-      return cloneElement(node as ReactElement<{ children?: ReactNode }>, {
-        ...rest,
-        children: Children.map(nestedChildren, enhance),
-      })
-    }
-
-    return node
-  }
-
-  return <div className={`w-full ${className || ""}`}>{Children.map(children, enhance)}</div>
-}
-
+export { Tabs, TabsList, TabsTrigger, TabsContent, TabsContext };
 export default Tabs;
