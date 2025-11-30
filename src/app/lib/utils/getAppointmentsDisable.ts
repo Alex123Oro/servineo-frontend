@@ -41,15 +41,8 @@ export async function getAppointmentsDisable(fixerId: string): Promise<Days> {
       };
     }
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Error de Axios:', {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-    } else {
       console.error('Error desconocido:', error);
-    }
+
     return {
       lunes: [],
       martes: [],

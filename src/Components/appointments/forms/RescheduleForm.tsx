@@ -161,7 +161,21 @@ export default forwardRef<RescheduleFormHandle, RescheduleFormProps>(function Re
         `&appointment_date=${encodeURIComponent(ymd(pastDate))}T00:00:00.000Z` +
         `&start_hour=${encodeURIComponent(String(startHour(pastDate)))}`;
 
-      const res = await axios.get(url, {
+      interface AppointmentResponse {
+        data?: {
+          _id?: string;
+          current_requester_name?: string;
+          current_requester_phone?: string;
+          appointment_description?: string;
+          appointment_type?: string;
+          latitude?: number;
+          longitude?: number;
+          display_name_location?: string;
+          link_id?: string;
+        };
+      }
+
+      const res = await axios.get<AppointmentResponse>(url, {
         headers: { Accept: 'application/json' },
         timeout: 10000,
       });
@@ -257,7 +271,7 @@ export default forwardRef<RescheduleFormHandle, RescheduleFormProps>(function Re
         timeout: 10000,
       });
 
-      const updateData = updateRes?.data;
+      const updateData = updateRes?.data as { modified?: boolean; message?: string };
       console.log('update response:', updateRes.status, updateData);
 
       if (updateRes.status >= 400 || updateData?.modified === false) {
@@ -297,14 +311,14 @@ export default forwardRef<RescheduleFormHandle, RescheduleFormProps>(function Re
         },
       );
 
-      const createData = createRes?.data;
+      const createData: { success?: boolean; message?: string } = createRes?.data || {};
       console.log('create response:', createRes.status, createData);
 
-      if (createRes.status >= 400 || (createData && createData.success === false)) {
-        throw new Error(createData?.message || `Creación fallida (status ${createRes.status})`);
+      if (createRes.status >= 400 || (createData.success === false)) {
+        throw new Error(createData.message || `Creación fallida (status ${createRes.status})`);
       }
 
-      console.log('✅ Nueva cita creada');
+      console.log('Nueva cita creada');
 
       //  --- MOSTRAR RESUMEN ---
       const startLocal = new Date(createPayload.starting_time);

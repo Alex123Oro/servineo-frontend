@@ -204,7 +204,7 @@ const AppointmentForm = forwardRef<AppointmentFormHandle, AppointmentFormProps>(
           'https://servineo-backend-lorem.onrender.com/api/crud_create/appointments/create',
           payload,
         );
-        const data = res.data;
+        const data = res.data as { success?: boolean; message?: string };
 
         if (data && data.success === false) {
           setErrors({ general: data.message || 'No se pudo crear la cita.' });
@@ -231,6 +231,7 @@ const AppointmentForm = forwardRef<AppointmentFormHandle, AppointmentFormProps>(
             modality,
             locationOrLink: modality === 'virtual' ? meetingLink : place,
             description,
+
           });
           setShowSummary(true);
         }

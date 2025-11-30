@@ -99,7 +99,7 @@ export const CancelDaysAppointments: React.FC<CancelDaysAppointmentsProps> = ({
     try {
       const date = `${year}-${String(month + 1).padStart(2, '0')}-01`;
 
-      const response = await axios.get(
+      const response = await axios.get<{ appointments?: Appointment[] }>(
         `${API_BASE}/crud_read/appointments/get_all_appointments_by_fixer_date`,
         {
           params: {
@@ -109,11 +109,7 @@ export const CancelDaysAppointments: React.FC<CancelDaysAppointmentsProps> = ({
         },
       );
 
-      if (
-        response.data &&
-        response.data.appointments &&
-        Array.isArray(response.data.appointments)
-      ) {
+      if (response.data && Array.isArray(response.data.appointments)) {
         const appointmentsByDay: {
           [key: string]: {
             count: number;
@@ -184,7 +180,7 @@ export const CancelDaysAppointments: React.FC<CancelDaysAppointmentsProps> = ({
       try {
         console.log('Canceling appointment ID:', appointmentId);
 
-        const response = await axios.put(
+        const response = await axios.put<{ succeed?: boolean }>(
           `${API_BASE}/crud_update/appointments/update_cancell_appointment_fixer?appointment_id=${appointmentId}`,
           {},
           {
@@ -194,7 +190,7 @@ export const CancelDaysAppointments: React.FC<CancelDaysAppointmentsProps> = ({
           },
         );
 
-        if (response.data && response.data.succeed === true) {
+        if (response.data?.succeed === true) {
           successCount++;
         } else {
           failedCount++;
