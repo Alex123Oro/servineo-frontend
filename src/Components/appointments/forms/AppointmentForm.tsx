@@ -234,7 +234,7 @@ const AppointmentForm = forwardRef<AppointmentFormHandle, AppointmentFormProps>(
             setLoading(true);
             try {
                 const res = await axios.post(
-                    "https://servineo-backend-lorem.onrender.com/api/crud_create/appointments/create",
+                    `${process.env.NEXT_PUBLIC_BACKEND}/api/crud_create/appointments/create`,
                     payload
                 );
                 const data = res.data;

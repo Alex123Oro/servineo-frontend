@@ -50,7 +50,7 @@ export const CancelDaysAppointments: React.FC<CancelDaysAppointmentsProps> = ({
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [totalAppointmentsToCancel, setTotalAppointmentsToCancel] = useState(0);
 
-  const API_BASE = 'https://servineo-backend-lorem.onrender.com/api';
+  const API_BASE = `${process.env.NEXT_PUBLIC_BACKEND || 'https://servineo-backend-lorem.onrender.com'}/api`;
 
   const months = [
     'Enero',
@@ -275,7 +275,7 @@ export const CancelDaysAppointments: React.FC<CancelDaysAppointmentsProps> = ({
     };
 
     loadData();
-  });
+  }, [isOpen, currentMonth, currentYear]);
 
   const toggleDaySelection = (date: string) => {
     setSelectedDays((prev) => {
@@ -426,11 +426,10 @@ export const CancelDaysAppointments: React.FC<CancelDaysAppointmentsProps> = ({
                   {daysWithAppointments.map((day) => (
                     <div
                       key={day.date}
-                      className={`text-black flex items-center justify-between p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                        selectedDays.includes(day.date)
-                          ? 'bg-blue-50 border-blue-500 shadow-sm'
-                          : 'border-gray-200 hover:bg-gray-50 hover:border-gray-300'
-                      } ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
+                      className={`text-black flex items-center justify-between p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedDays.includes(day.date)
+                        ? 'bg-blue-50 border-blue-500 shadow-sm'
+                        : 'border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                        } ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
                       onClick={() => !isLoading && toggleDaySelection(day.date)}
                     >
                       <div className="flex flex-col flex-1 min-w-0">
@@ -444,11 +443,10 @@ export const CancelDaysAppointments: React.FC<CancelDaysAppointmentsProps> = ({
                       </div>
 
                       <div
-                        className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 border-2 rounded flex items-center justify-center transition-colors ml-2 ${
-                          selectedDays.includes(day.date)
-                            ? 'bg-blue-600 border-blue-600'
-                            : 'border-gray-400'
-                        }`}
+                        className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 border-2 rounded flex items-center justify-center transition-colors ml-2 ${selectedDays.includes(day.date)
+                          ? 'bg-blue-600 border-blue-600'
+                          : 'border-gray-400'
+                          }`}
                       >
                         {selectedDays.includes(day.date) && (
                           <svg
