@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { MapPin, Phone, Mail, Lock } from 'lucide-react';
-import { UserData } from '@/types/User';
+import { UserData } from '@/types/user';
 
 export default function UserProfileSummary() {
   const [user, setUser] = useState<UserData | null>(null);

@@ -6,7 +6,7 @@ import { Bell, BellOff, ShieldCheck, User2, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../lib/hooks/usoAutentificacion";
 import type { User } from "../redux/services/services/registro";
-import { UserData } from "@/types/User";
+import { UserData } from "@/types/user";
 
 export default function MiPerfilPage() {
   const router = useRouter();

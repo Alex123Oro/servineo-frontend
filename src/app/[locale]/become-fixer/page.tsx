@@ -5,14 +5,14 @@ import FixerRegisterForm from '@/Components/fixer/Fixer-register-form';
 import { FixerEnableWizard } from '@/Components/fixer/Filter-eneable-wizard';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/redux/store';
-import { IUser } from '@/types/user';
+import { UserData } from '@/types/user';
 import { useRouter } from 'next/navigation';
 
 export default function BecomeFixerPage() {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user.user);
 
-  const [requester, setRequester] = useState<IUser | null>(null);
+  const [requester, setRequester] = useState<UserData | null>(null);
 
   useEffect(() => {
     if (user?.role === 'fixer') {
@@ -44,7 +44,7 @@ export default function BecomeFixerPage() {
               <FixerRegisterForm
                 defaultValues={defaultValues}
                 onSubmit={(data) => {
-                  const finalUser: IUser = {
+                  const finalUser: UserData = {
                     _id: user?._id || '',
                     name: data.name || user?.name || '',
                     email: data.email || user?.email || '',

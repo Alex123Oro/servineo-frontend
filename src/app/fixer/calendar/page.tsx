@@ -1,71 +1,272 @@
-'use client';
+"use client";
 
-import { JobOffer } from '@/app/lib/mock-data';
-import { useEffect, useState } from 'react';
-import { mockJobOfferService, currentFixer } from '@/app/lib/mock-data';
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useRouter } from 'next/navigation';
+import DesktopCalendar from "@/Components/calendar/DesktopCalendar";
+import { UserRoleProvider } from "@/lib/utils/contexts/UserRoleContext";
+import MobileCalendar from "@/Components/calendar/mobile/MobileCalendar";
+import MobileList from "@/Components/list/MobileList";
+import { ModeSelectionModal, ModeSelectionModalHandles } from '@/Components/appointments/forms/ModeSelectionModal';
+import CancelDaysAppointments from "@/Components/appointments/forms/CancelDaysAppointment";
 
-export default function MyOfferCalendar() {
-  const [offers, setOffers] = useState<JobOffer[]>([]);
+import useDailyConts from "@/lib/utils/useDailyConts";
+import useSixMonthsAppointments from '@/hooks/useSixMonthsAppointments';
+import { AppointmentsProvider } from "@/lib/utils/contexts/AppointmentsContext/AppoinmentsContext";
+import { AppointmentsStatusProvider } from "@/lib/utils/contexts/DayliViewRequesterContext";
 
-  useEffect(() => {
-    const myOffers = mockJobOfferService.getMyOffers(currentFixer.id);
-    setOffers(myOffers);
-  }, []);
+export default function CalendarPage() {
+    const router = useRouter();
+    const modeModalRef = useRef<ModeSelectionModalHandles>(null);
 
-  const daysInMonth = 30; // Noviembre
-  const monthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const [fixer_id, setFixerId] = useState<string>('');
+    const [requester_id, setRequesterId] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [userRole, setUserRole] = useState<'requester' | 'fixer'>('requester');
+    
+    useEffect(() => {
+        // Intentar obtener datos desde localStorage primero (datos del usuario logueado)
+        const loadUserData = () => {
+            try {
+                const userStr = localStorage.getItem('servineo_user');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    const userId = user.id || '';
+                    const role = user.role || 'requester';
+                    
+                    if (role === 'fixer') {
+                        setFixerId(userId);
+                        setRequesterId(userId);
+                        setUserRole('fixer');
+                        setIsLoading(false);
+                        return;
+                    } else {
+                        setRequesterId(userId);
+                        // Si es requester, intentar obtener fixer_id de sessionStorage o URL
+                        const storedFixerId = sessionStorage.getItem('fixer_id');
+                        if (storedFixerId) {
+                            setFixerId(storedFixerId);
+                            setUserRole('requester');
+                            setIsLoading(false);
+                            return;
+                        }
+                    }
+                }
+                
+                // Fallback a sessionStorage si no hay datos en localStorage
+                const storedFixerId = sessionStorage.getItem('fixer_id');
+                const storedRequesterId = sessionStorage.getItem('requester_id');
+                const storedRoleUser = sessionStorage.getItem('roluser');
+                
+                if (storedFixerId) {
+                    setFixerId(storedFixerId);
+                    setRequesterId(storedRequesterId || '');
+                    setUserRole(storedRoleUser === 'fixer' ? 'fixer' : 'requester');
+                    setIsLoading(false);
+                } else {
+                    // Si no hay datos, redirigir al inicio
+                    router.push('/');
+                }
+            } catch (error) {
+                console.error('Error loading calendar data:', error);
+                router.push('/');
+            }
+        };
 
-  const offersByDay = monthDays.map((day) =>
-    offers.filter((_, idx) => (idx % daysInMonth) + 1 === day),
-  );
+        loadUserData();
+    }, [router]);
 
-  return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto bg-gray-50 rounded-xl shadow-lg">
-      <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">
-        Calendario de Reservas - Noviembre
-      </h2>
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
-      {/* Encabezado días de la semana */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center font-semibold text-gray-700 mb-2 sm:mb-4 text-xs sm:text-sm">
-        {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((d) => (
-          <div key={d} className="p-1 sm:p-2 bg-blue-600 text-white rounded-lg shadow">
-            {d}
-          </div>
-        ))}
-      </div>
+    const today = useMemo(() => {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }, []);
 
-      {/* Contenedor scrollable en móvil */}
-      <div className="overflow-x-auto">
-        <div className="grid grid-cols-7 gap-2 min-w-[700px] sm:min-w-full">
-          {monthDays.map((day, idx) => (
-            <div
-              key={day}
-              className="border border-gray-300 p-2 sm:p-3 min-h-[120px] sm:min-h-[160px] flex flex-col rounded-lg bg-white shadow hover:shadow-xl transition-all duration-300 overflow-hidden text-xs sm:text-sm"
+    const handleDataChange = (newDate: Date) => {
+        setSelectedDate(newDate);
+    }
+
+    const handleOpenAvailabilityModal = () => {
+        modeModalRef.current?.open();
+    }
+
+    const openCancelModal = () => {
+        setIsCancelModalOpen(true);
+    }
+
+    const closeCancelModal = () => {
+        setIsCancelModalOpen(false);
+    }
+
+    /*   Esto quedara como vestigio del lorem 
+     *   const handleConfirmCancel = (selectedDays: string[]) => {
+            //por alguna razon que no se explicar mandamos la logica pero xd funcion tonta que no quiero refactorizar 
+        }*/
+
+    const {
+        isHourBookedFixer,
+        isHourBooked,
+        isEnabled,
+        isCanceled,
+        refetch: refetchSixMonths,
+        refetchHour,
+        loading
+    } = useSixMonthsAppointments(fixer_id, today);
+
+    const {
+        getAppointmentsForDay,
+        refetch: refetchConts
+    } = useDailyConts({ date: today, fixer_id });
+
+    const refetchAll = useCallback(() => {
+        refetchSixMonths();
+        refetchConts();
+    }, [refetchSixMonths, refetchConts]);
+
+
+    const providerValue = useMemo(() => ({
+        isHourBookedFixer,
+        isHourBooked,
+        isEnabled,
+        isCanceled,
+        getAppointmentsForDay,
+        refetchAll,
+        refetchHour,
+        loading
+    }), [isHourBookedFixer, isHourBooked, isEnabled, isCanceled, refetchAll, refetchHour, getAppointmentsForDay, loading]);
+
+
+    return (
+        <UserRoleProvider
+            role={userRole}
+            fixer_id={fixer_id}
+            requester_id={requester_id}
+        >
+            <AppointmentsProvider
+                isHourBookedFixer={providerValue.isHourBookedFixer}
+                isHourBooked={providerValue.isHourBooked}
+                isEnabled={providerValue.isEnabled}
+                isCanceled={providerValue.isCanceled}
+                getAppointmentsForDay={providerValue.getAppointmentsForDay}
+                refetchAll={providerValue.refetchAll}
+                refetchHour={providerValue.refetchHour}
+                loading={providerValue.loading}
             >
-              {/* Número del día */}
-              <span className="font-bold mb-1 sm:mb-2 text-gray-800">{day}</span>
+                <AppointmentsStatusProvider
+                    fixerId={fixer_id}
+                    requesterId={requester_id}
+                    selectedDate={selectedDate}
+                >
+                    <div className="flex flex-col bg-white min-h-screen">
+                        <div className="flex flex-col md:flex-row md:items-center">
+                            <div className="flex items-center">
+                                <button
+                                    onClick={() => router.back()}
+                                    className="p-2 m-4 text-gray-600 hover:text-black hover:bg-gray-100 transition-colors self-start">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-6 h-6">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M6 6l12 12M6 18L18 6"
+                                            strokeWidth={2}
+                                        />
+                                    </svg>
+                                </button>
 
-              {/* Ofertas del día */}
-              <div className="flex flex-col gap-1 w-full overflow-y-auto max-h-[100px] sm:max-h-[120px] pr-1">
-                {offersByDay[idx].length === 0 && (
-                  <span className="text-gray-400 text-xs sm:text-sm">No hay reservas</span>
-                )}
-                {offersByDay[idx].map((offer) => (
-                  <div
-                    key={offer.id}
-                    className="border-b border-gray-200 pb-1 last:border-b-0 text-black hover:text-blue-600 cursor-pointer transition-colors duration-300 text-[10px] sm:text-sm"
-                    title={`${offer.title} - ${offer.city} - ${offer.price} Bs`}
-                  >
-                    <div className="font-semibold truncate">{offer.title}</div>
-                    <div className="truncate">{offer.city}</div>
-                    <div className="font-medium">{offer.price} Bs</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+                                {userRole === 'fixer' && (
+                                    <h2 className="text-black p-4 text-xl text-center flex-1">Mi Calendario</h2>
+                                )}
+                                {userRole === 'requester' && (
+                                    <h2 className="text-black p-4 text-xl text-center flex-1">Calendario de Juan Carlos Peréz</h2>
+                                )}
+                            </div>
+
+                            <div className="flex flex-col md:hidden gap-2 px-4 pb-4">
+                                {userRole === 'fixer' && (
+                                    <div className="flex gap-2">
+                                        <button
+                                            className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors text-sm"
+                                            onClick={handleOpenAvailabilityModal}
+                                        >
+                                            Modificar Disponibilidad
+                                        </button>
+                                        <button
+                                            className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors text-sm"
+                                            onClick={openCancelModal}
+                                        >
+                                            Cancelar Citas
+                                        </button>
+                                    </div>
+                                )}
+
+                            </div>
+
+                            <div className="hidden md:flex md:items-center md:ml-auto md:mr-4 md:gap-4">
+
+                                {userRole === 'fixer' && (
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors whitespace-nowrap"
+                                            onClick={handleOpenAvailabilityModal}
+                                        >
+                                            Modificar Disponibilidad
+                                        </button>
+                                        <button
+                                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors whitespace-nowrap"
+                                            onClick={openCancelModal}
+                                        >
+                                            Cancelar Citas
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center md:block hidden">
+                            <DesktopCalendar
+                                fixer_id={fixer_id}
+                                requester_id={requester_id}
+                            />
+                        </div>
+
+                        <div className="flex flex-col md:hidden justify-center gap-4" >
+                            <MobileCalendar
+                                fixer_id={fixer_id}
+                                selectedDate={selectedDate}
+                                onSelectDate={handleDataChange}
+                            />
+                            <div></div>
+                            <MobileList
+                                selectedDate={selectedDate}
+                                fixerId={fixer_id}
+                                requesterId={requester_id}
+                                onDateChange={handleDataChange}
+                            />
+                        </div>
+
+                        <ModeSelectionModal
+                            ref={modeModalRef}
+                            fixerId={fixer_id}
+                        />
+
+                        <CancelDaysAppointments
+                            isOpen={isCancelModalOpen}
+                            onClose={closeCancelModal}
+                            fixer_id={fixer_id}
+                        />
+                    </div>
+                </AppointmentsStatusProvider>
+            </AppointmentsProvider>
+        </UserRoleProvider>
+    );
 }
+
+
