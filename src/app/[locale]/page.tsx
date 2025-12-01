@@ -24,7 +24,7 @@ export default function Home() {
       <HowItWorksSection />
 
       <CTASection />
-      <FooterSection />
+      {/*<FooterSection />*/}
     </div>
   );
 }
