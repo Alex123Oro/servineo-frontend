@@ -9,5 +9,9 @@ export default createMiddleware({
 });
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  // Excluir rutas públicas y assets para que el middleware no intercepte
+  // las peticiones a imágenes estáticas en /img, /assets, /icons, etc.
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|img|assets|icons).*)',
+  ],
 };

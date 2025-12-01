@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback, TouchEvent } from "react";
-import Image from "next/image";
+// Usamos <img> nativo aquí porque el optimizador de Next puede fallar en dev
+// con imágenes locales y provocar logs en la terminal. El elemento nativo
+// evita esas solicitudes al optimizador y muestra las imágenes directamente.
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
@@ -13,25 +15,39 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    image: "/img/Carpinteria.webp",
+    image: "/img/Carpinteria.png",
     category: "CARPINTERÍA",
     title: "Muebles y carpintería a medida",
     subtitle: "Carpintería y muebles a medida",
     description: "Profesionales especializados en trabajos de carpintería y muebles personalizados"
   },
   {
-    image: "/img/Electricistas.webp",
+    image: "/img/Electricistas.png",
     category: "ELECTRICIDAD",
     title: "Soluciones eléctricas seguras",
     subtitle: "Instalaciones y reparaciones eléctricas",
     description: "Expertos en instalaciones eléctricas residenciales e industriales"
   },
   {
-    image: "/img/Limpieza.webp",
+    image: "/img/Limpieza.png",
     category: "LIMPIEZA",
     title: "Espacios impecables, vida saludable",
     subtitle: "Servicios de limpieza profesional",
     description: "Limpieza completa para hogares y oficinas con productos eco-amigables"
+  },
+    {
+    image: "/img/Pintura.png",
+    category: "PINTURA",
+    title: "Renueva tus espacios con color",
+    subtitle: "Pintores profesionales para interiores y exteriores",
+    description: "Transforma tu hogar con acabados de alta calidad y atención al detalle"
+  },
+    {
+    image: "/img/Plomeria.png",
+    category: "PLOMERÍA",
+    title: "Soluciones de plomería confiables",
+    subtitle: "Reparasiones e instalaciones de plomería",
+    description: "Soluciones rápidas y efectivas para todos tus problemas de plomería"
   },
 
 ];
@@ -168,34 +184,37 @@ export default function InspirationSection() {
               key={index}
               className={`carrusel-slide ${index === currentIndex ? 'active' : ''}`}
             >
-              <Image
-                src={failedMap[index] ? "" : slide.image}
-                alt={slide.title}
-                fill
-                style={{ objectFit: 'cover' }}
-                className="carrusel-image"
-                priority={index === 0}
-                placeholder="blur"
-                blurDataURL={blurDataURL}
-                onError={() => {
-                  setFailedMap(prev => ({ ...prev, [index]: true }));
-                }}
-                onLoad={() => {
-                  setLoadingMap(prev => ({ ...prev, [index]: false }));
-                }}
-              />
+              {/* Imagen: parent debe rellenar todo el slide para que la imagen y
+                  el overlay mantengan la misma altura del contenedor */}
+              <div className="relative w-full h-full rounded-md overflow-hidden">
+                <img
+                  src={failedMap[index] ? '/assets/fallback-image.svg' : slide.image}
+                  alt={slide.title}
+                  className="carrusel-image"
+                  style={{ objectFit: 'cover' }}
+                  decoding="async"
+                  loading={index === currentIndex ? 'eager' : 'lazy'}
+                  onError={() => {
+                    setFailedMap(prev => ({ ...prev, [index]: true }));
+                    setLoadingMap(prev => ({ ...prev, [index]: false }));
+                  }}
+                  onLoad={() => {
+                    setLoadingMap(prev => ({ ...prev, [index]: false }));
+                  }}
+                />
+              </div>
 
               {loadingMap[index] && (
                 <div className="carrusel-skeleton" />
               )}
 
+              {/* Badge categoría en esquina superior izquierda */}
+              <span className="carrusel-category carrusel-category-top">
+                {slide.category}
+              </span>
+
               <div className="carrusel-overlay"></div>
               <div className="carrusel-content">
-                {/* 🔥 CATEGORÍA con sombra extra gruesa */}
-                <span className="carrusel-category bg-black/90 text-white px-4 py-2 rounded-lg font-bold text-sm [text-shadow:_0_0_8px_black,_0_0_4px_black,_0_0_2px_black]">
-                  {slide.category}
-                </span>
-                
                 <div className="carrusel-text-group">
                   {/* 🔥 TÍTULO con sombra ULTRA GRUESA */}
                   <h2 className="carrusel-title text-white font-bold text-3xl md:text-5xl [text-shadow:_0_0_20px_black,_0_0_12px_black,_0_0_6px_black,_0_0_3px_black]">
