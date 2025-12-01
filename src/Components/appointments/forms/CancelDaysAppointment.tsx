@@ -314,7 +314,7 @@ export const CancelDaysAppointments: React.FC<CancelDaysAppointmentsProps> = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
       <div className="bg-white rounded-lg w-full max-w-md mx-auto max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className=" h-12 px-3 sm:px-4 flex items-center justify-between flex-shrink-0">
+        <div className=" h-12 px-3 sm:px-4 flex items-center justify-between flex-shrink-0 color bg-blue-600">
           <div className="w-6"></div>
           <h3 className="text-white font-semibold text-base sm:text-lg text-center">
             Cancelar Citas por Día
