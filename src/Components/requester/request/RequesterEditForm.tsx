@@ -68,8 +68,30 @@ export default function RequesterEditForm() {
           })
         }
       } catch (err: unknown) {
-        if (err instanceof Error) setError(err.message)
-        else setError('Error al cargar tus datos.')
+        // Fallback: cargar desde localStorage aunque falle el backend
+        try {
+          const raw = localStorage.getItem('servineo_user')
+          const stored = raw ? JSON.parse(raw) : null
+          if (stored) {
+            setTelefono(stored.telefono || stored.phone || '')
+            const ubic = stored.ubicacion || {
+              lat: 0,
+              lng: 0,
+              direccion: '',
+              departamento: '',
+              pais: '',
+            }
+            setUbicacion(ubic)
+            if (ubic?.lat && ubic?.lng) {
+              setLatLng({ lat: ubic.lat, lng: ubic.lng })
+            }
+          }
+        } catch {}
+
+        if (err instanceof Error) {
+          const msg = err.message === 'Failed to fetch' ? 'No se pudo conectar con el servidor' : err.message
+          setError(msg)
+        } else setError('Error al cargar tus datos.')
       }
     }
     cargarDatos()
@@ -142,7 +164,23 @@ export default function RequesterEditForm() {
         setLatLng(coords)
         fetchAddress(coords.lat, coords.lng)
       },
-      () => setError('No se pudo obtener tu ubicación'),
+      () => {
+        // Intentar fallback: usar la ubicación guardada en localStorage si existe
+        try {
+          const raw = localStorage.getItem('servineo_user');
+          if (raw) {
+            const stored = JSON.parse(raw);
+            if (stored?.ubicacion && stored.ubicacion.lat && stored.ubicacion.lng) {
+              setUbicacion(stored.ubicacion);
+              setLatLng({ lat: stored.ubicacion.lat, lng: stored.ubicacion.lng });
+              setError(null);
+              return;
+            }
+          }
+        } catch {}
+
+        setError('No se pudo obtener tu ubicación (usa el mapa o introduce manualmente)');
+      },
       { enableHighAccuracy: true }
     )
   }
@@ -194,6 +232,10 @@ export default function RequesterEditForm() {
 
     setLoading(true)
     try {
+      const token = localStorage.getItem('servineo_token')
+      if (!token) {
+        throw new Error('No autenticado')
+      }
       const result = await actualizarDatosUsuario({ telefono, ubicacion })
 
       if (!result.success) {
@@ -223,8 +265,12 @@ export default function RequesterEditForm() {
       setIsEditingTelefono(false)
       router.push('/mi-perfil')
     } catch (err: unknown) {
-      if (err instanceof Error) setError(err.message)
-      else setError('Error al actualizar perfil')
+      if (err instanceof Error) {
+        const msg = err.message === 'Failed to fetch' ? 'No se pudo conectar con el servidor' : err.message
+        setError(msg)
+      } else {
+        setError('Error al actualizar perfil')
+      }
     } finally {
       setLoading(false)
     }

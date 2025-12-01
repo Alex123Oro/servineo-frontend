@@ -196,7 +196,7 @@ export default function InspirationSection() {
 
               <div className="carrusel-overlay"></div>
               <div className="carrusel-content">
-                {/* 🔥 CATEGORÍA con sombra extra gruesa */}
+                {/* 🔥 CATEGORÍA arriba */}
                 <span className="carrusel-category bg-black/90 text-white px-4 py-2 rounded-lg font-bold text-sm [text-shadow:_0_0_8px_black,_0_0_4px_black,_0_0_2px_black]">
                   {slide.category}
                 </span>

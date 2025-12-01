@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../lib/hooks/usoAutentificacion";
 import type { User } from "../redux/services/services/registro";
 import { UserData } from "@/types/User";
+import { enviarFotoPerfil } from "../redux/services/services/RegistrarDPconecionBackend";
 
 export default function MiPerfilPage() {
   const router = useRouter();
@@ -50,12 +51,14 @@ export default function MiPerfilPage() {
 
 
   const updateEditableFields = (
-    data: UserData & { firstName?: string; lastName?: string }
+    data: UserData & { firstName?: string; lastName?: string; nombre?: string; apellido?: string; apellidos?: string }
   ) => {
     if (!data || hasUnsavedChanges) return;
-    if (data.firstName !== undefined || data.lastName !== undefined) {
-      setEditName(data.firstName ?? "");
-      setEditLastName(data.lastName ?? "");
+    const explicitFirst = data.firstName ?? data.nombre;
+    const explicitLast = data.lastName ?? data.apellido ?? data.apellidos;
+    if (explicitFirst !== undefined || explicitLast !== undefined) {
+      setEditName(explicitFirst ?? "");
+      setEditLastName(explicitLast ?? "");
       setEditEmail(data.email ?? "");
       return;
     }
@@ -244,121 +247,184 @@ useEffect(() => {
 
       setSavingInline(true);
 
-      let base64Photo: string | null = null;
-      if (editPhotoFile) {
-        base64Photo = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(editPhotoFile);
-        });
-      }
-
       const fullName = `${editName.trim()} ${editLastName.trim()}`
       .replace(/\s+/g, " ")
       .trim();
 
+      function isValidEmail(email: string) {
+        const allowedDomains = [
+          "gmail.com",
+          "hotmail.com",
+          "outlook.com",
+          "yahoo.com",
+          "icloud.com",
+          "live.com"
+        ];
 
-function isValidEmail(email: string) {
-  const allowedDomains = [
-    "gmail.com",
-    "hotmail.com",
-    "outlook.com",
-    "yahoo.com",
-    "icloud.com",
-    "live.com"
-  ];
+        if (!email) return false;
 
-  if (!email) return false;
+        const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
-  const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        if (!regex.test(email)) return false;
 
-  if (!regex.test(email)) return false;
+        const domain = email.split("@")[1];
+        return allowedDomains.includes(domain);
+      }
 
-  const domain = email.split("@")[1];
-  return allowedDomains.includes(domain);
-}
+      if (!isValidEmail(editEmail.trim())) {
+        alert("⚠️ Correo inválido.");
+        setSavingInline(false);
+        return;
+      }
 
-if (!isValidEmail(editEmail.trim())) {
-  alert("⚠️ Correo inválido.");
-  setSavingInline(false);
-  return;
-}
-
-      const payload = {
-        name: fullName,
-        email: editEmail.trim(),
-        photo: base64Photo ?? userData?.photo ?? userData?.picture ?? userData?.url_photo ?? null,
-      };
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/controlC/usuario/update`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-          credentials: "include",
+        // Subida de foto usando servicio ya implementado (si el usuario seleccionó una)
+        let base64Photo: string | null = null;
+        if (editPhotoFile) {
+          try {
+            const uid = userData?.id ? String(userData.id) : undefined;
+            if (uid) {
+              const resp = await enviarFotoPerfil(uid, editPhotoFile);
+              if (!resp.success) throw new Error(resp.message || 'Error al subir la foto');
+              base64Photo = resp.user?.picture || null;
+            }
+          } catch (photoErr) {
+            console.error('Error subiendo foto con servicio enviarFotoPerfil:', photoErr);
+            throw photoErr;
+          }
         }
-      );
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Error al actualizar");
-      const currentUser = userData || {};
-      const newUser = {
-        ...currentUser,
-        ...data.user,
-        name: payload.name,
-        email: payload.email,
-        firstName: editName.trim(),
-        lastName: editLastName.trim(),
-        photo: payload.photo ?? currentUser?.photo ?? currentUser?.picture ?? currentUser?.url_photo ?? data.user?.photo ?? null,
-        picture: payload.photo ?? currentUser?.picture ?? currentUser?.photo ?? currentUser?.url_photo ?? data.user?.picture ?? null,
-        url_photo: payload.photo ?? currentUser?.url_photo ?? currentUser?.photo ?? currentUser?.picture ?? data.user?.url_photo ?? null,
-      };
+        const payload = {
+          name: fullName,
+          firstName: editName.trim(),
+          lastName: editLastName.trim(),
+          nombre: editName.trim(),
+          apellido: editLastName.trim(),
+          email: editEmail.trim(),
+          photo: base64Photo ?? userData?.photo ?? userData?.picture ?? userData?.url_photo ?? null,
+        };
 
-      console.log("💾 Guardando en localStorage:", { 
-        name: payload.name, 
-        email: payload.email,
-        firstName: editName.trim(),
-        lastName: editLastName.trim()
-      });
-      localStorage.setItem("servineo_user", JSON.stringify(newUser));
-      
-      const verify = localStorage.getItem("servineo_user");
-      if (verify) {
-        const verified = JSON.parse(verify);
-        console.log("✅ Verificado en localStorage:", { 
-          name: verified.name, 
-          email: verified.email,
-          firstName: verified.firstName,
-          lastName: verified.lastName
+        // Intento principal: enviar JSON (photo como dataURI) — es lo que espera vuestro backend
+        let data: {
+          token?: string;
+          user?: { photo?: string | null; url_photo?: string | null; picture?: string | null } | undefined;
+          picture?: string | null;
+          message?: string;
+          error?: string;
+        } = {};
+        try {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/controlC/usuario/update`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+            credentials: 'include',
+          });
+
+          try { data = await res.json().catch(() => ({})); } catch { data = {}; }
+
+          if (!res.ok) {
+            // si el endpoint devuelve error, lanzamos para entrar en fallback
+            const serverMsg = data?.message || data?.error || `Error ${res.status}`;
+            throw new Error(serverMsg);
+          }
+        } catch (primaryErr) {
+          console.warn('Fallo al enviar JSON a /usuario/update, intentando fallback...', primaryErr);
+
+          // Ya subimos foto con servicio; si falla el update, no intentamos más rutas redundantes
+        }
+        const currentUser = userData || {};
+
+        // Si backend devuelve nuevo token, actualízalo
+        if (data.token) {
+          try { localStorage.setItem("servineo_token", data.token); } catch {}
+        }
+
+        // Prioriza picture devuelto por el controller, luego data.user, luego payload
+        const pictureFromResp = data.picture || data.user?.photo || data.user?.url_photo || data.user?.picture;
+        const finalPhotoRaw = pictureFromResp || (typeof payload.photo === 'string' ? payload.photo : undefined) || currentUser?.photo || undefined;
+        const finalPhoto = typeof finalPhotoRaw === 'string' ? finalPhotoRaw : undefined;
+
+        const newUser = {
+          ...currentUser,
+          ...data.user,
+          name: payload.name,
+          email: payload.email,
+          firstName: editName.trim(),
+          lastName: editLastName.trim(),
+          photo: finalPhoto,
+          picture: finalPhoto || currentUser?.picture,
+          url_photo: finalPhoto || currentUser?.url_photo,
+        };
+
+        console.log("💾 Guardando en localStorage:", {
+          name: payload.name,
+          email: payload.email,
+          photo: finalPhoto,
         });
-      }
-      
-      
-      window.dispatchEvent(new Event("servineo_user_updated"));
-      
+        localStorage.setItem("servineo_user", JSON.stringify(newUser));
 
-      setUserData(newUser);
-      setUser(newUser as User);
-      setHasUnsavedChanges(false);
-      setEditPhotoFile(null);
+        window.dispatchEvent(new Event("servineo_user_updated"));
 
+        setUserData(newUser);
+        setUser(newUser as User);
+        setHasUnsavedChanges(false);
+        setEditPhotoFile(null);
 
-      if (typeof window !== 'undefined' && window.dispatchEvent) {
-       
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'servineo_user',
-          newValue: JSON.stringify(newUser),
-          storageArea: localStorage
-        }));
-      }
+        if (typeof window !== 'undefined' && window.dispatchEvent) {
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'servineo_user',
+            newValue: JSON.stringify(newUser),
+            storageArea: localStorage
+          }));
+        }
 
-      alert("Los cambios se han guardado correctamente");
-    } catch {
-      alert("No se pudo actualizar el perfil.");
+        try {
+          const profRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/controlC/usuario/profile`, {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${localStorage.getItem('servineo_token') || ''}` },
+            credentials: 'include',
+          });
+          if (profRes.ok) {
+            const profData = await profRes.json().catch(() => ({}));
+            const fromApi = profData?.user ?? profData ?? {};
+            const constructedName = (() => {
+              const fn = fromApi.firstName ?? fromApi.nombre;
+              const ln = fromApi.lastName ?? fromApi.apellido;
+              if (fn || ln) return `${(fn || '').trim()} ${(ln || '').trim()}`.trim().replace(/\s+/g, ' ');
+              return undefined;
+            })();
+            const apiName = constructedName ?? fromApi.name;
+            const finalName = (() => {
+              const aLen = (apiName || '').trim().split(/\s+/).filter(Boolean).length;
+              const sLen = (newUser.name || '').trim().split(/\s+/).filter(Boolean).length;
+              return aLen >= sLen ? (apiName ?? newUser.name) : newUser.name;
+            })();
+            const finalFirst = (fromApi.firstName ?? fromApi.nombre ?? newUser.firstName) ?? ((finalName || '').trim().split(/\s+/)[0] || undefined);
+            const finalLast = (fromApi.lastName ?? fromApi.apellido ?? newUser.lastName) ?? (() => { const p=(finalName||'').trim().split(/\s+/); return p.length>1?p.slice(1).join(' '):undefined; })();
+            const syncedUser = {
+              ...newUser,
+              name: finalName,
+              email: fromApi.email ?? newUser.email,
+              firstName: finalFirst,
+              lastName: finalLast,
+              nombre: finalFirst,
+              apellido: finalLast,
+            };
+            localStorage.setItem('servineo_user', JSON.stringify(syncedUser));
+            setUserData(syncedUser);
+            setUser(syncedUser as User);
+            window.dispatchEvent(new Event('servineo_user_updated'));
+          }
+        } catch {}
+
+        alert("Los cambios se han guardado correctamente");
+    } catch (err: unknown) {
+      let errorMsg = err instanceof Error ? err.message : "No se pudo actualizar el perfil.";
+      if (errorMsg === 'Failed to fetch') errorMsg = 'No se pudo conectar con el servidor';
+      console.error("Error saving profile:", errorMsg);
+      alert(errorMsg);
     } finally {
       setSavingInline(false);
     }
@@ -683,6 +749,7 @@ if (!isValidEmail(editEmail.trim())) {
     </main>
   );
 }
+
 
 
 

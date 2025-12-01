@@ -51,12 +51,16 @@ export default function Home() {
       {/* Hero cambia según el rol */}
       <HeroSection isFixer={isFixer} />
 
-      {/* Sección intermedia: mapa + ofertas / MyOffer */}
+      {/* Sección intermedia: inspiración + mapa + ofertas / MyOffer */}
       <section className={isFixer ? 'bg-white' : 'py-16 px-4 bg-white'}>
         <div className="max-w-7xl mx-auto">
-          {/* Mapa e inspiración solo para usuarios normales */}
+          {/* Inspiración y mapa solo para usuarios normales */}
           {!isFixer && (
             <>
+              <div id="tour-inspiration-section">
+                <InspirationSection />
+              </div>
+
               <div id="tour-map-section">
                 <section id="mapa" className="w-full py-16 px-4 bg-gray-50 scroll-mt-24">
                   <div className="max-w-7xl mx-auto">
@@ -66,10 +70,6 @@ export default function Home() {
                     <Map />
                   </div>
                 </section>
-              </div>
-
-              <div id="tour-inspiration-section">
-                <InspirationSection />
               </div>
             </>
           )}

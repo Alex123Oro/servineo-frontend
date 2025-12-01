@@ -10,16 +10,23 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <TourProvider
         steps={[]}
         styles={{
-          popover: (base) => ({
-            ...base,
-            borderRadius: '16px',
-            padding: '28px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(43, 106, 224, 0.1)',
-            zIndex: 999999,
-            maxWidth: '460px',
-            backgroundColor: '#ffffff',
-            pointerEvents: 'auto',
-          }),
+          popover: (base) => {
+            // Responsive popover: compacto en pantallas pequeñas
+            const isSmall = typeof window !== 'undefined' ? window.innerWidth <= 480 : false;
+            return {
+              ...base,
+              borderRadius: '16px',
+              padding: isSmall ? '14px' : '28px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(43, 106, 224, 0.1)',
+              zIndex: 999999,
+              maxWidth: isSmall ? '92%' : '460px',
+              backgroundColor: '#ffffff',
+              pointerEvents: 'auto',
+              // Evitar que el popover ocupe toda la pantalla en móvil y permitir scroll interno
+              maxHeight: isSmall ? '58vh' : undefined,
+              overflowY: isSmall ? 'auto' : undefined,
+            } as Record<string, unknown>;
+          },
           maskWrapper: (base) => ({ ...base, zIndex: 999998 }),
           maskArea: (base) => ({ ...base, rx: 12, fill: 'rgba(0, 0, 0, 0.75)' }),
           badge: (base) => ({ ...base, display: 'none' }),

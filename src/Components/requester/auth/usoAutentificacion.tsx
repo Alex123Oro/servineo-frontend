@@ -58,10 +58,8 @@ try {
           setUser(null);
         }
       })
-      .catch(() => {
-        localStorage.removeItem("servineo_token");
-        localStorage.removeItem("servineo_user");
-        setUser(null);
+      .catch((err) => {
+        console.warn("No se pudo verificar la sesión (network/backend). Manteniendo token/localStorage provisional.", err);
       })
       .finally(() => setLoading(false));
   }, []);

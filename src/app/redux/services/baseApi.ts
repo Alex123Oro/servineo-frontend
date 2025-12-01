@@ -10,7 +10,7 @@ export const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers) => {
     // Puedes obtener el token del estado si lo necesitas
     // const token = (getState() as RootState).auth.token
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('servineo_token');
     
     // Si tenemos un token, lo añadimos a los headers
     if (token) {
@@ -20,7 +20,8 @@ export const baseQuery = fetchBaseQuery({
     headers.set('Content-Type', 'application/json');
     return headers;
   },
-  credentials: 'include',
+  // No usar cookies/credentials por defecto. Usamos header Bearer para autenticación.
+  credentials: undefined,
 });
 
 // API base que otros servicios pueden extender

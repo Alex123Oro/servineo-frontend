@@ -48,27 +48,28 @@ export const tourSteps: StepType[] = [
   },
 
   // PASO 2: Mapa
+  // PASO 2: Inspiración
   {
-    selector: '#tour-map-section',
+    selector: '#tour-inspiration-section',
     content: (
       <div>
-        <h4 className="font-bold text-lg mb-2 text-gray-800">2. Mapa de Fixers</h4>
+        <h4 className="font-bold text-lg mb-2 text-gray-800">2. Inspírate</h4>
         <p className="text-gray-600 text-sm">
-          Visualiza a los profesionales en tu zona en tiempo real.
+          Mira proyectos realizados por nuestros profesionales para tomar ideas.
         </p>
       </div>
     ),
     position: 'top',
   },
 
-  // PASO 3: Inspiración
+  // PASO 3: Mapa
   {
-    selector: '#tour-inspiration-section',
+    selector: '#tour-map-section',
     content: (
       <div>
-        <h4 className="font-bold text-lg mb-2 text-gray-800">3. Inspírate</h4>
+        <h4 className="font-bold text-lg mb-2 text-gray-800">3. Mapa de Fixers</h4>
         <p className="text-gray-600 text-sm">
-          Mira proyectos realizados por nuestros profesionales para tomar ideas.
+          Visualiza a los profesionales en tu zona en tiempo real.
         </p>
       </div>
     ),

@@ -321,16 +321,19 @@
 }
 
 .carrusel-content {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 3;
   color: white;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: flex-start;
+  width: 100%;
   height: 100%;
-  padding: 40px 15%;
-  max-width: 70%;
+  padding: 40px 40px;
 }
 
 .carrusel-category {
@@ -343,12 +346,16 @@
   display: inline-block;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  align-self: flex-start;
+  margin-bottom: auto;
 }
 
 .carrusel-text-group {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  margin-top: auto;
+  padding-bottom: 50px;
 }
 
 .carrusel-title {
@@ -437,12 +444,15 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .carrusel-content {
-    padding: 0 12%;
-    max-width: 75%;
+    padding: 30px 30px;
   }
 
   .carrusel-title {
     font-size: 2.5rem;
+  }
+
+  .carrusel-text-group {
+    padding-bottom: 45px;
   }
 }
 
@@ -453,27 +463,31 @@
   }
 
   .carrusel-content {
-    padding: 30px 15%;
-    max-width: 80%;
+    padding: 20px 20px;
   }
 
   .carrusel-text-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    padding-bottom: 40px;
   }
 
   .carrusel-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    margin: 0;
+    line-height: 1.2;
   }
 
   .carrusel-subtitle {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    margin: 0;
   }
 
   .carrusel-category {
-    font-size: 0.8rem;
-    padding: 6px 16px;
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    margin-bottom: 0;
   }
 
   .carrusel-arrow {
@@ -503,34 +517,35 @@
   }
 
   .carrusel-content {
-    padding: 20px 10% 60px 10%;
-    max-width: 80%;
-    align-items: flex-start;
-    text-align: left;
-    justify-content: space-between;
+    padding: 15px 15px;
   }
 
   .carrusel-text-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    width: 100%;
+    padding-bottom: 35px;
   }
 
   .carrusel-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     line-height: 1.2;
     margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .carrusel-subtitle {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin: 0;
   }
 
   .carrusel-category {
-    font-size: 0.7rem;
-    padding: 5px 12px;
+    font-size: 0.65rem;
+    padding: 4px 10px;
     margin-bottom: 0;
+    flex-shrink: 0;
   }
 
   .carrusel-arrow {
@@ -540,21 +555,21 @@
   }
 
   .carrusel-arrow-left {
-    left: 15px;
+    left: 8px;
   }
 
   .carrusel-arrow-right {
-    right: 15px;
+    right: 8px;
   }
 
   .carrusel-dots {
-    bottom: 20px;
-    gap: 8px;
+    bottom: 10px;
+    gap: 6px;
   }
 
   .carrusel-dot {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
   }
 }
 
