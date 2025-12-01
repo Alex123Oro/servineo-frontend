@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useTour } from '@reactour/tour';
 import { tourSteps } from './TourSteps';
+import { usePathname } from 'next/navigation';
 
 export function TourLogic() {
   const { setSteps, setIsOpen, setCurrentStep, isOpen } = useTour() as {
@@ -10,9 +11,10 @@ export function TourLogic() {
     setCurrentStep: (index: number) => void;
     isOpen: boolean;
   };
+  const pathname = usePathname();
 
   const startTour = () => {
-    // 1. Configurar pasos
+    // 1. Configurar pasos según dispositivo
     const isMobile = window.innerWidth < 1024;
     const filteredSteps = tourSteps.filter(step => {
       if (isMobile) {
@@ -22,45 +24,68 @@ export function TourLogic() {
     });
     setSteps(filteredSteps);
     
-    // 2. Cerrar tour (por si acaso estaba abierto) y reiniciar paso
+    // 2. Reiniciar estado del tour
     setIsOpen(false);
     setCurrentStep(0);
 
-    // 3. Forzar scroll al inicio INMEDIATO
+    // 3. Forzar scroll al inicio
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
 
-    // 4. Esperar medio segundo para asegurar que el navegador terminó de renderizar arriba
+    // 4. Abrir tour con pequeño delay para asegurar renderizado
     setTimeout(() => {
       setIsOpen(true);
     }, 500);
   };
 
+  // Escuchar cambios de ruta para detectar regreso al home o reinicio forzado
   useEffect(() => {
-    // Lógica inicial (al cargar la página)
-    const tourVisto = localStorage.getItem('servineoTourVisto');
-    if (!tourVisto) {
-      const timer = setTimeout(() => {
-        startTour();
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
+    const checkAndStartTour = () => {
+      // Verificamos si estamos en el home buscando el elemento ancla
+      // Esto es más seguro que checkear el pathname por temas de internacionalización (/es, /en)
+      const isHomePage = document.getElementById('tour-start-point');
+      
+      if (!isHomePage) return;
 
-    // Lógica para reiniciar desde el footer
-    const handleRestart = () => {
+      const forceRestart = localStorage.getItem('servineo_force_restart');
+      const tourVisto = localStorage.getItem('servineoTourVisto');
+
+      // Caso 1: Reinicio forzado desde el footer (viniendo de otra página)
+      if (forceRestart === 'true') {
+        localStorage.removeItem('servineo_force_restart');
+        localStorage.removeItem('servineoTourVisto');
+        setTimeout(() => startTour(), 500);
+      } 
+      // Caso 2: Primera visita natural
+      else if (!tourVisto) {
+        setTimeout(() => startTour(), 1500);
+      }
+    };
+
+    checkAndStartTour();
+  }, [pathname]);
+
+  // Listener para reinicio manual dentro de la misma página
+  useEffect(() => {
+    const handleRestartEvent = () => {
       localStorage.removeItem('servineoTourVisto');
       startTour();
     };
-
-    window.addEventListener('restart-tour', handleRestart);
+    window.addEventListener('restart-tour', handleRestartEvent);
     return () => {
-      window.removeEventListener('restart-tour', handleRestart);
+      window.removeEventListener('restart-tour', handleRestartEvent);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Marcar como visto cuando se cierra
   useEffect(() => {
     if (!isOpen && localStorage.getItem('servineoTourVisto') !== 'true') {
-      localStorage.setItem('servineoTourVisto', 'true');
+       // Solo marcamos como visto si el tour se abrió alguna vez en esta sesión
+       // Esto evita marcarlo prematuramente
+       const hasStarted = document.querySelector('.reactour__popover'); 
+       if(hasStarted) {
+         localStorage.setItem('servineoTourVisto', 'true');
+       }
     }
   }, [isOpen]);
 

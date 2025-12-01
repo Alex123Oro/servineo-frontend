@@ -1,17 +1,31 @@
 'use client';
 import Link from 'next/link';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Globe } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface FooterSectionProps {
   onRestartTour?: () => void;
 }
 
 export default function FooterSection({ onRestartTour }: FooterSectionProps = {}) {
+  const router = useRouter();
+
   const handleRestartTour = () => {
+    // 1. Guardamos una bandera indicando que el usuario quiere ver el tour
+    localStorage.setItem('servineo_force_restart', 'true');
+    
+    // 2. Eliminamos la marca de "visto" para permitir que arranque
+    localStorage.removeItem('servineoTourVisto');
+
+    // 3. Redirigimos a la página principal
+    // Si ya estás en el home, el router refrescará o el evento de abajo lo capturará
+    router.push('/');
+
+    // 4. Disparamos el evento por si acaso ya estamos en la página correcta y el router no recarga
+    window.dispatchEvent(new Event('restart-tour'));
+    
     if (onRestartTour) {
       onRestartTour();
-    } else {
-      window.dispatchEvent(new Event('restart-tour'));
     }
   };
 
@@ -57,7 +71,6 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
             Calidad garantizada y servicio confiable.
           </p>
         </div>
-
         <div
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-base text-center sm:text-left"
           role="navigation"
@@ -77,7 +90,6 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
               ))}
             </ul>
           </div>
-
           <div aria-labelledby="empresa-heading">
             <h3 id="empresa-heading" className="text-xl font-semibold text-[#1AA7ED] mb-2">
               Empresa
@@ -100,7 +112,6 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
               </li>
             </ul>
           </div>
-
           <div aria-labelledby="legal-heading">
             <h3 id="legal-heading" className="text-xl font-semibold text-[#1AA7ED] mb-2">
               Legal
@@ -115,7 +126,6 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
               ))}
             </ul>
           </div>
-
           <div aria-labelledby="contacto-heading">
             <h3
               id="contacto-heading"
@@ -164,7 +174,6 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
             </div>
           </div>
         </div>
-
         <div
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-t border-gray-700 pt-6"
         >
@@ -219,7 +228,6 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
             </select>
           </div>
         </div>
-
         <div className="border-t border-gray-700" role="separator" aria-hidden="true" />
         <div
           className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-sm pt-8"
