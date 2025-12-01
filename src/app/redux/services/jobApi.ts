@@ -7,11 +7,19 @@ interface ApiResponse {
   success?: boolean;
 }
 
+
+// interface ApiResponseSingle {
+//   data: IJobOffer;
+//   success?: boolean;
+// }
 export const jobApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllJobs: builder.query<IJobOffer[], void>({
       query: () => '/job-offers',
       providesTags: ['Job'],
+      transformResponse: (response: ApiResponse) => {
+        return response.data;
+      }
     }),
 
     getJobsByFixer: builder.query<IJobOffer[], string>({
