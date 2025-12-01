@@ -1,6 +1,4 @@
 @import 'tailwindcss';
-@import '../Components/Tour/TourStyles.css';
-@import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -254,6 +252,7 @@
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
+
 /* ============================================
    CARRUSEL DE INSPIRACIÓN - INICIO
    ============================================ */
@@ -321,16 +320,22 @@
 }
 
 .carrusel-content {
-  position: relative;
+  /* Forzamos posición absoluta para garantizar que el bloque de texto
+     esté siempre visible sobre la imagen y ocupe la zona inferior-izquierda
+     como en el diseño (imagen con título grande en la parte baja). */
+  position: absolute;
   z-index: 3;
   color: white;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: flex-start;
-  height: 100%;
-  padding: 40px 15%;
-  max-width: 70%;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  max-width: 55%;
+  padding: 0;
+  pointer-events: none; /* evita que overlay capture clicks sobre el texto */
 }
 
 .carrusel-category {
@@ -345,6 +350,32 @@
   letter-spacing: 0.5px;
 }
 
+/* Badge top-left variant */
+.carrusel-category-top {
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  z-index: 5;
+  background-color: #2b6ae0;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .carrusel-category-top {
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+}
+
 .carrusel-text-group {
   display: flex;
   flex-direction: column;
@@ -354,17 +385,19 @@
 .carrusel-title {
   font-size: 3rem;
   font-weight: 800;
-  margin: 0 0 15px 0;
-  line-height: 1.1;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0 0 12px 0;
+  line-height: 1.05;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
 }
 
 .carrusel-subtitle {
-  font-size: 1.3rem;
-  font-weight: 400;
+  font-size: 1.1rem;
+  font-weight: 500;
   margin: 0;
-  opacity: 0.9;
-  line-height: 1.4;
+  opacity: 0.95;
+  line-height: 1.3;
+  pointer-events: auto;
 }
 
 .carrusel-arrow {

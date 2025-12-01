@@ -1,321 +1,410 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { StepIndicator } from "./Step-indicator"
-import { Card } from "../Card"
-import { PillButton } from "./Pill-button"
-import { CIStep } from "./steps/Ci-step"
-import { LocationStep } from "./steps/Location-step"
-import { ServicesStep, type Service } from "./steps/Services-step"
-import { PaymentStep, type PaymentMethod } from "./steps/Payment-step";
-import { ExperienceStep, type Experience } from "./steps/Experience-step"
-import { VehicleStep } from "./steps/Vehicle-step"
-import { TermsStep } from "./steps/Terms-step"
-import { CheckCircle2, ArrowLeft, ArrowRight } from "lucide-react"
-import { ProfilePhotoStep } from "./steps/Profile-photo-step"
-
-type RequesterUser = {
-  id: string
-  name: string
-  email: string
-  urlPhoto?: string
-  role: "requester" | "fixer"
-}
-
-type FixerProfileDraft = {
-  ci: string
-  location?: { lat: number; lng: number } | null
-  services: Service[]
-  selectedServiceIds: string[]
-  payments: PaymentMethod[]
-  accountInfo?: string
-  experiences: Experience[]
-  hasVehicle: boolean | null
-  vehicleType?: string
-  termsAccepted: boolean
-  photoUrl?: string
-}
+import { useState } from 'react';
+import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { StepIndicator } from './Step-indicator';
+import { Card } from '../Card';
+import { PillButton } from './Pill-button';
+import { CIStep } from './steps/Ci-step';
+import { LocationStep } from './steps/Location-step';
+import { ServicesStep, type Service } from './steps/Services-step';
+import { PaymentStep } from './steps/Payment-step';
+import { VehicleStep } from './steps/Vehicle-step';
+import { TermsStep } from './steps/Terms-step';
+import { CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ProfilePhotoStep } from './steps/Profile-photo-step';
+import { useConvertToFixerMutation } from '@/app/redux/services/become';
+import { IUser } from '@/types/user';
+import { fixerProfileSchema, type FixerProfileData } from '@/app/lib/validations/fixer-schemas';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { SerializedError } from '@reduxjs/toolkit';
 
 const DEFAULT_SERVICES: Service[] = [
-  { id: "svc-plumbing", name: "Plomería" },
-  { id: "svc-electric", name: "Electricidad" },
-  { id: "svc-carpentry", name: "Carpintería" },
-  { id: "svc-paint", name: "Pintura" },
-]
-
-const MOCK_TAKEN_CIS = new Set(["1234567", "ABC-890", "9001002"])
+  { id: 'svc-plumbing', name: 'Plomería' },
+  { id: 'svc-electric', name: 'Electricidad' },
+  { id: 'svc-carpentry', name: 'Carpintería' },
+  { id: 'svc-paint', name: 'Pintura' },
+];
 
 interface FixerEnableWizardProps {
-  user: RequesterUser
+  user: IUser;
+}
+
+// Type guards para manejar errores
+function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
+  return typeof error === 'object' && error != null && 'status' in error;
+}
+
+function isErrorWithData(error: unknown): error is { data: { message?: string; error?: string } } {
+  return (
+    typeof error === 'object' &&
+    error != null &&
+    'data' in error &&
+    typeof (error as { data: unknown }).data === 'object'
+  );
+}
+
+function isSerializedError(error: unknown): error is SerializedError {
+  return (
+    typeof error === 'object' &&
+    error != null &&
+    ('name' in error || 'message' in error || 'code' in error)
+  );
 }
 
 export function FixerEnableWizard({ user }: FixerEnableWizardProps) {
-  const [step, setStep] = useState(0)
-  const total = 8
-  const [draft, setDraft] = useState<FixerProfileDraft>({
-    ci: "",
-    location: null,
-    services: DEFAULT_SERVICES.map((s) => ({ id: s.id, name: s.name })),
-    selectedServiceIds: [],
-    payments: [],
-    accountInfo: "",
-    experiences: [],
-    hasVehicle: null,
-    vehicleType: "",
-    termsAccepted: false,
-    photoUrl: "",
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [submitting, setSubmitting] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const [convertToFixer] = useConvertToFixerMutation();
+  const [step, setStep] = useState(0);
+  const total = 7; // 0 to 6
+  const [success, setSuccess] = useState(false);
 
-  function validateStep() {
-    const e: Record<string, string> = {}
-    if (step === 0) {
-      if (!draft.photoUrl) e.photo = "Debe subir una foto de perfil"
+  const methods = useForm<FixerProfileData>({
+    resolver: zodResolver(fixerProfileSchema),
+    defaultValues: {
+      ci: '',
+      workLocation: { lat: -16.5, lng: -68.15 }, // Default location (La Paz approx)
+      servicios: [],
+      metodoPago: {
+        hasEfectivo: false,
+        qr: false,
+        tarjetaCredito: false,
+      },
+      accountInfo: '',
+      experience: { descripcion: '' },
+      vehiculo: {
+        hasVehiculo: false,
+        tipoVehiculo: undefined,
+      },
+      acceptTerms: false,
+      url_photo: user.url_photo || '',
+    },
+    mode: 'onChange',
+  });
+
+  const {
+    handleSubmit,
+    trigger,
+    watch,
+    setValue,
+    //control,
+    formState: { isSubmitting, errors },
+  } = methods;
+
+  // Watch values for conditional rendering or passing to steps
+  const url_photo = watch('url_photo');
+  const ci = watch('ci');
+  const workLocation = watch('workLocation');
+  const servicios = watch('servicios');
+  const metodoPago = watch('metodoPago');
+  const accountInfo = watch('accountInfo');
+  const vehiculo = watch('vehiculo');
+  const acceptTerms = watch('acceptTerms');
+
+  // Helper to manage services state which is a bit complex for simple watch
+  // We'll keep the list of available services in local state if they can be added/removed dynamically
+  // But the selected IDs are in the form.
+  const [availableServices, setAvailableServices] = useState<Service[]>(
+    DEFAULT_SERVICES.map((s) => ({ id: s.id, name: s.name })),
+  );
+
+  const validateStep = async () => {
+    let fieldsToValidate: (keyof FixerProfileData)[] = [];
+
+    switch (step) {
+      case 0:
+        fieldsToValidate = ['url_photo'];
+        break;
+      case 1:
+        fieldsToValidate = ['ci'];
+        break;
+      case 2:
+        fieldsToValidate = ['workLocation'];
+        break;
+      case 3:
+        fieldsToValidate = ['servicios'];
+        break;
+      case 4:
+        fieldsToValidate = ['metodoPago', 'accountInfo'];
+        break;
+      case 5:
+        fieldsToValidate = ['vehiculo'];
+        break;
+      case 6:
+        fieldsToValidate = ['acceptTerms'];
+        break;
     }
-    if (step === 1) {
-      if (!draft.ci.trim()) e.ci = "CI es requerido"
-      else if (!/^[0-9-]+$/.test(draft.ci.trim())) e.ci = "CI debe contener solo números y guiones"
-      else if (draft.ci && MOCK_TAKEN_CIS.has(draft.ci.trim())) e.ci = "Este CI ya está registrado"
-    }
-    if (step === 2) {
-      if (!draft.location) e.location = "Debe seleccionar una ubicación"
-    }
-    if (step === 3) {
-      if (draft.selectedServiceIds.length === 0) e.services = "Seleccione al menos un servicio"
-    }
-    if (step === 4) {
-      if (draft.payments.length === 0) e.payments = "Seleccione al menos un método de pago"
-      const needsAccount = draft.payments.includes("qr") || draft.payments.includes("card")
-      if (needsAccount && !draft.accountInfo?.trim()) e.accountInfo = "Ingrese la cuenta para pagos"
-    }
-    if (step === 6) {
-      if (draft.hasVehicle === null) e.vehicle = "Debe indicar si cuenta con vehículo"
-      if (draft.hasVehicle === true && !draft.vehicleType) e.vehicleType = "Seleccione el tipo de vehículo"
-    }
-    if (step === 7) {
-      if (!draft.termsAccepted) e.terms = "Debe aceptar los términos y condiciones"
-    }
-    setErrors(e)
-    return Object.keys(e).length === 0
-  }
 
-  function goNext() {
-    if (validateStep()) setStep((s) => Math.min(total - 1, s + 1))
-  }
-  function goPrev() {
-    setStep((s) => Math.max(0, s - 1))
-  }
-
-  function toggleService(id: string) {
-    setDraft((d) => ({
-      ...d,
-      selectedServiceIds: d.selectedServiceIds.includes(id)
-        ? d.selectedServiceIds.filter((x) => x !== id)
-        : [...d.selectedServiceIds, id],
-    }))
-  }
-
-  function addCustomService(name: string) {
-    const trimmed = name.trim()
-    if (!trimmed) return
-    const id = `custom-${Date.now()}`
-    setDraft((d) => ({
-      ...d,
-      services: [...d.services, { id, name: trimmed, custom: true }],
-      selectedServiceIds: [...d.selectedServiceIds, id],
-    }))
-  }
-
-  function editService(id: string, name: string) {
-    setDraft((d) => ({
-      ...d,
-      services: d.services.map((s) => (s.id === id ? { ...s, name } : s)),
-    }))
-  }
-
-  function deleteService(id: string) {
-    setDraft((d) => ({
-      ...d,
-      services: d.services.filter((s) => s.id !== id),
-      selectedServiceIds: d.selectedServiceIds.filter((x) => x !== id),
-    }))
-  }
-
-async function handleSubmit() {
-  if (!validateStep()) return;
-
-  setSubmitting(true);
-  await new Promise((r) => setTimeout(r, 900));
-
-  // ⚡ Crear objeto fija real del usuario
-  const fixerUser = {
-    ...user,
-    role: "fixer",
-    fixerProfile: draft, // todo lo que llenó el wizard
+    const isValid = await trigger(fieldsToValidate);
+    return isValid;
   };
 
-  // ⚡ Guardarlo en localStorage
-  localStorage.setItem("servineo_user", JSON.stringify(fixerUser));
+  const goNext = async () => {
+    const isValid = await validateStep();
+    if (isValid) {
+      setStep((s) => Math.min(total - 1, s + 1));
+    }
+  };
 
-  // ⚡ Disparar evento global
-  window.dispatchEvent(new Event("servineo_user_updated"));
+  const goPrev = () => {
+    setStep((s) => Math.max(0, s - 1));
+  };
 
-  // ⚡Recargar página completa
-  window.location.href = "/fixer/profile"; 
-}
+  // Service handlers
+  const handleToggleService = (id: string) => {
+    const current = servicios || [];
+    const updated = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
+    setValue('servicios', updated, { shouldValidate: true });
+  };
 
+  const handleAddCustomService = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const id = `custom-${Date.now()}`;
+    setAvailableServices((prev) => [...prev, { id, name: trimmed, custom: true }]);
+    setValue('servicios', [...(servicios || []), id], { shouldValidate: true });
+  };
 
-  function addExperience(experience: Omit<Experience, "id">) {
-    const id = `exp-${Date.now()}`
-    setDraft((d) => ({
-      ...d,
-      experiences: [...d.experiences, { ...experience, id }],
-    }))
-  }
+  const handleEditService = (id: string, name: string) => {
+    setAvailableServices((prev) => prev.map((s) => (s.id === id ? { ...s, name } : s)));
+  };
 
-  function deleteExperience(id: string) {
-    setDraft((d) => ({
-      ...d,
-      experiences: d.experiences.filter((exp) => exp.id !== id),
-    }))
-  }
+  const handleDeleteService = (id: string) => {
+    setAvailableServices((prev) => prev.filter((s) => s.id !== id));
+    setValue(
+      'servicios',
+      (servicios || []).filter((x) => x !== id),
+      { shouldValidate: true },
+    );
+  };
+
+  // Payment handlers
+  const handleTogglePayment = (method: 'cash' | 'qr' | 'card') => {
+    const current = { ...metodoPago };
+    if (method === 'cash') current.hasEfectivo = !current.hasEfectivo;
+    if (method === 'qr') current.qr = !current.qr;
+    if (method === 'card') current.tarjetaCredito = !current.tarjetaCredito;
+
+    setValue('metodoPago', current, { shouldValidate: true });
+  };
+
+  // Helper to convert object to array for the step component
+  const getPaymentArray = () => {
+    const arr: ('cash' | 'qr' | 'card')[] = [];
+    if (metodoPago?.hasEfectivo) arr.push('cash');
+    if (metodoPago?.qr) arr.push('qr');
+    if (metodoPago?.tarjetaCredito) arr.push('card');
+    return arr;
+  };
+
+  const onSubmit: SubmitHandler<FixerProfileData> = async (data) => {
+    try {
+      if (!user._id) {
+        console.error('User ID is missing');
+        return;
+      }
+
+      const payload = {
+        id: user._id?.toString(), // ← por si acaso es ObjectId
+        profile: {
+          telefono: user.telefono,
+          ci: data.ci.trim(),
+
+          // Solo servicios oficiales (los que empiezan con "svc-")
+          services: data.servicios
+            .filter((id): id is string => id.startsWith('svc-'))
+            .map((id) => {
+              const service = DEFAULT_SERVICES.find((s) => s.id === id);
+              return { name: service?.name ?? 'Servicio desconocido' };
+            }),
+
+          vehicle: data.vehiculo.hasVehiculo
+            ? {
+                hasVehiculo: true,
+                tipoVehiculo: data.vehiculo.tipoVehiculo || undefined,
+              }
+            : { hasVehiculo: false },
+
+          paymentMethods: (() => {
+            const methods: { type: string }[] = [];
+            if (data.metodoPago.hasEfectivo) methods.push({ type: 'efectivo' });
+            if (data.metodoPago.qr) methods.push({ type: 'qr' });
+            if (data.metodoPago.tarjetaCredito) methods.push({ type: 'tarjeta' });
+            return methods;
+          })(),
+
+          location: {
+            lat: Number(data.workLocation.lat),
+            lng: Number(data.workLocation.lng),
+            direccion: data.workLocation.direccion?.trim() || '',
+            // NO enviamos departamento ni pais → rompe el backend
+          },
+
+          terms: {
+            accepted: data.acceptTerms,
+          },
+        },
+      };
+
+      console.log('Submitting user profile data:', payload);
+      await convertToFixer(payload).unwrap();
+      setSuccess(true);
+    } catch (error) {
+      console.error('Error registering fixer:', error);
+
+      // Manejo tipado de errores
+      if (isErrorWithData(error)) {
+        console.error('API Error Data:', error.data);
+      } else if (isFetchBaseQueryError(error)) {
+        console.error('Fetch Error:', error);
+      } else if (isSerializedError(error)) {
+        console.error('Serialized Error:', error.message);
+      } else {
+        console.error('Unknown error type');
+      }
+    }
+  };
 
   return (
-    <div className="mx-auto w-full max-w-3xl animate-fade-in">
-      <StepIndicator step={step} total={total} />
-      {success ? (
-        <Card title="¡Listo!">
-          <div className="space-y-4 text-center">
-            <div className="flex justify-center">
-              <CheckCircle2 className="h-16 w-16 text-green-600 animate-scale-in" />
-            </div>
-            <p className="text-lg font-semibold text-gray-900">{user.name} ahora está habilitado como FIXER.</p>
-            <div className="text-sm text-gray-600 space-y-1">
-              <p>CI: {draft.ci}</p>
-              <p>
-                Ubicación: {draft.location?.lat.toFixed(5)}, {draft.location?.lng.toFixed(5)}
+    <FormProvider {...methods}>
+      <div className="mx-auto w-full max-w-3xl animate-fade-in">
+        <StepIndicator step={step} total={total} />
+        {success ? (
+          <Card title="¡Listo!">
+            <div className="space-y-4 text-center">
+              <div className="flex justify-center">
+                <CheckCircle2 className="h-16 w-16 text-green-600 animate-scale-in" />
+              </div>
+              <p className="text-lg font-semibold text-gray-900">
+                {user.name} ahora está habilitado como FIXER.
               </p>
-              <p>Servicios: {draft.selectedServiceIds.length}</p>
-              <p>Métodos de pago: {draft.payments.join(", ")}</p>
-              <p>Experiencias: {draft.experiences.length}</p>
-              <p>Vehículo: {draft.hasVehicle ? `Sí (${draft.vehicleType})` : "No"}</p>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p>CI: {ci}</p>
+                <p>
+                  Ubicación: {workLocation?.lat.toFixed(5)}, {workLocation?.lng.toFixed(5)}
+                </p>
+                <p>Servicios: {servicios?.length}</p>
+                <p>Métodos de pago: {getPaymentArray().join(', ')}</p>
+                <p>Vehículo: {vehiculo?.hasVehiculo ? `Sí (${vehiculo.tipoVehiculo})` : 'No'}</p>
+                <p className="text-xs text-gray-500 mt-4">Estado: En revisión (pending)</p>
+              </div>
             </div>
-          </div>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {step === 0 && (
-            <ProfilePhotoStep
-              photoUrl={draft.photoUrl}
-              onPhotoChange={(photoUrl) => setDraft((d) => ({ ...d, photoUrl }))}
-              error={errors.photo}
-            />
-          )}
-
-          {step === 1 && (
-            <CIStep ci={draft.ci} onCIChange={(ci) => setDraft((d) => ({ ...d, ci }))} error={errors.ci} />
-          )}
-
-          {step === 2 && (
-            <LocationStep
-              location={draft.location || null}
-              onLocationChange={(location) => setDraft((d) => ({ ...d, location }))}
-              error={errors.location}
-            />
-          )}
-
-          {step === 3 && (
-            <ServicesStep
-              services={draft.services}
-              selectedServiceIds={draft.selectedServiceIds}
-              onToggleService={toggleService}
-              onAddCustomService={addCustomService}
-              onEditService={editService}
-              onDeleteService={deleteService}
-              error={errors.services}
-            />
-          )}
-
-          {step === 4 && (
-            <PaymentStep
-              payments={draft.payments}
-              accountInfo={draft.accountInfo || ""}
-              onTogglePayment={(method) =>
-                setDraft((d) => ({
-                  ...d,
-                  payments: d.payments.includes(method)
-                    ? d.payments.filter((x) => x !== method)
-                    : [...d.payments, method],
-                }))
-              }
-              onAccountInfoChange={(accountInfo) => setDraft((d) => ({ ...d, accountInfo }))}
-              paymentsError={errors.payments}
-              accountError={errors.accountInfo}
-            />
-          )}
-
-          {step === 5 && (
-            <ExperienceStep
-              experiences={draft.experiences}
-              onAddExperience={addExperience}
-              onDeleteExperience={deleteExperience}
-              error={errors.experiences}
-            />
-          )}
-
-          {step === 6 && (
-            <VehicleStep
-              hasVehicle={draft.hasVehicle}
-              vehicleType={draft.vehicleType}
-              onHasVehicleChange={(hasVehicle) => setDraft((d) => ({ ...d, hasVehicle }))}
-              onVehicleTypeChange={(vehicleType) => setDraft((d) => ({ ...d, vehicleType }))}
-              error={errors.vehicle || errors.vehicleType}
-            />
-          )}
-
-          {step === 7 && (
-            <TermsStep
-              accepted={draft.termsAccepted}
-              onAcceptChange={(termsAccepted) => setDraft((d) => ({ ...d, termsAccepted }))}
-              error={errors.terms}
-            />
-          )}
-
-          <div className="flex items-center justify-between">
-            <PillButton
-              type="button"
-              disabled={step === 0}
-              onClick={goPrev}
-              className="bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 flex items-center gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Atrás
-            </PillButton>
-            {step < 7 ? (
-              <PillButton
-                type="button"
-                onClick={goNext}
-                className="bg-primary text-white hover:bg-blue-800 flex items-center gap-2"
-              >
-                Siguiente
-                <ArrowRight className="h-4 w-4" />
-              </PillButton>
-            ) : (
-              <PillButton
-                type="button"
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="bg-primary text-white hover:bg-blue-800 disabled:opacity-50 flex items-center gap-2"
-              >
-                {submitting ? "Guardando..." : "Finalizar"}
-                <CheckCircle2 className="h-4 w-4" />
-              </PillButton>
+          </Card>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {step === 0 && (
+              <ProfilePhotoStep
+                photoUrl={url_photo}
+                onPhotoChange={(url) => setValue('url_photo', url, { shouldValidate: true })}
+                error={errors.url_photo?.message}
+              />
             )}
-          </div>
-        </div>
-      )}
-    </div>
-  )
+
+            {step === 1 && (
+              <CIStep
+                ci={ci}
+                onCIChange={(val) => setValue('ci', val, { shouldValidate: true })}
+                error={errors.ci?.message}
+              />
+            )}
+
+            {step === 2 && (
+              <LocationStep
+                location={workLocation}
+                onLocationChange={(val) => setValue('workLocation', val, { shouldValidate: true })}
+                error={errors.workLocation?.message || errors.workLocation?.lat?.message}
+              />
+            )}
+
+            {step === 3 && (
+              <ServicesStep
+                services={availableServices}
+                selectedServiceIds={servicios}
+                onToggleService={handleToggleService}
+                onAddCustomService={handleAddCustomService}
+                onEditService={handleEditService}
+                onDeleteService={handleDeleteService}
+                error={errors.servicios?.message}
+              />
+            )}
+
+            {step === 4 && (
+              <PaymentStep
+                payments={getPaymentArray()}
+                accountInfo={accountInfo || ''}
+                onTogglePayment={handleTogglePayment}
+                onAccountInfoChange={(val) =>
+                  setValue('accountInfo', val, { shouldValidate: true })
+                }
+                paymentsError={errors.metodoPago?.root?.message} // Check where error lands
+                accountError={errors.accountInfo?.message}
+              />
+            )}
+
+            {step === 5 && (
+              <VehicleStep
+                hasVehicle={vehiculo?.hasVehiculo}
+                vehicleType={vehiculo?.tipoVehiculo}
+                onHasVehicleChange={(val) => {
+                  setValue('vehiculo.hasVehiculo', val, { shouldValidate: true });
+                  if (!val) setValue('vehiculo.tipoVehiculo', undefined);
+                }}
+                onVehicleTypeChange={(val) =>
+                  setValue('vehiculo.tipoVehiculo', val, { shouldValidate: true })
+                }
+                error={
+                  errors.vehiculo?.hasVehiculo?.message || errors.vehiculo?.tipoVehiculo?.message
+                }
+              />
+            )}
+
+            {step === 6 && (
+              <TermsStep
+                accepted={acceptTerms}
+                onAcceptChange={(val) => setValue('acceptTerms', val, { shouldValidate: true })}
+                error={errors.acceptTerms?.message}
+              />
+            )}
+
+            {errors.root && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                {errors.root.message}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <PillButton
+                type="button"
+                disabled={step === 0}
+                onClick={goPrev}
+                className="bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Atrás
+              </PillButton>
+              {step < total - 1 ? (
+                <PillButton
+                  type="button"
+                  onClick={goNext}
+                  className="bg-primary text-white hover:bg-blue-800 flex items-center gap-2"
+                >
+                  Siguiente
+                  <ArrowRight className="h-4 w-4" />
+                </PillButton>
+              ) : (
+                <PillButton
+                  type="submit"
+                  disabled={isSubmitting || !acceptTerms}
+                  className="bg-primary text-white hover:bg-blue-800 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isSubmitting ? 'Registrando...' : 'Registrar'}
+                  <CheckCircle2 className="h-4 w-4" />
+                </PillButton>
+              )}
+            </div>
+          </form>
+        )}
+      </div>
+    </FormProvider>
+  );
 }

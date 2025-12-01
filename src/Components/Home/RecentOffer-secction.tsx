@@ -1,25 +1,48 @@
-'use client';
-import { JobOffer } from '@/app/lib/mock-data';
-import { JobOfferCard } from '../Job-offers/Job-offer-card';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { mockJobOffers } from '@/app/lib/mock-data';
+"use client";
+import { JobOffer } from "@/app/lib/mock-data";
+import { JobOfferCard } from "../Job-offers/Job-offer-card";
+import Link from "next/link";
 
-export default function MyOffer() {
-  const [myOffers, setMyOffers] = useState([
-    { id: 1, title: 'Oferta de prueba', createdAt: new Date().toISOString() },
-  ]);
+import { useGetAllJobOffersQuery } from "@/app/redux/services/jobOfferApi";
+
+export default function RecentOffersSection() {
+ 
+  const { data: jobOffers = [] } = useGetAllJobOffersQuery();
+  
+  console.log("RecentOffersSection - jobOffers:", jobOffers);
+
+
 
   return (
     <section className="py-16 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold mb-4">Mis Ofertas</h2>
-        <div>
-          {myOffers.map((offer) => (
-            <div key={offer.id}>{offer.title}</div>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+              Ofertas Recientes
+            </h2>
+            <p className="text-lg text-gray-600">
+              Descubre las últimas ofertas publicadas
+            </p>
+          </div>
+          <Link 
+            href="/job-offer-list" 
+            className="text-primary hover:underline font-medium"
+          >
+            Ver todas →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {jobOffers?.map((offer) => (
+            <JobOfferCard 
+              key={offer.id} 
+              offer={offer as JobOffer} 
+              showFixerInfo={true}
+            />
           ))}
         </div>
       </div>
     </section>
   );
 }
+

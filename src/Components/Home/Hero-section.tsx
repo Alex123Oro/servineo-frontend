@@ -34,14 +34,17 @@ export default function HeroSection({ isFixer = false }: HeroSectionProps) {
       <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl animate-[pulse_8s_ease-in-out_infinite] animation-delay-2000" />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 text-[#2B6AE0] drop-shadow-sm">
+        {/* Título */}
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent drop-shadow-sm">
           {titleText}
         </h1>
 
+        {/* Subtítulo */}
         <p className="text-lg md:text-xl text-gray-700 mb-12 max-w-3xl mx-auto font-medium">
           {subtitleText}
         </p>
 
+        {/* Barra de búsqueda */}
         <form onSubmit={handleSearch} className="mb-10 max-w-2xl mx-auto" id="tour-search-bar">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -63,6 +66,7 @@ export default function HeroSection({ isFixer = false }: HeroSectionProps) {
           </div>
         </form>
 
+        {/* Búsquedas populares: SOLO para usuario normal */}
         {!isFixer && (
           <div className="mb-16">
             <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
@@ -83,6 +87,7 @@ export default function HeroSection({ isFixer = false }: HeroSectionProps) {
           </div>
         )}
 
+        {/* Stats: cambian según rol */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
           {isFixer ? (
             <>

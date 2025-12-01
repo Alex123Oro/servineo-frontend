@@ -1,61 +1,65 @@
+// refactorizar  las rutas
+
 import { baseApi } from './baseApi';
-
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-interface LoginResponse {
-  user: User;
-  token: string;
-}
-
+import type { IUserProfile } from '@/types/job-offer';
+import type { IUser } from '@/types/user';
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, LoginCredentials>({
-      query: (credentials) => ({
-        url: '/auth/login',
+    createUserProfile: builder.mutation<IUserProfile, IUserProfile>({
+      query: (body) => ({
+        url: '/user-profiles',
         method: 'POST',
-        body: credentials,
+        body,
       }),
-      // Invalidar cache después del login
-      invalidatesTags: ['Requester'],
+      invalidatesTags: ['User'],
     }),
 
-    getUser: builder.query<User, string>({
-      query: (id) => `/users/${id}`,
-      providesTags: ['Requester'],
+    getUserProfiles: builder.query<IUserProfile[], void>({
+      query: () => '/user-profiles',
+      providesTags: ['User'],
+    }),
+    updateDescription: builder.mutation<IUser, { id: string; description: string }>({
+      query: ({ id, description }) => ({
+        url: `/user/${id}/description`,
+        method: 'POST',
+        body: { description },
+      }),
+      invalidatesTags: ['User'],
     }),
 
-    updateUser: builder.mutation<User, Partial<User> & { id: string }>({
-      query: ({ id, ...patch }) => ({
-        url: `/users/${id}`,
+    getUsersByRole: builder.query<IUserProfile[], string>({
+      query: (role) => `/user-profiles/role/${role}`,
+      providesTags: ['User'],
+    }),
+
+    convertToFixer: builder.mutation<
+      IUserProfile,
+      { id: string; profile: IUserProfile['profile'] }
+    >({
+      query: ({ id, profile }) => ({
+        url: `/user-profiles/${id}/convert-fixer`,
         method: 'PATCH',
-        body: patch,
+        body: { profile },
       }),
-      invalidatesTags: ['Requester'],
+      invalidatesTags: ['User'],
     }),
 
-    getProfile: builder.query<User, void>({
-      query: () => '/users/profile',
-      providesTags: ['Requester'],
+    getUserById: builder.query<IUser, string>({
+      query: (id) => `/user/${id}`,
+      providesTags: ['User'],
     }),
   }),
+
   overrideExisting: false,
 });
 
 export const {
-  useLoginMutation,
-  useGetUserQuery,
-  useUpdateUserMutation,
-  useGetProfileQuery,
+  useCreateUserProfileMutation,
+  useGetUserProfilesQuery,
+  useUpdateDescriptionMutation,
+  useGetUsersByRoleQuery,
+  useConvertToFixerMutation,
+  useLazyGetUserByIdQuery,
+  useGetUserByIdQuery,
 } = userApi;

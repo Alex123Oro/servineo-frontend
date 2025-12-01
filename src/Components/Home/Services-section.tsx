@@ -1,5 +1,5 @@
 "use client";
-import { services } from '@/app/servicios/data';
+import { services } from '@/app/[locale]/servicios/data';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';

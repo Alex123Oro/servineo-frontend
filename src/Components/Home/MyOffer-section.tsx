@@ -28,7 +28,7 @@ export default function MyOffer() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Mis Ofertas</h2>
             <p className="text-lg text-gray-600">Aquí se muestran tus últimas ofertas</p>
           </div>
-          <Link href="/fixer/my-offers" className="text-primary hover:underline font-medium">
+          <Link href="/fixer/dashboard" className="text-primary hover:underline font-medium">
             Ver todas →
           </Link>
         </div>
