@@ -213,7 +213,11 @@
     "contactWhatsApp": "Contactar por WhatsApp",
     "searchResults": "Resultados de la búsqueda",
     "noResults": "No se encontraron resultados",
-    "defaultUserName": "Usuario"
+    "defaultUserName": "Usuario",
+    "uncategorized": "Sin categoría",
+    "viewDetails": "Ver detalles",
+    "location": "Ubicación",
+    "price": "Precio"
   },
   "calendar": {
     "months": {

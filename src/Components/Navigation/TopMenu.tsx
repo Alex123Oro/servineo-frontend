@@ -7,7 +7,7 @@ import { Home, Tag, Wrench, Briefcase, User, HelpCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '@/app/redux/slice/userSlice';
-import { UserData } from '@/types/user';
+import { UserData } from '@/types/user'; 
 
 interface RootState {
   user: {
@@ -57,7 +57,9 @@ export default function TopMenu() {
   }, []);
 
   useEffect(() => {
-    setCurrentPath(window.location.pathname);
+    if (typeof window !== 'undefined') {
+       setCurrentPath(window.location.pathname);
+    }
   }, []);
 
   useEffect(() => {
@@ -224,8 +226,8 @@ export default function TopMenu() {
               ))}
             </nav>
 
-            {/* Botones / perfil */}
-            <div className="flex items-center gap-2 md:gap-4" id="desktop-auth-buttons">
+            {/* Botones / perfil (DESKTOP) - ID AGREGADO */}
+            <div className="hidden md:flex items-center gap-4" id="tour-auth-buttons-desktop">
               {!isLogged ? (
                 <>
                   <Link
@@ -262,7 +264,11 @@ export default function TopMenu() {
                           Editar perfil
                         </Link>
                         <button
-                          onClick={logout}
+                          onClick={() => {
+                            localStorage.removeItem('servineo_token');
+                            localStorage.removeItem('servineo_user');
+                            window.location.reload();
+                          }}
                           className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
                         >
                           Cerrar sesión
@@ -273,27 +279,44 @@ export default function TopMenu() {
                 </>
               )}
             </div>
+
+            {/* Mobile Button */}
+            <div className="md:hidden flex items-center">
+              {/* ID AGREGADO AQUI PARA EL TOUR MOBILE */}
+              <div id="tour-auth-buttons-mobile" className="mr-2">
+                 {!isLogged ? (
+                    <Link
+                    href="/login"
+                    className="px-2 py-1 rounded-md bg-[var(--color-primary)] text-white text-xs font-medium"
+                  >
+                    Login
+                  </Link>
+                 ) : (
+                   <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                 )}
+              </div>
+            </div>
           </div>
         </div>
-      </header>
 
-      {/* Bottom nav móvil */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white shadow-t border-t border-gray-200">
-        <nav className="flex justify-around items-center py-2">
-          {navItems.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => router.push(item.href)}
-              className={`flex flex-col items-center text-xs ${
-                currentPath === item.href ? 'text-primary' : 'text-gray-700 hover:text-primary'
-              }`}
-            >
-              <item.icon size={20} />
-              <span>{item.name}</span>
-            </button>
-          ))}
-        </nav>
-      </div>
+        {/* Bottom nav móvil */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white shadow-t border-t border-gray-200">
+          <nav className="flex justify-around items-center py-2">
+            {navItems.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => router.push(item.href)}
+                className={`flex flex-col items-center text-xs ${
+                  currentPath === item.href ? 'text-primary' : 'text-gray-700 hover:text-primary'
+                }`}
+              >
+                <item.icon size={20} />
+                <span>{item.name}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+      </header>
 
       {/* Spacer */}
       <div className="h-20 md:h-20" />

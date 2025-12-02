@@ -230,7 +230,11 @@
     "contactWhatsApp": "Contact via WhatsApp",
     "searchResults": "Search results",
     "noResults": "No results found",
-    "defaultUserName": "User"
+    "defaultUserName": "User",
+    "uncategorized": "Uncategorized", 
+    "viewDetails": "View details",
+    "location": "Location",
+    "price": "Price"
   },
   "calendar": {
     "months": {
