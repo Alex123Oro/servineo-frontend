@@ -1,7 +1,12 @@
 'use client'
 
+<<<<<<< HEAD
 import 'animate.css';
 import React, { useRef, useState } from 'react'
+=======
+//import 'animate.css';
+import React, { useEffect, useRef, useState } from 'react'
+>>>>>>> 2838f543e3c864a263053aa760571ae854ff4222
 import dynamic from "next/dynamic";
 import { FaArrowDown } from "react-icons/fa6"
 import { Play, Pause } from "lucide-react";
@@ -16,9 +21,20 @@ export const Title = () => {
     const [audioAllowed, setAudioAllowed] = useState(false)
     const [open, setOpen] = useState(false)
     const [showPauseScreen, setShowPauseScreen] = useState(true)
+<<<<<<< HEAD
     
     const [checkPause, setCheckPause] = useState(false)
 
+=======
+    const [isClient, setIsClient] = useState(false);
+    
+    const [checkPause, setCheckPause] = useState(false)
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+>>>>>>> 2838f543e3c864a263053aa760571ae854ff4222
     const handleAllowAudio = async () => { 
         setAudioAllowed(true);
         setOpen(false); 
@@ -46,12 +62,20 @@ export const Title = () => {
         }
         
     }
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 2838f543e3c864a263053aa760571ae854ff4222
 
   return (
     <div>
         <div className="flex flex-col items-center min-h-screen gap-[10px] bg-gradient-to-b from-[#2B6AE0] to-[#2B31E0]">
             <div>
+<<<<<<< HEAD
                 <h1 className='text-center text-[60px] text-white mt-[80px]' > Cómo funciona Servineo </h1>
+=======
+                <h1 className='text-center text-[60px] text-white mt-[40px]' > Cómo funciona Servineo </h1>
+>>>>>>> 2838f543e3c864a263053aa760571ae854ff4222
             </div>
 
             <div>
@@ -92,6 +116,7 @@ export const Title = () => {
             
             {/* contenedor del video */}
             <div className="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden shadow-lg mb-[30px]">
+<<<<<<< HEAD
                 <ReactPlayer
                     src="/img/imgHowUseServineo/SERVINEO TUTORIAL.mp4"
                     playing={playing}
@@ -101,6 +126,21 @@ export const Title = () => {
                     width='100%'
                     style={{ position: 'absolute', top: 0, left: 0, objectFit: "cover"}}
                 />
+=======
+                {
+                    isClient && (
+                        <ReactPlayer
+                            url="/videos/SERVINEO_TUTORIAL.mp4"
+                            playing={playing}
+                            muted={audioAllowed ? false : true}
+                            controls
+                            height='100%'
+                            width='100%'
+                            style={{ position: 'absolute', top: 0, left: 0, objectFit: "cover"}}
+                        />
+                    )
+                }
+>>>>>>> 2838f543e3c864a263053aa760571ae854ff4222
                 
                 { showPauseScreen === true && (
                     <div

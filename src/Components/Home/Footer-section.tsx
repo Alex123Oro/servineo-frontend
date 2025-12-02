@@ -33,7 +33,7 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
   const exploreLinks = [
     { name: 'Servicios', path: '/servicios' },
     { name: 'Ofrece tus servicios', path: '/info/reparador' },
-    { name: 'Ofertas de trabajo', path: 'ofertas' },
+    { name: 'Ofertas de trabajo', path: '/job-offer-list' },
   ];
 
   return (
