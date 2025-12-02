@@ -14,6 +14,8 @@ import useSixMonthsAppointments from '@/hooks/useSixMonthsAppointments';
 import { AppointmentsProvider } from '@/app/lib/utils/contexts/AppointmentsContext/AppoinmentsContext';
 import { AppointmentsStatusProvider } from '@/app/lib/utils/contexts/DayliViewRequesterContext';
 
+import DatePicker from '@/Components/list/DatePicker/DatePicker';
+
 //const fixer_id = "68ef1993be38c7f1c3c2c777";
 const fixer_id = '68e87a9cdae3b73d8040102f';
 const requester_id = "68ec99ddf39c7c140f42fcfa";
@@ -27,6 +29,9 @@ export default function CalendarPage() {
 
     const [userRole, setUserRole] = useState<'requester' | 'fixer'>('fixer');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [selectDate, setSelectDate] = useState<Date>(new Date());
+
+
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
     const today = useMemo(() => {
@@ -38,6 +43,7 @@ export default function CalendarPage() {
     const handleDataChange = (newDate: Date) => {
         setSelectedDate(newDate);
     };
+
 
     const switchRole = () => {
         if (userRole === 'requester') {
@@ -207,8 +213,15 @@ export default function CalendarPage() {
                             </div>
                         </div>
 
-                        <div className="hidden justify-center md:flex">
-                            <DesktopCalendar />
+                        <div className="hidden flex-col justify-center md:flex ">
+                            <DatePicker
+                                selectedDate={selectDate}
+                                onDateChange={setSelectDate}
+                            />
+                            <DesktopCalendar
+                                selectedDate={selectDate}
+                                onDateChange={setSelectDate}
+                            />
                         </div>
 
                         <div className="flex flex-col md:hidden justify-center gap-4">
