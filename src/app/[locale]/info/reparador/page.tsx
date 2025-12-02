@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function ParaReparadores() {
   const [imgError, setImgError] = useState(false);
@@ -116,12 +117,12 @@ export default function ParaReparadores() {
         <p className="text-gray-700 mb-6">
           Regístrate en Servineo y empieza a recibir trabajos de manera confiable y profesional.
         </p>
-        <a
+        <Link
           href="/registro-reparador"
           className="inline-block bg-[var(--primary)] text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-xl transition-all duration-300"
         >
           Registrarse
-        </a>
+        </Link>
       </section>
 
     </main>
