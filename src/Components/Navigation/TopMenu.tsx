@@ -1,44 +1,43 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import Link from 'next/link';
-import { Menu, X, Wrench, UserCircle } from 'lucide-react';
-import { useGetUserByIdQuery } from '@/app/redux/services/userApi';
-import { useDispatch, useSelector } from 'react-redux';
+import Image from 'next/image';
+import { Home, Tag, Wrench, Briefcase, User, HelpCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '@/app/redux/slice/userSlice';
-// CORRECCIÓN 1: Usamos UserData que es lo que existe en tu archivo de tipos
 import { UserData } from '@/types/user';
 
-interface UserState {
-  user: UserData | null; // CORRECCIÓN 2: Usar UserData
-  isAuthenticated: boolean;
-  loading: boolean;
-}
-
 interface RootState {
-  user: UserState;
+  user: {
+    user: UserData | null;
+    isAuthenticated: boolean;
+    loading: boolean;
+  };
 }
 
 export default function TopMenu() {
   const dispatch = useDispatch();
-  // Acceder correctamente al estado
+  const router = useRouter();
+
   const { user, loading } = useSelector((state: RootState) => state.user);
 
-  const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isLogged, setIsLogged] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
+  const [currentPath, setCurrentPath] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const logoRef = useRef<HTMLButtonElement | null>(null);
 
   const navItems = [
-    { name: 'Inicio', href: '/' },
-    { name: 'Ofertas de trabajo', href: '/job-offer-list' },
-    { name: 'Ayuda', href: '/ask-for-help/centro_de_ayuda' },
+    { name: 'Servicios', href: '/servicios', icon: Wrench },
+    { name: 'Ofertas', href: '/job-offer-list', icon: Tag },
+    { name: 'Ayuda', href: '/ayuda', icon: HelpCircle },
   ];
 
-  // Obtener userId desde localStorage
   useEffect(() => {
     const token = localStorage.getItem('servineo_user');
     if (token) {
@@ -47,17 +46,6 @@ export default function TopMenu() {
     }
   }, []);
 
-  // Consultar user por ID
-  const { data: userData } = useGetUserByIdQuery(userId!, {
-    skip: !userId,
-  });
-
-  // Guardar user en redux
-  useEffect(() => {
-    if (userData) dispatch(setUser(userData));
-  }, [userData, dispatch]);
-
-  // Detectar scroll y login
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
@@ -68,7 +56,10 @@ export default function TopMenu() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Click fuera del dropdown
+  useEffect(() => {
+    setCurrentPath(window.location.pathname);
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -79,18 +70,29 @@ export default function TopMenu() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Determinar qué botón mostrar según el rol
-  const getRoleButton = () => {
-    // Si está cargando, mostrar skeleton o nada
-    if (loading || !user) return null;
+  const handleLogoClick = () => {
+    if (window.location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      router.push('/');
+    }
+  };
 
+  const logout = () => {
+    localStorage.removeItem('servineo_token');
+    localStorage.removeItem('servineo_user');
+    window.location.reload();
+  };
+
+  const getRoleButton = () => {
+    if (loading || !user) return null;
     if (!user.role) return null;
 
     if (user.role === 'requester') {
       return (
         <Link
           href="/become-fixer"
-          className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-primary transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-[var(--color-primary)] border border-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-colors"
         >
           <Wrench className="h-4 w-4" />
           Convertir a Fixer
@@ -102,29 +104,25 @@ export default function TopMenu() {
       return (
         <Link
           href="/fixer/dashboard"
-          className="flex items-center gap-2 text-white px-4 py-2 rounded-md text-sm font-medium bg-primary transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-[var(--color-primary)] text-white hover:opacity-90 transition-opacity"
         >
-          <UserCircle className="h-4 w-4" />
+          <User className="h-4 w-4" />
           Perfil de Fixer
         </Link>
       );
     }
-
     return null;
   };
 
   const getRoleButtonMobile = () => {
-    // Si está cargando, mostrar skeleton o nada
     if (loading || !user) return null;
-
     if (!user.role) return null;
 
     if (user.role === 'requester') {
       return (
         <Link
           href="/become-fixer"
-          className="flex items-center justify-center gap-2 w-full bg-green-600 text-white px-4 py-2 rounded-md text-base font-medium hover:bg-green-700 transition-colors"
-          onClick={() => setIsOpen(false)}
+          className="flex items-center justify-center gap-2 w-full bg-[var(--color-primary)] text-white px-3 py-1 rounded-md text-[10px] sm:text-xs md:text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Wrench className="h-4 w-4" />
           Convertir a Fixer
@@ -136,73 +134,124 @@ export default function TopMenu() {
       return (
         <Link
           href="/fixer/dashboard"
-          className="flex items-center justify-center gap-2 w-full bg-blue-600 text-white px-4 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition-colors"
-          onClick={() => setIsOpen(false)}
+          className="flex items-center justify-center gap-2 w-full bg-[var(--color-primary)] text-white px-3 py-1 rounded-md text-[10px] sm:text-xs md:text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          <UserCircle className="h-4 w-4" />
+          <User className="h-4 w-4" />
           Perfil de Fixer
         </Link>
       );
     }
-
     return null;
+  };
+
+  const handleDesktopNavKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    const logoItems = logoRef.current ? [logoRef.current] : [];
+    const navItemsEls = Array.from(document.querySelectorAll<HTMLElement>('nav a'));
+    const buttonItems = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '#desktop-auth-buttons a, #desktop-auth-buttons button',
+      ),
+    );
+    const allItems = [...logoItems, ...navItemsEls, ...buttonItems];
+    if (allItems.length === 0) return;
+
+    const index = allItems.indexOf(document.activeElement as HTMLElement);
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      const next = index === -1 ? 0 : (index + 1) % allItems.length;
+      allItems[next].focus();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const prev =
+        index === -1 ? allItems.length - 1 : (index - 1 + allItems.length) % allItems.length;
+      allItems[prev].focus();
+    }
   };
 
   return (
     <>
+      {/* HEADER PRINCIPAL */}
       <header
-        className={`fixed w-full z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
-        } border-t-[1.5px] border-b-[1.5px] border-primary`}
+        } border-b border-gray-100`}
+        role="banner"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
+          <div
+            className="flex justify-between h-20 items-center"
+            onKeyDown={handleDesktopNavKeyDown}
+          >
             {/* Logo */}
-            <Link href="/" className="text-primary font-bold text-xl">
-              SERVINEO
-            </Link>
+            <button
+              ref={logoRef}
+              onClick={handleLogoClick}
+              className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-primary)]"
+              aria-label="Ir al inicio"
+            >
+              <div className="relative overflow-hidden rounded-full shadow-md">
+                <Image
+                  src="/icon.png"
+                  alt="Logo de Servineo"
+                  width={40}
+                  height={40}
+                  className="transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
+              <span
+                className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary)]"
+                style={{ fontFamily: 'var(--font-sans)' }}
+              >
+                Servineo
+              </span>
+            </button>
 
-            {/* Desktop Menu */}
-            <nav className="hidden md:flex space-x-4">
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex gap-6" role="navigation" aria-label="Menú principal">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className={`font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-[var(--color-primary)] after:transition-all
+                    ${
+                      currentPath === item.href
+                        ? 'text-[var(--color-primary)] after:w-full'
+                        : 'text-gray-900 hover:text-[var(--color-primary)] after:w-0 hover:after:w-full'
+                    }`}
                 >
                   {item.name}
                 </Link>
               ))}
             </nav>
 
-            {/* Desktop Right - AQUI AGREGAMOS EL ID QUE FALTABA */}
-            <div className="hidden md:flex items-center space-x-4" id="tour-auth-buttons-desktop">
+            {/* Botones / perfil */}
+            <div className="flex items-center gap-2 md:gap-4" id="desktop-auth-buttons">
               {!isLogged ? (
                 <>
                   <Link
                     href="/login"
-                    className="text-gray-700 hover:text-primary px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    className="px-3 py-1 text-[10px] sm:text-xs md:text-sm lg:text-base rounded-md bg-[var(--color-primary)] text-white font-medium hover:opacity-90 transition"
                   >
                     Iniciar Sesión
                   </Link>
                   <Link
                     href="/signUp"
-                    className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
+                    className="px-3 py-1 text-[10px] sm:text-xs md:text-sm lg:text-base rounded-md border border-[var(--color-primary)] text-[var(--color-primary)] font-medium hover:opacity-80 transition"
                   >
-                    Regístrate
+                    Registrarse
                   </Link>
                 </>
               ) : (
                 <>
-                  {/* Botón según rol del usuario */}
                   {getRoleButton()}
-
                   <div className="relative" ref={dropdownRef}>
                     <button
                       onClick={() => setAccountOpen(!accountOpen)}
-                      className="text-gray-700 hover:text-primary px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                      className="flex items-center gap-2 cursor-pointer ml-[-10px] px-3 py-1 border border-gray-300 bg-white rounded-xl transition"
                     >
-                      Mi cuenta
+                      <span className="font-medium text-gray-700 hover:text-primary">
+                        {user?.name}
+                      </span>
                     </button>
                     {accountOpen && (
                       <div className="absolute right-0 mt-2 w-44 bg-white shadow-lg border border-gray-200 rounded-md py-2 z-50">
@@ -213,11 +262,7 @@ export default function TopMenu() {
                           Editar perfil
                         </Link>
                         <button
-                          onClick={() => {
-                            localStorage.removeItem('servineo_token');
-                            localStorage.removeItem('servineo_user');
-                            window.location.reload();
-                          }}
+                          onClick={logout}
                           className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
                         >
                           Cerrar sesión
@@ -228,94 +273,30 @@ export default function TopMenu() {
                 </>
               )}
             </div>
-
-            {/* Mobile Button */}
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-primary hover:bg-gray-100 transition-colors"
-              >
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <div
-          className={`md:hidden ${
-            isOpen ? 'block' : 'hidden'
-          } bg-white/95 backdrop-blur-sm border-t border-gray-200`}
-        >
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-
-            {/* AQUI AGREGAMOS EL ID QUE FALTABA EN MOBILE */}
-            <div className="pt-4 pb-2 border-t border-gray-200 px-2 space-y-2" id="tour-auth-buttons-mobile">
-              {!isLogged ? (
-                <>
-                  <Link
-                    href="/login"
-                    className="block w-full text-center text-primary px-4 py-2 rounded-md text-base font-medium hover:bg-gray-50"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Iniciar Sesión
-                  </Link>
-                  <Link
-                    href="/signUp"
-                    className="block w-full text-center text-white bg-primary px-4 py-2 rounded-md text-base font-medium hover:bg-primary/90"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Regístrate
-                  </Link>
-                </>
-              ) : (
-                <>
-                  {/* Botón según rol - Mobile */}
-                  {getRoleButtonMobile()}
-
-                  <Link
-                    href="/app/profile"
-                    className="block px-4 py-2 text-primary hover:bg-gray-50 rounded-md"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Mi cuenta
-                  </Link>
-                  <Link
-                    href="/requesterEdit"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-md"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Editar perfil
-                  </Link>
-                  <button
-                    onClick={() => {
-                      localStorage.removeItem('servineo_token');
-                      localStorage.removeItem('servineo_user');
-                      window.location.reload();
-                    }}
-                    className="block w-full text-left text-red-600 px-4 py-2 rounded-md text-base font-medium hover:bg-red-50"
-                  >
-                    Cerrar sesión
-                  </button>
-                </>
-              )}
-            </div>
           </div>
         </div>
       </header>
 
+      {/* Bottom nav móvil */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white shadow-t border-t border-gray-200">
+        <nav className="flex justify-around items-center py-2">
+          {navItems.map((item) => (
+            <button
+              key={item.name}
+              onClick={() => router.push(item.href)}
+              className={`flex flex-col items-center text-xs ${
+                currentPath === item.href ? 'text-primary' : 'text-gray-700 hover:text-primary'
+              }`}
+            >
+              <item.icon size={20} />
+              <span>{item.name}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
+
       {/* Spacer */}
-      <div className="h-16" />
+      <div className="h-20 md:h-20" />
     </>
   );
 }

@@ -38,15 +38,13 @@ function useInViewMultiple(count: number, options?: IntersectionObserverInit) {
 }
 
 export default function WhyServineoPage() {
-  const fallbackSrc = '/fallback-image.svg';
-
   const banners = [
     {
       id: 1,
       title: 'Descubre quiénes están cerca de ti',
       description:
         'Explora tu ciudad desde el mapa interactivo de Servineo y descubre a los fixers disponibles cerca de ti. Podrás ver fácilmente su ubicación y acceder a su información con un solo clic. Así, Servineo te conecta de forma rápida y sencilla con los profesionales que realmente están a tu alcance.',
-      image: '/images/banner1.jpg',
+      image: '/img/imgWhyServineo/banner1.png',
       alt: 'Mapa de la ciudad con marcadores que muestran fixers cerca del usuario',
       icon: (
         <MapPin className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" aria-hidden="true" />
@@ -58,7 +56,7 @@ export default function WhyServineoPage() {
       title: 'Conócelos en detalle',
       description:
         'En Servineo, cada fixer cuenta con un perfil completo que muestra su experiencia, especialidades y disponibilidad. Explora sus trayectorias, conoce sus habilidades y elige con confianza al profesional que mejor se adapte a tus necesidades. Todo lo que necesitas saber para encontrar al fixer ideal, en un solo lugar.',
-      image: '/images/banner2.jpg',
+      image: '/img/imgWhyServineo/banner2.png',
       alt: 'Perfil de un profesional mostrando su información y experiencia',
       icon: <User className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" aria-hidden="true" />,
     },
@@ -67,7 +65,7 @@ export default function WhyServineoPage() {
       title: 'Agenda tu cita con facilidad',
       description:
         'Con Servineo, agendar un servicio es rápido y sin complicaciones. Elige al profesional que necesites, coordina los detalles por WhatsApp y confirma tu cita en el horario que prefieras. Todo desde una plataforma práctica que conecta fácilmente a quienes ofrecen y quienes buscan un servicio.',
-      image: '/images/banner3.jpg',
+      image: '/img/imgWhyServineo/banner3.png',
       alt: 'Persona agendando una cita de servicio desde su dispositivo',
       icon: (
         <Calendar className="inline-block w-6 h-6 mr-2 text-[var(--primary)]" aria-hidden="true" />
@@ -79,7 +77,7 @@ export default function WhyServineoPage() {
       title: 'Confía en la calidad y seguridad del servicio',
       description:
         'En Servineo, la confianza es lo primero. Por eso, cada fixer pasa por un proceso de registro que valida su compromiso, responsabilidad y cumplimiento de nuestras políticas. Así, garantizamos que cada servicio dentro de la plataforma sea seguro, transparente y de calidad, brindándote la tranquilidad de contratar a profesionales en los que realmente puedes confiar.',
-      image: '/images/banner4.jpg',
+      image: '/img/imgWhyServineo/banner4.png',
       alt: 'Profesional estrechando la mano de un cliente en señal de confianza',
       icon: (
         <ShieldCheck
@@ -90,25 +88,19 @@ export default function WhyServineoPage() {
     },
   ];
 
-  // Mapa para saber qué imágenes fallaron y usar fallback
-  const [failedMap, setFailedMap] = useState<Record<number, boolean>>({});
-
   const STORAGE_KEY = 'whyServineoScroll';
 
-  // Guardar scroll mientras el usuario navega
+  // Guardar scroll
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const handleScroll = () => {
       sessionStorage.setItem(STORAGE_KEY, String(window.scrollY));
     };
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Restaurar scroll después de renderizar y cargar imágenes
+  // Restaurar scroll
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -116,16 +108,12 @@ export default function WhyServineoPage() {
       const saved = sessionStorage.getItem(STORAGE_KEY);
       if (saved) {
         const y = parseInt(saved, 10);
-        if (!Number.isNaN(y)) {
-          window.scrollTo({ top: y, left: 0, behavior: 'auto' });
-        }
+        if (!Number.isNaN(y)) window.scrollTo({ top: y, left: 0, behavior: 'auto' });
       }
     };
 
-    // Restaurar al montar
     restoreScroll();
 
-    // Restaurar al volver con atrás/adelante
     const handlePopState = () => {
       const retry = () => {
         restoreScroll();
@@ -135,17 +123,14 @@ export default function WhyServineoPage() {
     };
 
     window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const { refs, inViewStates } = useInViewMultiple(banners.length);
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      {/* Hero / Introducción */}
+      {/* Hero */}
       <section className="max-w-5xl mx-auto px-6 py-24 text-center">
         <h1 className="text-5xl md:text-6xl font-extrabold text-[var(--primary)] mb-8 leading-tight">
           ¿Por qué Servineo?
@@ -197,14 +182,12 @@ export default function WhyServineoPage() {
             />
             <div className="relative rounded-3xl shadow-lg overflow-hidden w-full md:w-[90%] z-10 group bg-gray-100">
               <Image
-                src={failedMap[index] ? fallbackSrc : banner.image}
+                src={banner.image}
                 alt={banner.alt}
                 width={800}
                 height={520}
                 className="w-full h-auto object-cover block transition duration-500 group-hover:scale-105 group-hover:shadow-2xl group-hover:brightness-95"
-                onError={() => {
-                  setFailedMap((prev) => ({ ...prev, [index]: true }));
-                }}
+                unoptimized // importante para Turbopack y rutas absolutas
               />
             </div>
           </div>
