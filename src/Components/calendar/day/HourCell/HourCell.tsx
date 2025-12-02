@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import EditAppointmentForm, {
     EditAppointmentFormHandle,
     ExistingAppointment,
@@ -8,6 +8,7 @@ import EditAppointmentForm, {
 import { useUserRole } from '@/app/lib/utils/contexts/UserRoleContext';
 import type { AppointmentFormHandle } from '@/Components/appointments/forms/AppointmentForm';
 import AppointmentForm from '@/Components/appointments/forms/AppointmentForm';
+import NoInternetPopUp from '@/Components/appointments/forms/popups/NoInternetPopUp';
 import AppointmentDetailsForm, {
     EditAppointmentFormHandle as DetailsFormHandle,
 } from '@/Components/appointments/forms/AppointmentDetails';
@@ -29,6 +30,7 @@ interface HourCellProps {
 const today = new Date();
 
 export default function HourCell({ hour, date, isPast, isToday, view }: HourCellProps) {
+    const [noInternetOpen, setNoInternetOpen] = useState(false);
     const refFormularioCita = useRef<AppointmentFormHandle | null>(null);
     const formRef = useRef<DetailsFormHandle>(null);
     const refFormularioEditarCita = useRef<EditAppointmentFormHandle | null>(null);
@@ -120,7 +122,15 @@ export default function HourCell({ hour, date, isPast, isToday, view }: HourCell
         return fechaFinal.toISOString();
     };
 
+    const checkInternet = () => {
+        return typeof window !== 'undefined' ? window.navigator.onLine : true;
+    };
+
     const handleOpenForm = () => {
+        if (!checkInternet()) {
+            setNoInternetOpen(true);
+            return;
+        }
         if (formRef.current) {
             const now = new Date(date);
             now.setHours(hour, 0, 0, 0);
@@ -130,6 +140,10 @@ export default function HourCell({ hour, date, isPast, isToday, view }: HourCell
 
     // Función para cargar y editar cita (copiada de HorarioDelDia)
     async function cargarYEditarCita() {
+        if (!checkInternet()) {
+            setNoInternetOpen(true);
+            return;
+        }
         try {
             const ymd = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
             const isoParaEditar = new Date(
@@ -183,6 +197,10 @@ export default function HourCell({ hour, date, isPast, isToday, view }: HourCell
     }
 
     const handleClick = () => {
+        if (!checkInternet()) {
+            setNoInternetOpen(true);
+            return;
+        }
         if (isRequester) {
             if (estado === 'disponible' || estado === 'cancelOtherRequester') {
                 const localISOString = createISOWithOffset(date, hour);
@@ -223,6 +241,8 @@ export default function HourCell({ hour, date, isPast, isToday, view }: HourCell
             <EditAppointmentForm ref={refFormularioEditarCita} />
 
             <AppointmentDetailsForm ref={formRef} />
+
+            <NoInternetPopUp open={noInternetOpen} onClose={() => setNoInternetOpen(false)} />
         </div>
     );
 }

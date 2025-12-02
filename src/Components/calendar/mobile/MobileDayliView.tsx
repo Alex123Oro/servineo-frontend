@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useMemo } from 'react';
 import AppointmentForm from '../../appointments/forms/AppointmentForm';
+import NoInternetPopUp from '../../appointments/forms/popups/NoInternetPopUp';
 import type { AppointmentFormHandle } from '../../appointments/forms/AppointmentForm';
 import EditAppointmentForm from '../../appointments/forms/EditAppointmentForm';
 import type {
@@ -127,6 +128,10 @@ export default function HorarioDelDia({
   const refFormularioCita = useRef<AppointmentFormHandle | null>(null);
   const refFormularioEditarCita = useRef<EditAppointmentFormHandle | null>(null);
   const formRef = useRef<DetailsFormHandle>(null);
+  const [noInternetOpen, setNoInternetOpen] = useState(false);
+    const checkInternet = () => {
+      return typeof window !== 'undefined' ? window.navigator.onLine : true;
+    };
   const handleDatePickerChange = (newDate: Date) => {
     const newDateStr = aYMDDeCualquiera(newDate);
     setFecha(newDateStr);
@@ -238,6 +243,10 @@ export default function HorarioDelDia({
   ]);
 
   async function cargarYEditarCita(item: HorarioItem) {
+    if (!checkInternet()) {
+      setNoInternetOpen(true);
+      return;
+    }
     try {
       if (!fecha) return;
       const [y, m, d] = fecha.split('-').map(Number);
@@ -293,6 +302,10 @@ export default function HorarioDelDia({
   }
 
   async function cargarDetallesCita(item: HorarioItem) {
+    if (!checkInternet()) {
+      setNoInternetOpen(true);
+      return;
+    }
     if (formRef.current) {
       const [y, m, d] = fecha.split('-').map(Number);
       const [hh] = item.Hora_Inicio.split(':');
@@ -371,6 +384,11 @@ export default function HorarioDelDia({
     }
 
     if (!clickeable) return;
+
+    if (!checkInternet()) {
+      setNoInternetOpen(true);
+      return;
+    }
 
     const ymd = fecha || aYMDDeCualquiera(selectedDate || new Date());
     const baseDate = convertirYMDaFechaLocal(ymd);
@@ -517,6 +535,7 @@ export default function HorarioDelDia({
           <AppointmentForm ref={refFormularioCita} fixerId={fixerId} requesterId={requesterId} />
           <EditAppointmentForm ref={refFormularioEditarCita} />
           <AppointmentDetailsForm ref={formRef} />
+          <NoInternetPopUp open={noInternetOpen} onClose={() => setNoInternetOpen(false)} />
         </>
       )}
     </div>
