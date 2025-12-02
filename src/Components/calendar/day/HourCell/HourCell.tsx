@@ -73,15 +73,14 @@ export default function HourCell({ hour, date, isPast, isToday, view }: HourCell
             return 'bg-[#FFC857]';
         if (
             estado === 'cancelFixer' ||
-            estado === 'cancelOtherRequester' ||
             estado === 'cancelRequester'
         )
-            return 'bg-[#FF3E17] text-sm ';
+            return 'bg-[#FF3E17] text-sm';
         if (estado === 'inhabilitado') return 'bg-[#64748B]';
         if (isFixer) {
             if (estado === 'cancelOtherFixer') return 'bg-[#FF3E17]';
         } else {
-            if (estado === 'disponible') return 'bg-[#16A34A]';
+            if (estado === 'disponible' || estado === 'cancelOtherRequester') return 'bg-[#16A34A]';
             if (estado === 'cancelOtherFixer') return 'bg-[#64748B]';
         }
     };
