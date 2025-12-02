@@ -11,12 +11,10 @@ interface NextBtnProps {
 
 export const NextBtn = ({ ...props }: NextBtnProps) => {
   const isLastStep = props.currentStep === props.stepsLength - 1;
-
   // NUEVO: Si es el paso 0 (Bienvenida), ocultamos el botón "Siguiente" estándar
   if (props.currentStep === 0) return null; 
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // ... (resto de tu lógica igual que antes)
     e.preventDefault();
     e.stopPropagation();
     if (props.setCurrentStep && props.steps) {
@@ -35,7 +33,6 @@ export const NextBtn = ({ ...props }: NextBtnProps) => {
     <button 
         onClick={handleClick}
         type="button"
-        // ... (mismos estilos que tenías)
         style={{
             backgroundColor: '#2B6AE0',
             color: 'white',
@@ -51,7 +48,6 @@ export const NextBtn = ({ ...props }: NextBtnProps) => {
             zIndex: 1000001,
             boxShadow: '0 4px 12px rgba(43, 106, 224, 0.3)',
         }}
-        // ... (resto de estilos hover)
     >
       {isLastStep ? 'Finalizar' : 'Siguiente'}
     </button>
@@ -68,7 +64,6 @@ export const PrevBtn = ({ ...props }: PrevBtnProps) => {
   if (props.currentStep === 0) return null;
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      // ... (resto de tu lógica igual)
       e.preventDefault();
       e.stopPropagation();
       if (props.setCurrentStep) {
@@ -79,7 +74,6 @@ export const PrevBtn = ({ ...props }: PrevBtnProps) => {
   return (
     <button
       onClick={handleClick}
-        // ... (mismos estilos y lógica)
         style={{
             color: '#666',
             fontWeight: '600',
@@ -94,7 +88,6 @@ export const PrevBtn = ({ ...props }: PrevBtnProps) => {
             position: 'relative',
             zIndex: 1000001,
         }}
-        // ...
     >
       Anterior
     </button>

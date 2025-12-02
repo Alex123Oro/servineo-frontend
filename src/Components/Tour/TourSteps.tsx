@@ -32,7 +32,6 @@ export const tourSteps: StepType[] = [
     position: 'center',
     stepInteraction: false,
   },
-
   // PASO 1: Buscador
   {
     selector: '#tour-search-bar',
@@ -40,13 +39,12 @@ export const tourSteps: StepType[] = [
       <div>
         <h4 className="font-bold text-lg mb-2 text-gray-800">1. Búsqueda Inteligente</h4>
         <p className="text-gray-600 text-sm">
-          Escribe aquí el servicio que necesitas (ej. &quot;Plomero&quot;) para encontrar ayuda rápidamente.
+          Escribe aquí el servicio que necesitas (ej. "Plomero") para encontrar ayuda rápidamente.
         </p>
       </div>
     ),
     position: 'bottom',
   },
-
   // PASO 2: Mapa
   {
     selector: '#tour-map-section',
@@ -60,7 +58,6 @@ export const tourSteps: StepType[] = [
     ),
     position: 'top',
   },
-
   // PASO 3: Inspiración
   {
     selector: '#tour-inspiration-section',
@@ -74,7 +71,6 @@ export const tourSteps: StepType[] = [
     ),
     position: 'top',
   },
-
   // PASO 4: Ofertas Recientes
   {
     selector: '#tour-recent-offers',
@@ -88,7 +84,6 @@ export const tourSteps: StepType[] = [
     ),
     position: 'top',
   },
-
   // PASO 5: Servicios
   {
     selector: '#tour-services-section',
@@ -102,7 +97,6 @@ export const tourSteps: StepType[] = [
     ),
     position: 'top',
   },
-
   // PASO 6: Cómo funciona
   {
     selector: '#tour-how-it-works',
@@ -116,7 +110,6 @@ export const tourSteps: StepType[] = [
     ),
     position: 'top',
   },
-
   // PASO 7: CTA
   {
     selector: '#tour-cta-section',
@@ -130,7 +123,6 @@ export const tourSteps: StepType[] = [
     ),
     position: 'top',
   },
-
   // PASO 8: Footer
   {
     selector: '#footer-principal',
@@ -144,7 +136,6 @@ export const tourSteps: StepType[] = [
     ),
     position: 'top',
   },
-
   // PASO 9: Auth Desktop
   {
     selector: '#tour-auth-buttons-desktop',

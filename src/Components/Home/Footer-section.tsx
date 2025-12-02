@@ -11,7 +11,9 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
     if (onRestartTour) {
       onRestartTour();
     } else {
-      window.dispatchEvent(new Event('restart-tour'));
+      // MODIFICACIÓN: Usamos la lógica de recarga forzada que es más segura
+      localStorage.removeItem('servineoTourVisto');
+      window.location.reload();
     }
   };
 
@@ -59,7 +61,7 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
         </div>
 
         <div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-base"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-base text-center sm:text-left"
           role="navigation"
           aria-label="Enlaces del pie de página"
         >
@@ -93,8 +95,7 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
               <li>
                 <button 
                   onClick={handleRestartTour} 
-                  className="footerLink text-left w-full cursor-pointer hover:text-[#1AA7ED] transition-colors"
-                  style={{ background: 'none', border: 'none', font: 'inherit', color: 'inherit' }}
+                  className="footerLink text-left w-full sm:w-auto cursor-pointer hover:text-[#1AA7ED] transition-colors bg-transparent border-none p-0"
                 >
                   Ver guía nuevamente
                 </button>
@@ -124,10 +125,10 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
             >
               Contáctanos
             </h3>
-            <div className="space-y-1 mt-1 text-white">
+            <div className="space-y-2 mt-1 text-white flex flex-col items-center sm:items-start">
               <div className="flex items-center" aria-label="Ubicación: Cochabamba, Bolivia">
                 <MapPin
-                  className="h-5 w-5 text-blue-400 mr-4 transition-all duration-300 group-hover:text-[#1AA7ED] group-hover:drop-shadow-[0_0_8px_var(--secondary)]"
+                  className="h-5 w-5 text-blue-400 mr-2 transition-all duration-300 group-hover:text-[#1AA7ED] group-hover:drop-shadow-[0_0_8px_var(--secondary)]"
                   aria-hidden="true"
                 />
                 <a
@@ -141,7 +142,7 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
                 </a>
               </div>
               <div className="flex items-center" aria-label="Número de WhatsApp">
-                <Phone className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true" />
+                <Phone className="h-5 w-5 text-blue-400 mr-2" aria-hidden="true" />
                 <a
                   href="https://wa.me/59175139742?text=Hola%2C%20me%20gustaria%20recibir%20informacion%20sobre%20los%20servicios%20que%20ofrece%20SERVINEO.%20Muchas%20gracias."
                   target="_blank"
@@ -153,13 +154,13 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
                 </a>
               </div>
               <div className="flex items-center" aria-label="Correo electrónico de contacto">
-                <Mail className="h-5 w-5 text-blue-400 mr-4" aria-hidden="true" />
+                <Mail className="h-5 w-5 text-blue-400 mr-2" aria-hidden="true" />
                 <a
-                  href="mailto:servineo.serviciostecnicos@gmail.com?subject=Consulta de servicios&body=Hola, me gustaria recibir informacion sobre los servicios que ofrece SERVINEO."
+                  href="mailto:contacto@servineo.bo"
                   className="hover:text-[#1AA7ED] transition-colors"
-                  aria-label="Enviar correo electrónico a servineo.serviciostecnicos@gmail.com"
+                  aria-label="Enviar correo electrónico a contacto@servineo.bo"
                 >
-                  serviciostecnicos@gmail.com
+                  contacto@servineo.bo
                 </a>
               </div>
             </div>
@@ -220,7 +221,6 @@ export default function FooterSection({ onRestartTour }: FooterSectionProps = {}
             </select>
           </div>
         </div>
-
         <div className="border-t border-gray-700" role="separator" aria-hidden="true" />
         <div
           className="flex flex-col sm:flex-row items-center justify-between gap-4 text-white text-sm pt-8"

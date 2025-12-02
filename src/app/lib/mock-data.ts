@@ -108,10 +108,10 @@ export const currentFixer: Fixer = {
   paymentMethods: ['Efectivo', 'Transferencia', 'QR'],
 };
 
-// Mock de ofertas de trabajo
+// Mock de ofertas de trabajo - CORREGIDO: IDs ÚNICOS
 let _mockJobOffers: JobOffer[] = [
   {
-    id: 'offer-001',
+    id: 'offer-001', // ID 1
     fixerId: 'fixer-001',
     fixerName: 'Juan Carlos Pérez',
     fixerPhoto: '/img/avatars/fixer-001.jpg',
@@ -134,21 +134,21 @@ let _mockJobOffers: JobOffer[] = [
     },
   },
   {
-    id: 'offer-001',
+    id: 'offer-002', // ID 2 (Antes era offer-001)
     fixerId: 'fixer-001',
     fixerName: 'Juan Carlos Pérez',
     fixerPhoto: '/img/avatars/fixer-001.jpg',
-    title: 'Servicios de Plomería y Electricidad',
+    title: 'Instalación de luminarias',
     description:
-      'Especialista en reparaciones de plomería e instalaciones eléctricas. Soluciones rápidas y garantizadas.',
-    tags: ['Plomería', 'Electricidad', 'Reparaciones'],
+      'Instalación profesional de todo tipo de lámparas y sistemas de iluminación LED.',
+    tags: ['Electricidad', 'Iluminación', 'Decoración'],
     whatsapp: '59170341618',
     photos: ['/img/carpinteria1.jpg', '/img/carpinteria2.jpg', '/img/carpinteria3.jpg'],
-    services: ['Plomería', 'Electricidad'],
-    price: 150,
+    services: ['Electricidad'],
+    price: 80,
     rating: 4.8,
     completedJobs: 124,
-    createdAt: new Date('2025-01-15'),
+    createdAt: new Date('2025-01-16'),
     city: 'Cochabamba',
     location: {
       lat: -17.3935,
@@ -157,21 +157,21 @@ let _mockJobOffers: JobOffer[] = [
     },
   },
   {
-    id: 'offer-001',
+    id: 'offer-003', // ID 3 (Antes era offer-001)
     fixerId: 'fixer-001',
     fixerName: 'Juan Carlos Pérez',
     fixerPhoto: '/img/avatars/fixer-001.jpg',
-    title: 'Servicios de Plomería y Electricidad',
+    title: 'Reparación de fugas',
     description:
-      'Especialista en reparaciones de plomería e instalaciones eléctricas. Soluciones rápidas y garantizadas.',
-    tags: ['Plomería', 'Electricidad', 'Reparaciones'],
+      'Detección y reparación de fugas de agua sin romper paredes innecesariamente.',
+    tags: ['Plomería', 'Fugas', 'Urgencias'],
     whatsapp: '59170341618',
     photos: ['/img/carpinteria1.jpg', '/img/carpinteria2.jpg', '/img/carpinteria3.jpg'],
-    services: ['Plomería', 'Electricidad'],
-    price: 150,
+    services: ['Plomería'],
+    price: 120,
     rating: 4.8,
     completedJobs: 124,
-    createdAt: new Date('2025-01-15'),
+    createdAt: new Date('2025-01-17'),
     city: 'Cochabamba',
     location: {
       lat: -17.3935,
@@ -180,21 +180,21 @@ let _mockJobOffers: JobOffer[] = [
     },
   },
   {
-    id: 'offer-001',
+    id: 'offer-004', // ID 4 (Antes era offer-001)
     fixerId: 'fixer-001',
     fixerName: 'Juan Carlos Pérez',
     fixerPhoto: '/img/avatars/fixer-001.jpg',
-    title: 'Servicios de Plomería y Electricidad',
+    title: 'Mantenimiento general',
     description:
-      'Especialista en reparaciones de plomería e instalaciones eléctricas. Soluciones rápidas y garantizadas.',
-    tags: ['Plomería', 'Electricidad', 'Reparaciones'],
+      'Mantenimiento preventivo para hogares y oficinas. Revisión completa de instalaciones.',
+    tags: ['Mantenimiento', 'Hogar', 'Oficina'],
     whatsapp: '59170341618',
     photos: ['/img/carpinteria1.jpg', '/img/carpinteria2.jpg', '/img/carpinteria3.jpg'],
     services: ['Plomería', 'Electricidad'],
-    price: 150,
+    price: 200,
     rating: 4.8,
     completedJobs: 124,
-    createdAt: new Date('2025-01-15'),
+    createdAt: new Date('2025-01-18'),
     city: 'Cochabamba',
     location: {
       lat: -17.3935,
@@ -203,21 +203,21 @@ let _mockJobOffers: JobOffer[] = [
     },
   },
   {
-    id: 'offer-001',
+    id: 'offer-005', // ID 5 (Antes era offer-001)
     fixerId: 'fixer-001',
     fixerName: 'Juan Carlos Pérez',
     fixerPhoto: '/img/avatars/fixer-001.jpg',
-    title: 'Servicios de Plomería y Electricidad',
+    title: 'Cableado estructurado',
     description:
-      'Especialista en reparaciones de plomería e instalaciones eléctricas. Soluciones rápidas y garantizadas.',
-    tags: ['Plomería', 'Electricidad', 'Reparaciones'],
+      'Instalación de redes y cableado para oficinas y negocios.',
+    tags: ['Electricidad', 'Redes', 'Internet'],
     whatsapp: '59170341618',
     photos: ['/img/carpinteria1.jpg', '/img/carpinteria2.jpg', '/img/carpinteria3.jpg'],
-    services: ['Plomería', 'Electricidad'],
-    price: 150,
+    services: ['Electricidad'],
+    price: 350,
     rating: 4.8,
     completedJobs: 124,
-    createdAt: new Date('2025-01-15'),
+    createdAt: new Date('2025-01-19'),
     city: 'Cochabamba',
     location: {
       lat: -17.3935,
@@ -226,21 +226,21 @@ let _mockJobOffers: JobOffer[] = [
     },
   },
   {
-    id: 'offer-001',
+    id: 'offer-006', // ID 6 (Antes era offer-001)
     fixerId: 'fixer-001',
     fixerName: 'Juan Carlos Pérez',
     fixerPhoto: '/img/avatars/fixer-001.jpg',
-    title: 'Servicios de Plomería y Electricidad',
+    title: 'Instalación de grifería',
     description:
-      'Especialista en reparaciones de plomería e instalaciones eléctricas. Soluciones rápidas y garantizadas.',
-    tags: ['Plomería', 'Electricidad', 'Reparaciones'],
+      'Cambio e instalación de grifos para baños y cocinas.',
+    tags: ['Plomería', 'Grifería', 'Baño'],
     whatsapp: '59170341618',
     photos: ['/img/carpinteria1.jpg', '/img/carpinteria2.jpg', '/img/carpinteria3.jpg'],
-    services: ['Plomería', 'Electricidad'],
-    price: 150,
+    services: ['Plomería'],
+    price: 60,
     rating: 4.8,
     completedJobs: 124,
-    createdAt: new Date('2025-01-15'),
+    createdAt: new Date('2025-01-20'),
     city: 'Cochabamba',
     location: {
       lat: -17.3935,
@@ -249,21 +249,21 @@ let _mockJobOffers: JobOffer[] = [
     },
   },
   {
-    id: 'offer-001',
+    id: 'offer-007', // ID 7 (Antes era offer-001)
     fixerId: 'fixer-001',
     fixerName: 'Juan Carlos Pérez',
     fixerPhoto: '/img/avatars/fixer-001.jpg',
-    title: 'Servicios de Plomería y Electricidad',
+    title: 'Revisión eléctrica',
     description:
-      'Especialista en reparaciones de plomería e instalaciones eléctricas. Soluciones rápidas y garantizadas.',
-    tags: ['Plomería', 'Electricidad', 'Reparaciones'],
+      'Diagnóstico de fallas eléctricas y cortocircuitos.',
+    tags: ['Electricidad', 'Reparación', 'Seguridad'],
     whatsapp: '59170341618',
     photos: ['/img/carpinteria1.jpg', '/img/carpinteria2.jpg', '/img/carpinteria3.jpg'],
-    services: ['Plomería', 'Electricidad'],
-    price: 150,
+    services: ['Electricidad'],
+    price: 100,
     rating: 4.8,
     completedJobs: 124,
-    createdAt: new Date('2025-01-15'),
+    createdAt: new Date('2025-01-21'),
     city: 'Cochabamba',
     location: {
       lat: -17.3935,
@@ -271,12 +271,9 @@ let _mockJobOffers: JobOffer[] = [
       address: 'Av. Oquendo #234, Cochabamba',
     },
   },
-
-  // Add more mock job offers as needed
 ];
 
 // Mock de fixers
-// En src/app/lib/mock-data.ts
 export const mockFixers = [
   {
     id: 'fixer-001',
@@ -294,7 +291,7 @@ export const mockFixers = [
     paymentMethods: ['Efectivo', 'Transferencia', 'QR'],
     jobOffers: [
       {
-        id: 'offer-001',
+        id: 'offer-001', // ID ÚNICO (corresponde al primero de arriba)
         fixerId: 'fixer-001',
         fixerName: 'Juan Carlos Pérez',
         fixerPhoto: '/img/avatars/fixer-001.jpg',
@@ -305,7 +302,6 @@ export const mockFixers = [
         photos: ['/img/plomeria1.jpg'],
         rating: 4.8,
         completedJobs: 124,
-        // AÑADE ESTAS PROPIEDADES FALTANTES:
         tags: ['Plomería', 'Reparación', 'Urgente'],
         whatsapp: '59170341618',
         services: ['Plomería'],
@@ -317,7 +313,7 @@ export const mockFixers = [
         },
       },
       {
-        id: 'offer-002',
+        id: 'offer-002', // ID ÚNICO
         fixerId: 'fixer-001',
         fixerName: 'Juan Carlos Pérez',
         fixerPhoto: '/img/avatars/fixer-001.jpg',
@@ -328,7 +324,6 @@ export const mockFixers = [
         photos: ['/img/electricidad1.jpg'],
         rating: 4.8,
         completedJobs: 124,
-        // NO OLVIDES ESTAS PROPIEDADES:
         tags: ['Electricidad', 'Instalación'],
         whatsapp: '59170341618',
         services: ['Electricidad'],
@@ -341,8 +336,8 @@ export const mockFixers = [
       },
     ],
   },
-  // ... otros fixers con la misma estructura completa
 ];
+
 // Update the job offers to include references to fixers
 _mockJobOffers = _mockJobOffers.map((offer) => {
   const fixer = mockFixers.find((f) => f.id === offer.fixerId);

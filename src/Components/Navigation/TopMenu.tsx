@@ -6,10 +6,11 @@ import { Menu, X, Wrench, UserCircle } from 'lucide-react';
 import { useGetUserByIdQuery } from '@/app/redux/services/userApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '@/app/redux/slice/userSlice';
-import { IUser } from '@/types/user';
+// CORRECCIÓN 1: Usamos UserData que es lo que existe en tu archivo de tipos
+import { UserData } from '@/types/user';
 
 interface UserState {
-  user: IUser | null;
+  user: UserData | null; // CORRECCIÓN 2: Usar UserData
   isAuthenticated: boolean;
   loading: boolean;
 }
@@ -89,7 +90,7 @@ export default function TopMenu() {
       return (
         <Link
           href="/become-fixer"
-          className="flex items-center gap-2  px-4 py-2 rounded-md text-sm font-medium text-primary transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-primary transition-colors"
         >
           <Wrench className="h-4 w-4" />
           Convertir a Fixer
@@ -101,7 +102,7 @@ export default function TopMenu() {
       return (
         <Link
           href="/fixer/dashboard"
-          className="flex items-center gap-2  text-white px-4 py-2 rounded-md text-sm font-medium bg-primary transition-colors"
+          className="flex items-center gap-2 text-white px-4 py-2 rounded-md text-sm font-medium bg-primary transition-colors"
         >
           <UserCircle className="h-4 w-4" />
           Perfil de Fixer
@@ -174,8 +175,8 @@ export default function TopMenu() {
               ))}
             </nav>
 
-            {/* Desktop Right */}
-            <div className="hidden md:flex items-center space-x-4">
+            {/* Desktop Right - AQUI AGREGAMOS EL ID QUE FALTABA */}
+            <div className="hidden md:flex items-center space-x-4" id="tour-auth-buttons-desktop">
               {!isLogged ? (
                 <>
                   <Link
@@ -258,7 +259,8 @@ export default function TopMenu() {
               </Link>
             ))}
 
-            <div className="pt-4 pb-2 border-t border-gray-200 px-2 space-y-2">
+            {/* AQUI AGREGAMOS EL ID QUE FALTABA EN MOBILE */}
+            <div className="pt-4 pb-2 border-t border-gray-200 px-2 space-y-2" id="tour-auth-buttons-mobile">
               {!isLogged ? (
                 <>
                   <Link

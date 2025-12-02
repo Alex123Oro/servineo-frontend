@@ -1,56 +1,20 @@
-export interface IUser {
-  _id?: string;
-  id?: string;
-  name: string;
-  email: string;
-  url_photo?: string;
-  role: 'requester' | 'fixer' | 'admin';
-
-  authProviders?: Array<{
-    provider: string;
-    providerId: string;
-    password?: string;
-  }>;
-
+// src/types/User.ts
+export interface UserData {
+  id?: string | number;
+  name?: string;
+  email?: string;
+  phone?: string;
   telefono?: string;
 
+  photo?: string;
+  picture?: string;
+  url_photo?: string;
+
   ubicacion?: {
-    lat?: number;
-    lng?: number;
     direccion?: string;
     departamento?: string;
     pais?: string;
   };
 
-  ci?: string;
-  servicios?: string[];
-
-  vehiculo?: {
-    hasVehiculo?: boolean;
-    tipoVehiculo?: string;
-  };
-
-  fixerProfile?: string;
-  acceptTerms?: boolean;
-
-  metodoPago?: {
-    hasEfectivo?: boolean;
-    qr?: boolean;
-    tarjetaCredito?: boolean;
-  };
-
-  experience?: {
-    descripcion?: string;
-  };
-
-  workLocation?: {
-    lat?: number;
-    lng?: number;
-    direccion?: string;
-    departamento?: string;
-    pais?: string;
-  };
-  description?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  [key: string]: unknown;
 }

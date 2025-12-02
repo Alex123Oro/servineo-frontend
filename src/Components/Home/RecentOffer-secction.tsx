@@ -1,17 +1,17 @@
 "use client";
-import { JobOffer } from "@/app/lib/mock-data";
+import { JobOffer, mockJobOffers } from "@/app/lib/mock-data";
 import { JobOfferCard } from "../Job-offers/Job-offer-card";
 import Link from "next/link";
-
 import { useGetAllJobOffersQuery } from "@/app/redux/services/jobOfferApi";
 
 export default function RecentOffersSection() {
- 
-  const { data: jobOffers = [] } = useGetAllJobOffersQuery();
+  // Intentamos obtener ofertas de la API
+  const { data: apiOffers = [], isLoading } = useGetAllJobOffersQuery();
   
-  console.log("RecentOffersSection - jobOffers:", jobOffers);
+  // LÓGICA DE RESPALDO: Si la API no tiene datos o falla, usamos los mocks
+  const displayOffers = (apiOffers && apiOffers.length > 0) ? apiOffers : mockJobOffers.slice(0, 4);
 
-
+  console.log("RecentOffersSection - Showing:", displayOffers.length, "offers");
 
   return (
     <section className="py-16 px-4 bg-white">
@@ -32,17 +32,22 @@ export default function RecentOffersSection() {
             Ver todas →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {jobOffers?.map((offer) => (
-            <JobOfferCard 
-              key={offer.id} 
-              offer={offer as JobOffer} 
-              showFixerInfo={true}
-            />
-          ))}
-        </div>
+        
+        {/* Estado de Carga */}
+        {isLoading && apiOffers.length === 0 ? (
+           <div className="text-center py-10 text-gray-500">Cargando ofertas...</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayOffers.map((offer) => (
+              <JobOfferCard 
+                key={offer.id} 
+                offer={offer as JobOffer} 
+                showFixerInfo={true}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 }
-
