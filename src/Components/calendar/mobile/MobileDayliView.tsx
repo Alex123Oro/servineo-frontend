@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useMemo } from 'react';
 import AppointmentForm from '../../appointments/forms/AppointmentForm';
+import NoInternetPopUp from '../../appointments/forms/popups/NoInternetPopUp';
 import type { AppointmentFormHandle } from '../../appointments/forms/AppointmentForm';
 import EditAppointmentForm from '../../appointments/forms/EditAppointmentForm';
 import type {
