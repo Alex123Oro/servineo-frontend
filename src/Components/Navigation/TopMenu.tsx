@@ -35,8 +35,8 @@ export default function TopMenu() {
     const navItems = [
         { name: 'Inicio', href: '/' },
         { name: 'Ofertas de trabajo', href: '/job-offer-list' },
-        { name: 'Acceder Fixer', href: '/calendar' },
-        { name: 'Acceder Requester', href: '/calendar' }
+        { name: 'Acceder Fixer', href: '/calendar?role=fixer' },
+        { name: 'Acceder Requester', href: '/calendar?role=requester' }
 
     ];
 

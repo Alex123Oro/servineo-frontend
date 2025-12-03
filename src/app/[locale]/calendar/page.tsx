@@ -12,6 +12,8 @@ import useDailyConts from '@/app/lib/utils/useDailyConts';
 import useSixMonthsAppointments from '@/hooks/useSixMonthsAppointments';
 import { AppointmentsProvider } from '@/app/lib/utils/contexts/AppointmentsContext/AppoinmentsContext';
 import { AppointmentsStatusProvider } from '@/app/lib/utils/contexts/DayliViewRequesterContext';
+import { useSearchParams } from 'next/navigation';
+
 
 import DatePicker from '@/Components/list/DatePicker/DatePicker';
 
@@ -24,6 +26,8 @@ import DatePicker from '@/Components/list/DatePicker/DatePicker';
 export default function CalendarPage() {
     const router = useRouter();
     const modeModalRef = useRef<ModeSelectionModalHandles>(null);
+    const searchParams = useSearchParams();
+    const userRole = searchParams.get('role') as 'requester' | 'fixer';
 
     const input1Ref = useRef<HTMLInputElement>(null);
     const input2Ref = useRef<HTMLInputElement>(null);
@@ -31,7 +35,6 @@ export default function CalendarPage() {
     const [fixer_id, setFixerId] = useState<string>('672801563208ce83430d31d5');
     const [requester_id, setRequesterId] = useState<string>('68ec99ddf39c7c140f42fcfa');
 
-    const [userRole, setUserRole] = useState<'requester' | 'fixer'>('fixer');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [selectDate, setSelectDate] = useState<Date>(new Date());
 
