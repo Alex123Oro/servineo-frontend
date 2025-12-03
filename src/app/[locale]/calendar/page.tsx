@@ -6,7 +6,7 @@ import DesktopCalendar from '@/Components/calendar/DesktopCalendar';
 import { UserRoleProvider } from '@/app/lib/utils/contexts/UserRoleContext';
 import MobileCalendar from '@/Components/calendar/mobile/MobileCalendar';
 import MobileList from '@/Components/list/MobileList';
-import { ModeSelectionModalHandles } from '@/Components/appointments/forms/ModeSelectionModal';
+import { ModeSelectionModal, ModeSelectionModalHandles } from '@/Components/appointments/forms/ModeSelectionModal';
 import CancelDaysAppointments from '@/Components/appointments/forms/CancelDaysAppointment';
 import useDailyConts from '@/app/lib/utils/useDailyConts';
 import useSixMonthsAppointments from '@/hooks/useSixMonthsAppointments';
@@ -61,6 +61,7 @@ export default function CalendarPage() {
 
     const handleOpenAvailabilityModal = () => {
         modeModalRef.current?.open();
+        console.log('se abrio');
     };
 
     const openCancelModal = () => {
@@ -211,12 +212,7 @@ export default function CalendarPage() {
                                     </button>
 
                                 </div>
-                                <button
-                                    onClick={switchID}
-                                    className="w-full bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors cursor-pointer text-sm"
-                                >
-                                    Vista Actual: {userRole}
-                                </button>
+
                             </div>
 
                             <div className="hidden md:flex md:items-center md:ml-auto md:mr-4 md:gap-4">
@@ -289,6 +285,10 @@ export default function CalendarPage() {
                             />
                         </div>
 
+                        <ModeSelectionModal
+                            ref={modeModalRef}
+                            fixerId={fixer_id}
+                        />
 
                         <CancelDaysAppointments
                             isOpen={isCancelModalOpen}
