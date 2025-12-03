@@ -48,7 +48,8 @@ export default function DesktopCalendar({
     return (
         <div className="w-full flex flex-col items-center bg-white">
             <div className="w-full max-w-5xl">
-                <div className="bg-blue-500 w-full p-1 flex items-center">
+
+                <div className="bg-blue-500 w-full p-1 flex items-center sticky top-0 z-10">
                     <HeaderDesktop
                         year={year}
                         month={month}
@@ -60,7 +61,8 @@ export default function DesktopCalendar({
                         onViewChange={{ handleMonthView, handleWeekView, handleDayView }}
                     />
                 </div>
-                <div className=" w-full  justify-center">
+
+                <div className="w-full justify-center overflow-y-auto max-h-[70vh] px-1">
                     {view === 'month' && <DesktopMonthView year={year} month={month} />}
                     {view === 'week' && <DesktopWeekView date={selectedDate} />}
                     {view === 'day' && <DesktopDailyView date={selectedDate} />}

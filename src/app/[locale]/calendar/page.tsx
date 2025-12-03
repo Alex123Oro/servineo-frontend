@@ -6,7 +6,6 @@ import DesktopCalendar from '@/Components/calendar/DesktopCalendar';
 import { UserRoleProvider } from '@/app/lib/utils/contexts/UserRoleContext';
 import MobileCalendar from '@/Components/calendar/mobile/MobileCalendar';
 import MobileList from '@/Components/list/MobileList';
-import ModeSelectionModal from '@/Components/appointments/forms/ModeSelectionModal';
 import { ModeSelectionModalHandles } from '@/Components/appointments/forms/ModeSelectionModal';
 import CancelDaysAppointments from '@/Components/appointments/forms/CancelDaysAppointment';
 import useDailyConts from '@/app/lib/utils/useDailyConts';
@@ -16,9 +15,8 @@ import { AppointmentsStatusProvider } from '@/app/lib/utils/contexts/DayliViewRe
 
 import DatePicker from '@/Components/list/DatePicker/DatePicker';
 
-//const fixer_id = "68ef1993be38c7f1c3c2c777";
-const fixer_id = '68e87a9cdae3b73d8040102f';
-const requester_id = "68ec99ddf39c7c140f42fcfa";
+
+
 
 //segundo
 //const requester_id = '68f518e5ef03787169f81b22';
@@ -26,6 +24,12 @@ const requester_id = "68ec99ddf39c7c140f42fcfa";
 export default function CalendarPage() {
     const router = useRouter();
     const modeModalRef = useRef<ModeSelectionModalHandles>(null);
+
+    const input1Ref = useRef<HTMLInputElement>(null);
+    const input2Ref = useRef<HTMLInputElement>(null);
+
+    const [fixer_id, setFixerId] = useState<string>('672801563208ce83430d31d5');
+    const [requester_id, setRequesterId] = useState<string>('68ec99ddf39c7c140f42fcfa');
 
     const [userRole, setUserRole] = useState<'requester' | 'fixer'>('fixer');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -45,11 +49,10 @@ export default function CalendarPage() {
     };
 
 
-    const switchRole = () => {
-        if (userRole === 'requester') {
-            setUserRole('fixer');
-        } else {
-            setUserRole('requester');
+    const switchID = () => {
+        if (input1Ref.current && input2Ref.current) {
+            setRequesterId(input2Ref.current.value);
+            setFixerId(input1Ref.current.value);
         }
     };
 
@@ -151,6 +154,7 @@ export default function CalendarPage() {
                                     </svg>
                                 </button>
 
+
                                 {userRole === 'fixer' && (
                                     <h2 className="text-black p-4 text-xl text-center flex-1">Mi Calendario</h2>
                                 )}
@@ -159,9 +163,12 @@ export default function CalendarPage() {
                                         Calendario Diego Paredes
                                     </h2>
                                 )}
+
+
                             </div>
 
                             <div className="flex flex-col md:hidden gap-2 px-4 pb-4">
+
                                 {userRole === 'fixer' && (
                                     <div className="flex gap-2">
                                         <button
@@ -178,8 +185,31 @@ export default function CalendarPage() {
                                         </button>
                                     </div>
                                 )}
+                                <div className="flex ">
+                                    <input
+                                        type="text"
+                                        ref={input1Ref}
+                                        placeholder="id fixer"
+
+                                        className="border p-2 rounded"
+                                    />
+
+                                    <input
+                                        type="text"
+                                        ref={input2Ref}
+                                        placeholder="id requester"
+                                        className="border p-2 rounded"
+                                    />
+                                    <button
+                                        onClick={switchID}
+                                        className="w-full bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors cursor-pointer text-sm"
+                                    >
+                                        Aceptar
+                                    </button>
+
+                                </div>
                                 <button
-                                    onClick={switchRole}
+                                    onClick={switchID}
                                     className="w-full bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors cursor-pointer text-sm"
                                 >
                                     Vista Actual: {userRole}
@@ -187,11 +217,26 @@ export default function CalendarPage() {
                             </div>
 
                             <div className="hidden md:flex md:items-center md:ml-auto md:mr-4 md:gap-4">
+                                <div className="flex ">
+                                    <input
+                                        type="text"
+                                        ref={input1Ref}
+                                        placeholder="id fixer"
+                                        className="border p-2 rounded"
+                                    />
+
+                                    <input
+                                        type="text"
+                                        ref={input2Ref}
+                                        placeholder="id requester"
+                                        className="border p-2 rounded"
+                                    />
+                                </div>
                                 <button
-                                    onClick={switchRole}
+                                    onClick={switchID}
                                     className="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-600 transition-colors cursor-pointer whitespace-nowrap"
                                 >
-                                    Vista Actual: {userRole}
+                                    Aceptar
                                 </button>
 
                                 {userRole === 'fixer' && (
@@ -213,15 +258,21 @@ export default function CalendarPage() {
                             </div>
                         </div>
 
-                        <div className="hidden flex-col justify-center md:flex ">
-                            <DatePicker
-                                selectedDate={selectDate}
-                                onDateChange={setSelectDate}
-                            />
-                            <DesktopCalendar
-                                selectedDate={selectDate}
-                                onDateChange={setSelectDate}
-                            />
+
+                        <div className="hidden md:flex flex-col items-center justify-center gap-4 w-full">
+                            <div className="w-full flex justify-center">
+                                <DatePicker
+                                    selectedDate={selectDate}
+                                    onDateChange={setSelectDate}
+                                />
+                            </div>
+
+                            <div className="w-full flex justify-center">
+                                <DesktopCalendar
+                                    selectedDate={selectDate}
+                                    onDateChange={setSelectDate}
+                                />
+                            </div>
                         </div>
 
                         <div className="flex flex-col md:hidden justify-center gap-4">
@@ -235,7 +286,6 @@ export default function CalendarPage() {
                             />
                         </div>
 
-                        <ModeSelectionModal ref={modeModalRef} fixerId={fixer_id} />
 
                         <CancelDaysAppointments
                             isOpen={isCancelModalOpen}
@@ -245,6 +295,6 @@ export default function CalendarPage() {
                     </div>
                 </AppointmentsStatusProvider>
             </AppointmentsProvider>
-        </UserRoleProvider>
+        </UserRoleProvider >
     );
 }
