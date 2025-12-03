@@ -9,6 +9,8 @@ import { useUserRole } from '@/app/lib/utils/contexts/UserRoleContext';
 import type { AppointmentFormHandle } from '@/Components/appointments/forms/AppointmentForm';
 import AppointmentForm from '@/Components/appointments/forms/AppointmentForm';
 import NoInternetPopUp from '@/Components/appointments/forms/popups/NoInternetPopUp';
+import { Fragment } from 'react';
+import DisabledHourPopup from '@/Components/appointments/forms/popups/DisabledHourPopup';
 import AppointmentDetailsForm, {
     EditAppointmentFormHandle as DetailsFormHandle,
 } from '@/Components/appointments/forms/AppointmentDetails';
@@ -28,6 +30,12 @@ const today = new Date();
 
 export default function HourCell({ hour, date, isPast, isToday, view }: HourCellProps) {
     const [noInternetOpen, setNoInternetOpen] = useState(false);
+    const [disabledPopupOpen, setDisabledPopupOpen] = useState(false);
+        // Mensaje para el popup de horario inhabilitado
+        const getDisabledMessage = () => {
+            if (isFixer) return 'Este horario se encuentra deshabilitado.';
+            return 'Este horario se encuentra deshabilitado,Por favor seleccione otro.';
+        };
     const refFormularioCita = useRef<AppointmentFormHandle | null>(null);
     const formRef = useRef<DetailsFormHandle>(null);
     const refFormularioEditarCita = useRef<EditAppointmentFormHandle | null>(null);
@@ -198,6 +206,10 @@ export default function HourCell({ hour, date, isPast, isToday, view }: HourCell
             setNoInternetOpen(true);
             return;
         }
+        if (estado === 'inhabilitado') {
+            setDisabledPopupOpen(true);
+            return;
+        }
         if (isRequester) {
             if (estado === 'disponible' || estado === 'cancelOtherRequester') {
                 const localISOString = createISOWithOffset(date, hour);
@@ -221,25 +233,28 @@ export default function HourCell({ hour, date, isPast, isToday, view }: HourCell
     };
 
     return (
-        <div className={`flex items-center ${todayColor()} h-15 border-b border-r border-black`}>
-            <div className="w-full">
-                {showHourCell() && (
-                    <div
-                        className={`mx-2  rounded-md text-center text-white ${getColor()} py-3 cursor-pointer`}
-                        onClick={handleClick}
-                    >
-                        <p>{getText()}</p>
-                    </div>
-                )}
+        <Fragment>
+            <div className={`flex items-center ${todayColor()} h-15 border-b border-r border-black`}>
+                <div className="w-full">
+                    {showHourCell() && (
+                        <div
+                            className={`mx-2  rounded-md text-center text-white ${getColor()} py-3 cursor-pointer`}
+                            onClick={handleClick}
+                        >
+                            <p>{getText()}</p>
+                        </div>
+                    )}
+                </div>
+
+                <AppointmentForm ref={refFormularioCita} fixerId={fixer_id} requesterId={requester_id} />
+
+                <EditAppointmentForm ref={refFormularioEditarCita} />
+
+                <AppointmentDetailsForm ref={formRef} />
+
+                <NoInternetPopUp open={noInternetOpen} onClose={() => setNoInternetOpen(false)} />
             </div>
-
-            <AppointmentForm ref={refFormularioCita} fixerId={fixer_id} requesterId={requester_id} />
-
-            <EditAppointmentForm ref={refFormularioEditarCita} />
-
-            <AppointmentDetailsForm ref={formRef} />
-
-            <NoInternetPopUp open={noInternetOpen} onClose={() => setNoInternetOpen(false)} />
-        </div>
+            <DisabledHourPopup open={disabledPopupOpen} onClose={() => setDisabledPopupOpen(false)} message={getDisabledMessage()} />
+        </Fragment>
     );
 }
