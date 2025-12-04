@@ -37,7 +37,7 @@ export async function getSixMonthAppointments(
 ): Promise<Appointment[]> {
     try {
         const response = await axios.get<ApiResponse>(
-            'https://servineo-backend-lorem.onrender.com/api/crud_read/schedules/get_six_months_appointments',
+            `${process.env.NEXT_PUBLIC_BACKEND}/api/crud_read/schedules/get_six_months_appointments`,
             {
                 params: {
                     fixer_id: fixerId,

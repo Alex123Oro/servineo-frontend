@@ -15,7 +15,7 @@ import AppointmentDetailsForm, {
     EditAppointmentFormHandle as DetailsFormHandle,
 } from '@/Components/appointments/forms/AppointmentDetails';
 import { useAppointmentsContext } from '@/app/lib/utils/contexts/AppointmentsContext/AppoinmentsContext';
-const API_BASE = 'https://servineo-backend-lorem.onrender.com';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 interface HourCellProps {
     date: Date;
@@ -31,11 +31,11 @@ const today = new Date();
 export default function HourCell({ hour, date, isPast, isToday, view }: HourCellProps) {
     const [noInternetOpen, setNoInternetOpen] = useState(false);
     const [disabledPopupOpen, setDisabledPopupOpen] = useState(false);
-        // Mensaje para el popup de horario inhabilitado
-        const getDisabledMessage = () => {
-            if (isFixer) return 'Este horario se encuentra deshabilitado.';
-            return 'Este horario se encuentra deshabilitado,Por favor seleccione otro.';
-        };
+    // Mensaje para el popup de horario inhabilitado
+    const getDisabledMessage = () => {
+        if (isFixer) return 'Este horario se encuentra deshabilitado.';
+        return 'Este horario se encuentra deshabilitado,Por favor seleccione otro.';
+    };
     const refFormularioCita = useRef<AppointmentFormHandle | null>(null);
     const formRef = useRef<DetailsFormHandle>(null);
     const refFormularioEditarCita = useRef<EditAppointmentFormHandle | null>(null);
