@@ -43,8 +43,6 @@ export default function HourCell({ hour, date, isPast, isToday, view }: HourCell
     const { isHourBookedFixer, isHourBooked, isEnabled, isCanceled } = useAppointmentsContext();
 
     const { isFixer, isRequester, requester_id, fixer_id } = useUserRole();
-    console.log(fixer_id + " fixekr");
-    console.log(requester_id + "requester");
     const isBookedFixer = isHourBookedFixer(date, hour);
     const isBooked = isHourBooked(date, hour, requester_id);
     const isEnable = isEnabled(date, hour);

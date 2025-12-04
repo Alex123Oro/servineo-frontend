@@ -32,8 +32,8 @@ export default function CalendarPage() {
     const input1Ref = useRef<HTMLInputElement>(null);
     const input2Ref = useRef<HTMLInputElement>(null);
 
-    const [fixer_id, setFixerId] = useState<string>('672801563208ce83430d31d5');
-    const [requester_id, setRequesterId] = useState<string>('68ec99ddf39c7c140f42fcfa');
+    const [fixer_id, setFixerId] = useState<string>('692fcd08dc02551862744940');
+    const [requester_id, setRequesterId] = useState<string>('692fdb88e984cce53d54cfb4');
 
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [selectDate, setSelectDate] = useState<Date>(new Date());
@@ -54,14 +54,13 @@ export default function CalendarPage() {
 
     const switchID = () => {
         if (input1Ref.current && input2Ref.current) {
-            setRequesterId(input2Ref.current.value);
             setFixerId(input1Ref.current.value);
+            setRequesterId(input2Ref.current.value);
         }
     };
 
     const handleOpenAvailabilityModal = () => {
         modeModalRef.current?.open();
-        console.log('se abrio');
     };
 
     const openCancelModal = () => {
@@ -170,9 +169,7 @@ export default function CalendarPage() {
 
 
                             </div>
-
                             <div className="flex flex-col md:hidden gap-2 px-4 pb-4">
-
                                 {userRole === 'fixer' && (
                                     <div className="flex gap-2">
                                         <button
@@ -189,46 +186,52 @@ export default function CalendarPage() {
                                         </button>
                                     </div>
                                 )}
-                                <div className="flex ">
-                                    <input
-                                        type="text"
-                                        ref={input1Ref}
-                                        placeholder="id fixer"
-
-                                        className="border p-2 rounded"
-                                    />
-
-                                    <input
-                                        type="text"
-                                        ref={input2Ref}
-                                        placeholder="id requester"
-                                        className="border p-2 rounded"
-                                    />
-                                    <button
-                                        onClick={switchID}
-                                        className="w-full bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors cursor-pointer text-sm"
-                                    >
-                                        Aceptar
-                                    </button>
-
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex flex-col">
+                                        <label className="text-sm mb-1">fixerID</label>
+                                        <input
+                                            type="text"
+                                            ref={input1Ref}
+                                            placeholder="id fixer"
+                                            defaultValue={fixer_id}
+                                            className="border p-2 rounded"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-sm mb-1">RequesterID</label>
+                                        <input
+                                            type="text"
+                                            ref={input2Ref}
+                                            defaultValue={requester_id}
+                                            placeholder="id requester"
+                                            className="border p-2 rounded"
+                                        />
+                                    </div>
                                 </div>
-
+                                <button
+                                    onClick={switchID}
+                                    className="w-full bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors cursor-pointer text-sm"
+                                >
+                                    Aceptar
+                                </button>
                             </div>
-
                             <div className="hidden md:flex md:items-center md:ml-auto md:mr-4 md:gap-4">
-                                <div className="flex ">
+                                <div className="flex w-150">
+                                    <label>fixerID</label>
                                     <input
                                         type="text"
                                         ref={input1Ref}
+                                        defaultValue={fixer_id}
                                         placeholder="id fixer"
-                                        className="border p-2 rounded"
+                                        className="border p-2 w-70 rounded"
                                     />
-
+                                    <label>requesterID</label>
                                     <input
                                         type="text"
                                         ref={input2Ref}
+                                        defaultValue={requester_id}
                                         placeholder="id requester"
-                                        className="border p-2 rounded"
+                                        className="border p-2 w-70 rounded"
                                     />
                                 </div>
                                 <button
