@@ -1,28 +1,18 @@
 'use client'
 
-//import 'animate.css';
 import React, { useEffect, useRef, useState } from 'react'
-import dynamic from "next/dynamic";
 import { FaArrowDown } from "react-icons/fa6"
 import { Play, Pause } from "lucide-react";
 import * as Popover from "@radix-ui/react-popover";
 
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const subtitle = "Estos son los pasos que debe seguir para\npoder usar nuestra plataforma facilmente"
 
 export const Title = () => {
-
     const [playing, setPlaying] = useState(false);
     const [audioAllowed, setAudioAllowed] = useState(false)
     const [open, setOpen] = useState(false)
     const [showPauseScreen, setShowPauseScreen] = useState(true)
-    const [isClient, setIsClient] = useState(false);
-    
-    const [checkPause, setCheckPause] = useState(false)
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
     const handleAllowAudio = async () => { 
         setAudioAllowed(true);
@@ -32,28 +22,43 @@ export const Title = () => {
     const handleNoAudio = () => {
         setOpen(false)
         setAudioAllowed(false)
-        setCheckPause(true)
     }
     
     const handlePlayPause = () => {
-        if(audioAllowed === false){
-            if (checkPause === true){
-                setPlaying(!playing);
-                setShowPauseScreen(!showPauseScreen);
-            }else{ 
-                setOpen(true);
-            }
-            //return;
-        } else {
-            //setAudioAllowed(!audioAllowed);
-            setPlaying(!playing);
-            setShowPauseScreen(!showPauseScreen);
+        if(!audioAllowed){
+            setOpen(true);
+            return;
         }
         
+        if (videoRef.current) {
+            if (playing) {
+                videoRef.current.pause();
+            } else {
+                videoRef.current.play();
+            }
+            setPlaying(!playing);
+            setShowPauseScreen(!playing);
+        }
     }
-    
 
-  return (
+    // Controlar play/pause cuando cambia el estado
+    useEffect(() => {
+        if (videoRef.current) {
+            if (playing) {
+                videoRef.current.play();
+            } else {
+                videoRef.current.pause();
+            }
+        }
+    }, [playing]);
+
+    // Detectar cuando el video termina
+    const handleVideoEnd = () => {
+        setPlaying(false);
+        setShowPauseScreen(true);
+    }
+
+    return (
     <div>
         <div className="flex flex-col items-center min-h-screen gap-[10px] bg-gradient-to-b from-[#2B6AE0] to-[#2B31E0]">
             <div>
@@ -96,30 +101,42 @@ export const Title = () => {
             </Popover.Root>
             {/* */}
             
-            {/* contenedor del video */}
-            <div className="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden shadow-lg mb-[30px]">
-                {
-                    isClient && (
-                        <ReactPlayer
-                            url="/videos/SERVINEO_TUTORIAL.mp4"
-                            playing={playing}
-                            muted={audioAllowed ? false : true}
-                            controls
-                            height='100%'
-                            width='100%'
-                            style={{ position: 'absolute', top: 0, left: 0, objectFit: "cover"}}
-                        />
-                    )
-                }
+            {/* contenedor del video - USANDO <video> NATIVO */}
+            <div className="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden shadow-lg mb-[30px] bg-black">
+                <video
+                    ref={videoRef}
+                    className="w-full h-full object-cover"
+                    controls={audioAllowed && playing}
+                    muted={!audioAllowed}
+                    onEnded={handleVideoEnd}
+                    preload="metadata"
+                    poster="/videos/poster.jpg" // Opcional: imagen de portada
+                >
+                    {/* Agrega múltiples formatos para compatibilidad */}
+                    <source src="/videos/SERVINEO_TUTORIAL.mp4" type="video/mp4" />
+                    <source src="/videos/SERVINEO_TUTORIAL.webm" type="video/webm" />
+                    Tu navegador no soporta videos HTML5.
+                </video>
                 
-                { showPauseScreen === true && (
+                { showPauseScreen && (
                     <div
-                        className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity duration-300"
+                        className="absolute inset-0 flex items-center justify-center bg-black/50 cursor-pointer transition-opacity duration-300"
+                        onClick={handlePlayPause}
                     >
-                        <button>
-                            <Play onClick={handlePlayPause} className='cursor-pointer text-white drop-shadow-lg transition-transform duration-300 hover:scale-130' size={64} color="white" />
+                        <button className="flex items-center justify-center w-20 h-20 bg-white/20 rounded-full hover:bg-white/30 transition-colors">
+                            <Play className='text-white drop-shadow-lg' size={48} />
                         </button>
                     </div>
+                )}
+                
+                {/* Botón de play/pause flotante cuando el video está reproduciéndose */}
+                {!showPauseScreen && playing && (
+                    <button
+                        className="absolute top-4 right-4 flex items-center justify-center w-12 h-12 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+                        onClick={handlePlayPause}
+                    >
+                        <Pause className='text-white' size={24} />
+                    </button>
                 )}
             </div>
             {/* */}
