@@ -16,7 +16,7 @@ import DatePicker from '@/Components/list/DatePicker/DatePicker';
 import { useUserRole } from '@/app/lib/utils/contexts/UserRoleContext';
 import { useAppointmentsContext } from '@/app/lib/utils/contexts/AppointmentsContext/AppoinmentsContext';
 
-const API_BASE = 'https://servineo-backend-lorem.onrender.com';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 interface PropiedadesHorarioDia {
     fixerId: string;

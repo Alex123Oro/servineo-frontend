@@ -37,7 +37,7 @@ export async function getAppointmentsByDate(fixerId: string, date: string): Prom
     try {
 
         const response = await axios.get<ApiResponse>(
-            'https://servineo-backend-lorem.onrender.com/api/crud_read/appointments/get_appointments_date',
+            `${process.env.NEXT_PUBLIC_API_URL}/api/crud_read/appointments/get_appointments_date`,
             {
                 params: {
                     id_fixer: fixerId,
@@ -54,7 +54,7 @@ export async function getAppointmentsByDate(fixerId: string, date: string): Prom
             return [];
         }
     } catch (error) {
-       console.error('Error desconocido:', error);
+        console.error('Error desconocido:', error);
         return [];
     }
 }
