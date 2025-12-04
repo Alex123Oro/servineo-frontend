@@ -56,7 +56,9 @@ export default function CalendarPage() {
         if (input1Ref.current && input2Ref.current) {
             setFixerId(input1Ref.current.value);
             setRequesterId(input2Ref.current.value);
+            refetchAll();
         }
+
     };
 
     const handleOpenAvailabilityModal = () => {
