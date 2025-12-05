@@ -59,6 +59,10 @@ export default function DatePicker({ selectedDate, onDateChange }: DatePickerPro
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
+
+        // Only allow numeric input
+        if (value !== '' && !/^\d+$/.test(value)) return;
+
         setDay(value);
 
         const newDay = parseInt(value);
@@ -69,30 +73,50 @@ export default function DatePicker({ selectedDate, onDateChange }: DatePickerPro
         if (isNaN(monthNum) || isNaN(yearNum)) return;
 
         const maxDays = getDaysInMonth(monthNum, yearNum);
-        const validDay = newDay > maxDays ? maxDays : newDay;
+        const validDay = Math.min(Math.max(1, newDay), maxDays);
+
+        // Update display if value exceeds valid range
+        if (newDay > maxDays) {
+            setDay(validDay.toString());
+        }
+
         notifyDateChange(validDay, monthNum, yearNum);
     };
 
     const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
+
+        // Only allow numeric input
+        if (value !== '' && !/^\d+$/.test(value)) return;
+
         setMonth(value);
         const newMonth = parseInt(value);
         if (isNaN(newMonth) || value === '') return;
+
+        // Limit month to 1-12 range
+        const validMonth = Math.min(Math.max(1, newMonth), 12);
+        if (newMonth > 12) {
+            setMonth('12');
+        }
 
         const dayNum = parseInt(day);
         const yearNum = parseInt(year);
         if (isNaN(dayNum) || isNaN(yearNum)) return;
 
-        const maxDays = getDaysInMonth(newMonth, yearNum);
-        const validDay = dayNum > maxDays ? maxDays : dayNum;
+        const maxDays = getDaysInMonth(validMonth, yearNum);
+        const validDay = Math.min(Math.max(1, dayNum), maxDays);
         if (dayNum > maxDays) {
             setDay(validDay.toString());
         }
-        notifyDateChange(validDay, newMonth, yearNum);
+        notifyDateChange(validDay, validMonth, yearNum);
     };
 
     const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
+
+        // Only allow numeric input and limit to reasonable year length (4 digits)
+        if (value !== '' && (!/^\d+$/.test(value) || value.length > 4)) return;
+
         setYear(value);
         const newYear = parseInt(value);
         if (isNaN(newYear) || value === '') return;
@@ -101,7 +125,14 @@ export default function DatePicker({ selectedDate, onDateChange }: DatePickerPro
         const monthNum = parseInt(month);
         if (isNaN(dayNum) || isNaN(monthNum)) return;
 
-        notifyDateChange(dayNum, monthNum, newYear);
+        // Validate day for the new year (in case of leap year changes)
+        const maxDays = getDaysInMonth(monthNum, newYear);
+        const validDay = Math.min(Math.max(1, dayNum), maxDays);
+        if (dayNum > maxDays) {
+            setDay(validDay.toString());
+        }
+
+        notifyDateChange(validDay, monthNum, newYear);
     };
 
     const handleDayBlur = () => {
@@ -117,7 +148,7 @@ export default function DatePicker({ selectedDate, onDateChange }: DatePickerPro
             const yearNum = parseInt(year);
             if (!isNaN(monthNum) && !isNaN(yearNum)) {
                 const maxDays = getDaysInMonth(monthNum, yearNum);
-                const validDay = dayNum > maxDays ? maxDays : dayNum;
+                const validDay = Math.min(Math.max(1, dayNum), maxDays);
                 if (validDay !== dayNum) {
                     setDay(validDay.toString());
                 }
@@ -136,6 +167,12 @@ export default function DatePicker({ selectedDate, onDateChange }: DatePickerPro
         if (isNaN(monthNum) || month === '') {
             setMonth((selectedDate.getMonth() + 1).toString());
         } else {
+            // Enforce valid month range 1-12
+            const validMonth = Math.min(Math.max(1, monthNum), 12);
+            if (validMonth !== monthNum) {
+                setMonth(validMonth.toString());
+            }
+
             // Clear debounce and immediately notify parent if date changed
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current);
@@ -143,12 +180,12 @@ export default function DatePicker({ selectedDate, onDateChange }: DatePickerPro
             const dayNum = parseInt(day);
             const yearNum = parseInt(year);
             if (!isNaN(dayNum) && !isNaN(yearNum)) {
-                const maxDays = getDaysInMonth(monthNum, yearNum);
-                const validDay = dayNum > maxDays ? maxDays : dayNum;
+                const maxDays = getDaysInMonth(validMonth, yearNum);
+                const validDay = Math.min(Math.max(1, dayNum), maxDays);
                 if (validDay !== dayNum) {
                     setDay(validDay.toString());
                 }
-                const newDate = new Date(yearNum, monthNum - 1, validDay, 12, 0, 0);
+                const newDate = new Date(yearNum, validMonth - 1, validDay, 12, 0, 0);
                 // Only notify if the date is actually different
                 if (newDate.getTime() !== selectedDate.getTime()) {
                     lastSelectedDateRef.current = newDate;
@@ -171,7 +208,7 @@ export default function DatePicker({ selectedDate, onDateChange }: DatePickerPro
             const monthNum = parseInt(month);
             if (!isNaN(dayNum) && !isNaN(monthNum)) {
                 const maxDays = getDaysInMonth(monthNum, yearNum);
-                const validDay = dayNum > maxDays ? maxDays : dayNum;
+                const validDay = Math.min(Math.max(1, dayNum), maxDays);
                 if (validDay !== dayNum) {
                     setDay(validDay.toString());
                 }

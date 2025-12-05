@@ -218,27 +218,31 @@ export default function CalendarPage() {
                                 </button>
                             </div>
                             <div className="hidden md:flex md:items-center md:ml-auto md:mr-4 md:gap-4">
-                                <div className="flex w-150">
-                                    <label>fixerID</label>
-                                    <input
-                                        type="text"
-                                        ref={input1Ref}
-                                        defaultValue={fixer_id}
-                                        placeholder="id fixer"
-                                        className="border p-2 w-70 rounded"
-                                    />
-                                    <label>requesterID</label>
-                                    <input
-                                        type="text"
-                                        ref={input2Ref}
-                                        defaultValue={requester_id}
-                                        placeholder="id requester"
-                                        className="border p-2 w-70 rounded"
-                                    />
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <label className="text-sm font-medium text-gray-700 whitespace-nowrap">fixerID</label>
+                                        <input
+                                            type="text"
+                                            ref={input1Ref}
+                                            defaultValue={fixer_id}
+                                            placeholder="id fixer"
+                                            className="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent min-w-[200px]"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <label className="text-sm font-medium text-gray-700 whitespace-nowrap">requesterID</label>
+                                        <input
+                                            type="text"
+                                            ref={input2Ref}
+                                            defaultValue={requester_id}
+                                            placeholder="id requester"
+                                            className="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent min-w-[200px]"
+                                        />
+                                    </div>
                                 </div>
                                 <button
                                     onClick={switchID}
-                                    className="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-600 transition-colors cursor-pointer whitespace-nowrap"
+                                    className="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-600 transition-colors cursor-pointer whitespace-nowrap font-medium"
                                 >
                                     Aceptar
                                 </button>
