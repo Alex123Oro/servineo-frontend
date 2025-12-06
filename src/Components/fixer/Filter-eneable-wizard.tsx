@@ -12,7 +12,7 @@ import { LocationStep } from './steps/Location-step';
 import { ServicesStep, type Service } from './steps/Services-step';
 import { PaymentStep } from './steps/Payment-step';
 import { VehicleStep } from './steps/Vehicle-step';
-import { TermsStep } from './steps/Terms-Step';
+import { TermsStep } from './steps/Terms-step';
 import { CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { ProfilePhotoStep } from './steps/Profile-photo-step';
 import { useConvertToFixerMutation } from '@/app/redux/services/become';
