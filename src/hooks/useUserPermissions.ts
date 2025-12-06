@@ -2,7 +2,8 @@
 import { useUserRole } from '@/app/lib/utils/contexts/UserRoleContext';
 
 export function useUserPermissions() {
-  const { isFixer, isRequester } = useUserRole();
+  // `role` puede estar disponible en el hook pero no se usa aún — prefix con _ para evitar warning
+  const { role: _role, isFixer, isRequester } = useUserRole();
 
   return {
     canSetAvailability: isFixer,

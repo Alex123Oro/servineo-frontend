@@ -3,6 +3,7 @@ const CLIENT_BASE = '/api/controlC/cliente';
 
 export interface AuthProvider {
   provider: 'email' | 'google' | 'discord' | 'github';
+  providerId?: string;
   email?: string;
   token?: string;
 }
@@ -193,24 +194,17 @@ export function vincularDiscord(
   onSuccess?: (client: Client) => void,
   onError?: (msg: string) => void,
 ) {
-  const rawState = JSON.stringify({ mode: 'link', token });
-  const state = btoa(rawState);
+  const state = encodeURIComponent(JSON.stringify({ mode: 'link', token }));
 
   const baseUrl = BASE_URL;
-
   const finalUrl = `${baseUrl}/auth/discord?state=${state}`;
 
   const popup = window.open(finalUrl, 'DiscordLink', 'width=600,height=700');
 
   const allowedOrigin = BASE_URL;
 
-  console.log('allowedOrigin:', allowedOrigin);
-
   const handleMessage = (event: MessageEvent) => {
-    if (event.origin !== allowedOrigin) {
-      console.warn('Mensaje rechazado por ORIGIN:', event.origin);
-      return;
-    }
+    if (event.origin !== allowedOrigin) return;
 
     if (event.data.type === 'DISCORD_LINK_SUCCESS') {
       onSuccess?.(event.data.client);
@@ -225,3 +219,4 @@ export function vincularDiscord(
 
   window.addEventListener('message', handleMessage);
 }
+

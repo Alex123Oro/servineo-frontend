@@ -1,6 +1,7 @@
 import { baseApi } from './baseApi';
 
 export const becomeApi = baseApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     convertToFixer: builder.mutation<unknown, { id: string; profile: unknown }>({
       query: ({ id, profile }) => ({

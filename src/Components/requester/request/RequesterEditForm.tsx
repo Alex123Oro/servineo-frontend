@@ -210,141 +210,149 @@ export default function RequesterEditForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6 max-w-2xl mx-auto bg-white rounded-2xl p-8"
-      aria-busy={loading}
-    >
-      <div>
-        <label className="block text-sm font-semibold mb-1 text-[#1A223F] text-left">
-          Número de teléfono:
-        </label>
-        <div className="flex items-center gap-2">
-          <input
-            type={showTelefono ? 'text' : 'password'}
-            value={telefono}
-            disabled={!isEditingTelefono}
-            onChange={handleTelefonoChange}
-            placeholder="+591 7xxxxxxx"
-            autoComplete="tel"
-            className={`flex-1 rounded-md border px-3 py-2 focus:outline-none focus:ring-2 transition text-black ${
-              isEditingTelefono
-                ? 'bg-white border-[#759AE0] focus:ring-[#1AA7ED]'
-                : 'bg-[#F5FAFE] border-[#E5F4FB] cursor-not-allowed'
-            }`}
-          />
-          <button
-            type="button"
-            onClick={() => setShowTelefono((p) => !p)}
-            className="p-2 rounded-md border border-[#E5F4FB] bg-[#F5FAFE] hover:bg-[#E5F4FB] transition"
-          >
-            {showTelefono ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsEditingTelefono((p) => !p);
-              setErrorTelefono(null);
-            }}
-            className={`p-2 rounded-md border transition ${
-              isEditingTelefono
-                ? 'border-[#1A223F] bg-[#E5F4FB]'
-                : 'border-[#E5F4FB] bg-[#F5FAFE] hover:bg-[#E5F4FB]'
-            }`}
-          >
-            <Pencil size={18} />
-          </button>
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold text-[#1A223F] mb-5 text-left">
+        Editar perfil
+      </h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 bg-white rounded-2xl p-8"
+        aria-busy={loading}
+      >
+        <div>
+          <label className="block text-sm font-semibold mb-1 text-[#1A223F] text-left">
+            Número de teléfono:
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type={showTelefono ? 'text' : 'password'}
+              value={telefono}
+              disabled={!isEditingTelefono}
+              onChange={handleTelefonoChange}
+              placeholder="+591 7xxxxxxx"
+              autoComplete="tel"
+              className={`flex-1 rounded-md border px-3 py-2 focus:outline-none focus:ring-2 transition text-black ${
+                isEditingTelefono
+                  ? 'bg-white border-[#759AE0] focus:ring-[#1AA7ED]'
+                  : 'bg-[#F5FAFE] border-[#E5F4FB] cursor-not-allowed'
+              }`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowTelefono((p) => !p)}
+              className="p-2 rounded-md border border-[#E5F4FB] bg-[#F5FAFE] hover:bg-[#E5F4FB] transition"
+            >
+              {showTelefono ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsEditingTelefono((p) => !p);
+                setErrorTelefono(null);
+              }}
+              className={`p-2 rounded-md border transition ${
+                isEditingTelefono
+                  ? 'border-[#1A223F] bg-[#E5F4FB]'
+                  : 'border-[#E5F4FB] bg-[#F5FAFE] hover:bg-[#E5F4FB]'
+              }`}
+            >
+              <Pencil size={18} />
+            </button>
+          </div>
+          {errorTelefono && (
+            <p className="text-sm text-red-600 mt-1" role="alert">
+              {errorTelefono}
+            </p>
+          )}
         </div>
-        {errorTelefono && (
-          <p className="text-sm text-red-600 mt-1" role="alert">
-            {errorTelefono}
+
+        <div>
+          <label className="block text-sm font-semibold mb-1 text-[#1A223F] text-left">
+            Ubicación:
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              value={ubicacion.direccion || ''}
+              disabled
+              placeholder="País, ciudad, departamento"
+              className="flex-1 rounded-md border px-3 py-2 bg-[#F5FAFE] border-[#E5F4FB] cursor-not-allowed text-black"
+            />
+            <button
+              type="button"
+              onClick={handleGetLocation}
+              className="p-2 rounded-md border border-[#E5F4FB] bg-[#F5FAFE] hover:bg-[#2BDDE0]/20 transition"
+            >
+              <Crosshair size={18} color="#2BDDE0" />
+            </button>
+          </div>
+          <span className="text-xs text-[#759AE0]">
+            Haz clic en el botón GPS o en el mapa para seleccionar tu ubicación
+          </span>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold mb-1 text-[#1A223F]">
+            Mapa
+          </label>
+          <div className="w-full h-64 border border-[#E5F4FB] rounded-lg overflow-hidden bg-gradient-to-br from-[#F5FAFE] to-[#E5F4FB] relative">
+            <MapContainer
+              center={latLng ? [latLng.lat, latLng.lng] : [-16.5, -68.15]}
+              zoom={13}
+              style={{ height: '100%', width: '100%' }}
+              whenReady={() => setMapReady(true)}
+            >
+              <TileLayer
+                attribution="&copy; OpenStreetMap contributors"
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {mapReady && (
+                <LocationMarker
+                  latLng={latLng}
+                  onChange={(coords: LatLng) => {
+                    setLatLng(coords);
+                    fetchAddress(coords.lat, coords.lng);
+                  }}
+                />
+              )}
+            </MapContainer>
+            {!mapReady && (
+              <span className="absolute inset-0 flex items-center justify-center text-gray-600">
+                Cargando mapa...
+              </span>
+            )}
+          </div>
+        </div>
+
+        {error && (
+          <p className="text-sm text-red-600" role="alert">
+            {error}
           </p>
         )}
-      </div>
 
-      <div>
-        <label className="block text-sm font-semibold mb-1 text-[#1A223F] text-left">
-          Ubicación:
-        </label>
-        <div className="flex items-center gap-2">
-          <input
-            value={ubicacion.direccion || ''}
-            disabled
-            placeholder="País, ciudad, departamento"
-            className="flex-1 rounded-md border px-3 py-2 bg-[#F5FAFE] border-[#E5F4FB] cursor-not-allowed text-black"
-          />
+        <div className="pt-4 flex justify-end gap-3">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center gap-2 rounded-md bg-[#1A223F] px-4 py-2 text-white font-semibold hover:bg-[#2B31E0] disabled:bg-[#759AE0]"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={14} className="animate-spin" /> Guardando...
+              </>
+            ) : (
+              'Guardar'
+            )}
+          </button>
           <button
             type="button"
-            onClick={handleGetLocation}
-            className="p-2 rounded-md border border-[#E5F4FB] bg-[#F5FAFE] hover:bg-[#2BDDE0]/20 transition"
+            onClick={() => router.back()}
+            className="rounded-md bg-[#E5F4FB] px-4 py-2 text-[#1A223F] font-semibold hover:bg-[#2BDDE0]/20"
           >
-            <Crosshair size={18} color="#2BDDE0" />
+            Cancelar
           </button>
         </div>
-        <span className="text-xs text-[#759AE0]">
-          Haz clic en el botón GPS o en el mapa para seleccionar tu ubicación
-        </span>
-      </div>
-
-      <div>
-        <label className="block text-sm font-semibold mb-1 text-[#1A223F]">Mapa</label>
-        <div className="w-full h-64 border border-[#E5F4FB] rounded-lg overflow-hidden bg-gradient-to-br from-[#F5FAFE] to-[#E5F4FB] relative">
-          <MapContainer
-            center={latLng ? [latLng.lat, latLng.lng] : [-16.5, -68.15]}
-            zoom={13}
-            style={{ height: '100%', width: '100%' }}
-            whenReady={() => setMapReady(true)}
-          >
-            <TileLayer
-              attribution="&copy; OpenStreetMap contributors"
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {mapReady && (
-              <LocationMarker
-                latLng={latLng}
-                onChange={(coords: LatLng) => {
-                  setLatLng(coords);
-                  fetchAddress(coords.lat, coords.lng);
-                }}
-              />
-            )}
-          </MapContainer>
-          {!mapReady && (
-            <span className="absolute inset-0 flex items-center justify-center text-gray-600">
-              Cargando mapa...
-            </span>
-          )}
-        </div>
-      </div>
-
-      {error && (
-        <p className="text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
-
-      <div className="pt-4 flex justify-end gap-3">
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex items-center gap-2 rounded-md bg-[#1A223F] px-4 py-2 text-white font-semibold hover:bg-[#2B31E0] disabled:bg-[#759AE0]"
-        >
-          {loading ? (
-            <>
-              <Loader2 size={14} className="animate-spin" /> Guardando...
-            </>
-          ) : (
-            'Guardar'
-          )}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="rounded-md bg-[#E5F4FB] px-4 py-2 text-[#1A223F] font-semibold hover:bg-[#2BDDE0]/20"
-        >
-          Cancelar
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }

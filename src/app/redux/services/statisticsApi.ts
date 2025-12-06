@@ -28,7 +28,7 @@ export interface JobLog {
 export const statisticsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getJobStatistics: builder.query<JobLog[], void>({
-      query: () => '/activity/ActivityReviews',
+      query: () => '/ActivityReviews',
       providesTags: ['Statistics'],
     }),
   }),
